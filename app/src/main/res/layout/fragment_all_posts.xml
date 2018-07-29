@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".AllPostsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/all_posts_recycler_view" />
 
 </FrameLayout>
