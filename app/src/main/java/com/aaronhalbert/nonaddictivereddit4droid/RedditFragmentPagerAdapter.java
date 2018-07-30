@@ -21,5 +21,10 @@ public class RedditFragmentPagerAdapter extends FragmentPagerAdapter {
         return AllPostsFragment.newInstance("abc", "def");
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        if (position == 0) return "/r/All"; else return "Home";
+    }
+
 
 }
