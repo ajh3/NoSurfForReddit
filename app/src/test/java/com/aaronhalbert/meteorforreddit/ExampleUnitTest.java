@@ -1,4 +1,4 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 import org.junit.Test;
 

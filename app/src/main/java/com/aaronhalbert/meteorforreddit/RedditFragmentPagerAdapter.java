@@ -1,4 +1,4 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

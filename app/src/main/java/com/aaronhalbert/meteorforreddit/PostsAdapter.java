@@ -1,11 +1,10 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
@@ -31,7 +30,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     @Override
     public PostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.list_item_view, viewGroup, false);
+                    .inflate(com.aaronhalbert.meteorforreddit.R.layout.list_item_view, viewGroup, false);
 
         return new PostHolder(view);
     }
@@ -42,7 +41,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         public PostHolder(View itemView) {
             super(itemView);
 
-            mTitle = itemView.findViewById(R.id.title);
+            mTitle = itemView.findViewById(com.aaronhalbert.meteorforreddit.R.id.title);
         }
     }
 

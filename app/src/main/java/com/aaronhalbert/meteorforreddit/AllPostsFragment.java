@@ -1,4 +1,4 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 
 import android.os.Bundle;
@@ -46,12 +46,12 @@ public class AllPostsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_all_posts, container, false);
+        return inflater.inflate(com.aaronhalbert.meteorforreddit.R.layout.fragment_all_posts, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        rv = Objects.requireNonNull(getView()).findViewById(R.id.all_posts_recycler_view);
+        rv = Objects.requireNonNull(getView()).findViewById(com.aaronhalbert.meteorforreddit.R.id.all_posts_recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);

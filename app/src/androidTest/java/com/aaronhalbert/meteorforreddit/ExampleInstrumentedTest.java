@@ -1,4 +1,4 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.aaronhalbert.nonaddictivereddit4droid", appContext.getPackageName());
+        assertEquals("com.aaronhalbert.meteorforreddit", appContext.getPackageName());
     }
 }

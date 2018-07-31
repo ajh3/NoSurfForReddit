@@ -1,4 +1,4 @@
-package com.aaronhalbert.nonaddictivereddit4droid;
+package com.aaronhalbert.meteorforreddit;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +12,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(com.aaronhalbert.meteorforreddit.R.layout.activity_main);
 
-        ViewPager pager = findViewById(R.id.pager);
-        MaterialTabs tabs = findViewById(R.id.tabs);
+        ViewPager pager = findViewById(com.aaronhalbert.meteorforreddit.R.id.pager);
+        MaterialTabs tabs = findViewById(com.aaronhalbert.meteorforreddit.R.id.tabs);
 
         pager.setAdapter(new RedditFragmentPagerAdapter(getSupportFragmentManager()));
         tabs.setViewPager(pager);
