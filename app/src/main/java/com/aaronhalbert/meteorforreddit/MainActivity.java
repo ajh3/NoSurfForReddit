@@ -21,4 +21,6 @@ public class MainActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
 
     }
+
+
 }

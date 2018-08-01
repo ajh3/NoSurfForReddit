@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class RedditFragmentPagerAdapter extends FragmentPagerAdapter {
-    static final int NUM_ITEMS = 2;
+    static final int NUM_ITEMS = 1;
 
     public RedditFragmentPagerAdapter(FragmentManager fm) {
         super(fm);

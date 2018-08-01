@@ -1,5 +1,4 @@
 package com.aaronhalbert.meteorforreddit;
 
-public class Item {
-
+public class Thing {
 }

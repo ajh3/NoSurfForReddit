@@ -4,17 +4,33 @@ package com.aaronhalbert.meteorforreddit;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import java.util.Objects;
+import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class AllPostsFragment extends Fragment {
+public class AllPostsFragment extends Fragment implements Callback<AppOnlyOAuthToken> {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
+    private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
+    private static final String BASE_URL = "https://www.reddit.com";
+    private static final String CLIENT_ID = "jPF59UF5MbMkWg";
+
 
     private String mParam1;
     private String mParam2;
@@ -55,6 +71,31 @@ public class AllPostsFragment extends Fragment {
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);
+
+        // TODO Move Retrofit builder to a separate method
+
+        Log.d(getClass().getSimpleName(), DEVICE_ID);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RedditInterface ri = retrofit.create(RedditInterface.class);
+
+        ri.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(this);
+    }
+
+    @Override
+    public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
+        Log.d(getClass().getSimpleName(),"Call succeeded with code=" + response.code() + " and has body = " + response.body());
+        Log.d(getClass().getSimpleName(), new Gson().toJson(response.body()));
+
+    }
+
+    @Override
+    public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
+        Log.d(getClass().getSimpleName(), "Call failed");
     }
 
 }
