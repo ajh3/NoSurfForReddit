@@ -22,18 +22,20 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class AllPostsFragment extends Fragment implements Callback<AppOnlyOAuthToken> {
+public class AllPostsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     private static final String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
-    private static final String BASE_URL = "https://www.reddit.com";
+
+    private static final String OAUTH_BASE_URL = "https://www.reddit.com";
+    private static final String API_BASE_URL = "https://oauth.reddit.com";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
 
 
     private String mParam1;
     private String mParam2;
+    private String accessToken;
     private RecyclerView rv = null;
 
     public AllPostsFragment() {
@@ -74,28 +76,54 @@ public class AllPostsFragment extends Fragment implements Callback<AppOnlyOAuthT
 
         // TODO Move Retrofit builder to a separate method
 
-        Log.d(getClass().getSimpleName(), DEVICE_ID);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+        Retrofit auth = new Retrofit.Builder()
+                .baseUrl(OAUTH_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        RedditInterface ri = retrofit.create(RedditInterface.class);
+        RedditInterface riAuth = auth.create(RedditInterface.class);
 
-        ri.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(this);
+        Log.e(getClass().getSimpleName(),"marco");
+
+        riAuth.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
+            @Override
+            public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
+                Log.e(getClass().getSimpleName(),"App auth call succeeded with code=" + response.code() + " and has body = " + response.body());
+                accessToken = response.body().getAccess_token();
+            }
+
+            @Override
+            public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
+                Log.e(getClass().getSimpleName(), "Auth call failed");
+            }
+        });
+
+
+
+/*
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RedditInterface riMain = retrofit.create(RedditInterface.class);
+
+        riMain.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<Listing>() {
+            @Override
+            public void onResponse(Call<Listing> call, Response<Listing> response) {
+                Log.e(getClass().getSimpleName(),"requestSubRedditListing call succeeded with code=" + response.code() + " and has body = " + response.body());
+                Log.e(getClass().getSimpleName(), new Gson().toJson(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<Listing> call, Throwable t) {
+                Log.e(getClass().getSimpleName(), "requestSubRedditListing call failed");
+            }
+        });
+*/
+        Log.e(getClass().getSimpleName(),"polo");
     }
 
-    @Override
-    public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
-        Log.d(getClass().getSimpleName(),"Call succeeded with code=" + response.code() + " and has body = " + response.body());
-        Log.d(getClass().getSimpleName(), new Gson().toJson(response.body()));
-
-    }
-
-    @Override
-    public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-        Log.d(getClass().getSimpleName(), "Call failed");
-    }
 
 }

@@ -21,6 +21,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             "vel", "erat", "placerat", "ante", "porttitor", "sodales", "pellentesque", "augue",
             "purus" };
 
+
+
     @Override
     public int getItemCount() {
         return sItems.length;
