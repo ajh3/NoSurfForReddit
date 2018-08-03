@@ -38,6 +38,16 @@ public class AllPostsFragment extends Fragment {
     private String accessToken;
     private RecyclerView rv = null;
 
+    // First retrofit instance for Reddit OAuth API
+    // TODO Move Retrofit builder to a separate method
+
+    private Retrofit auth = new Retrofit.Builder()
+            .baseUrl(OAUTH_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    private RedditInterface riAuth = auth.create(RedditInterface.class);
+
     public AllPostsFragment() {
         // Required empty public constructor
     }
@@ -58,6 +68,7 @@ public class AllPostsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -74,21 +85,14 @@ public class AllPostsFragment extends Fragment {
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);
 
-        // TODO Move Retrofit builder to a separate method
 
-        Retrofit auth = new Retrofit.Builder()
-                .baseUrl(OAUTH_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RedditInterface riAuth = auth.create(RedditInterface.class);
-
+        
         Log.e(getClass().getSimpleName(),"marco");
 
         riAuth.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
-                Log.e(getClass().getSimpleName(),"App auth call succeeded with code=" + response.code() + " and has body = " + response.body());
+                Log.e(getClass().getSimpleName(),"App-only auth call succeeded with code=" + response.code() + " and has body = " + response.body());
                 accessToken = response.body().getAccess_token();
             }
 
@@ -100,7 +104,7 @@ public class AllPostsFragment extends Fragment {
 
 
 
-/*
+/* Second retrofit instance for main Reddit API
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_BASE_URL)
