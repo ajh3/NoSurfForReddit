@@ -43,7 +43,7 @@ public class AllPostsFragment extends Fragment {
 
     private Retrofit auth = new Retrofit.Builder()
             .baseUrl(OAUTH_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
     private RedditInterface riAuth = auth.create(RedditInterface.class);
@@ -86,7 +86,7 @@ public class AllPostsFragment extends Fragment {
         rv.setHasFixedSize(true);
 
 
-        
+
         Log.e(getClass().getSimpleName(),"marco");
 
         riAuth.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
@@ -102,7 +102,7 @@ public class AllPostsFragment extends Fragment {
             }
         });
 
-
+        Log.e(getClass().getSimpleName(),"polo");
 
 /* Second retrofit instance for main Reddit API
 
@@ -126,7 +126,7 @@ public class AllPostsFragment extends Fragment {
             }
         });
 */
-        Log.e(getClass().getSimpleName(),"polo");
+
     }
 
 
