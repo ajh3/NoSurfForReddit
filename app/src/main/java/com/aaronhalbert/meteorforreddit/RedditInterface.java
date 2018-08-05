@@ -22,9 +22,9 @@ public interface RedditInterface {
             @Field("grant_type") String GRANT_TYPE,
             @Field("device_id") String DEVICE_ID);
 
-/*
+
     @Headers({USER_AGENT})
     @GET("/r/all")
     Call<Listing> requestSubRedditListing(@Header("Authorization") String authorization);
-*/
+
 }

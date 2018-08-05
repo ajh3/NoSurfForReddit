@@ -9,5 +9,4 @@ public class Listing {
     List<T3Link> children;
 
 
-
 }

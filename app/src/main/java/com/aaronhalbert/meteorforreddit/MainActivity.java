@@ -1,5 +1,6 @@
 package com.aaronhalbert.meteorforreddit;
 
+import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,10 @@ public class MainActivity extends AppCompatActivity {
 
         pager.setAdapter(new RedditFragmentPagerAdapter(getSupportFragmentManager()));
         tabs.setViewPager(pager);
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults();
+        }
 
     }
 
