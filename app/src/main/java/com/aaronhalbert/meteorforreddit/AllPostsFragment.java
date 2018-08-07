@@ -9,12 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -35,6 +34,8 @@ public class AllPostsFragment extends Fragment {
     private static final String API_BASE_URL = "https://oauth.reddit.com";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
 
+    private String[] titleArray = new String[25];
+
     private String mParam1;
     private String mParam2;
     private String accessToken;
@@ -52,7 +53,7 @@ public class AllPostsFragment extends Fragment {
             .client(httpClient.build())
             .build();
 
-    private RedditInterface riAuth = auth.create(RedditInterface.class);
+    private RetrofitInterface riAuth = auth.create(RetrofitInterface.class);
 
     // Second retrofit instance for main Reddit API
 
@@ -62,7 +63,7 @@ public class AllPostsFragment extends Fragment {
             .client(httpClient.build())
             .build();
 
-    private RedditInterface riMain = main.create(RedditInterface.class);
+    private RetrofitInterface riMain = main.create(RetrofitInterface.class);
 
 
 
@@ -105,24 +106,32 @@ public class AllPostsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         rv = Objects.requireNonNull(getView()).findViewById(com.aaronhalbert.meteorforreddit.R.id.all_posts_recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.setAdapter(new PostsAdapter());
+        rv.setAdapter(new PostsAdapter(titleArray));
         rv.setHasFixedSize(true);
+
+
 
         riAuth.requestAppOnlyOAuthToken(GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
+
                 Log.d(getClass().toString(),"App-only auth call succeeded with code=" + response.code() + " and has body = " + response.body());
                 accessToken = response.body().getAccess_token();
 
-                riMain.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<Listing>() {
+                riMain.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<RedditListingObject>() {
                     @Override
-                    public void onResponse(Call<Listing> call, Response<Listing> response) {
+                    public void onResponse(Call<RedditListingObject> call, Response<RedditListingObject> response) {
+
                         Log.d(getClass().toString(),"requestSubRedditListing call succeeded with code=" + response.code() + " and has body = " + response.body());
-                        Log.d(getClass().toString(), new Gson().toJson(response.body()));
+                        for (int x = 0; x < 25; x++) {
+                            titleArray[x] = response.body().getData().getChildren()[x].getData().getTitle();
+                        }
+                        Log.d(getClass().toString(), Arrays.toString(titleArray));
+                        rv.getAdapter().notifyDataSetChanged();
                     }
 
                     @Override
-                    public void onFailure(Call<Listing> call, Throwable t) {
+                    public void onFailure(Call<RedditListingObject> call, Throwable t) {
                         Log.d(getClass().toString(), "requestSubRedditListing call failed");
                     }
                 });

@@ -21,9 +21,11 @@ public class MainActivity extends AppCompatActivity {
         pager.setAdapter(new RedditFragmentPagerAdapter(getSupportFragmentManager()));
         tabs.setViewPager(pager);
 
+        /* Disable StrictMode due to Untagged socket detected errors
         if (BuildConfig.DEBUG) {
             StrictMode.enableDefaults();
         }
+        */
 
     }
 

@@ -6,7 +6,7 @@ public class AppOnlyOAuthToken {
     private int expires_in;
     private String scope;
 
-
+//TODO use @SerializedName annotation
     public String getAccess_token() {
         return access_token;
     }

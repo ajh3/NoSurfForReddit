@@ -21,11 +21,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             "vel", "erat", "placerat", "ante", "porttitor", "sodales", "pellentesque", "augue",
             "purus" };
 
+    private String[] mTitleArray;
+
 
 
     @Override
     public int getItemCount() {
-        return sItems.length;
+        return mTitleArray.length;
     }
 
     @NonNull
@@ -49,6 +51,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.mTitle.setText(sItems[i]);
+        postHolder.mTitle.setText(mTitleArray[i]);
+    }
+
+    PostsAdapter(String[] titleArray) {
+        super();
+        mTitleArray = titleArray;
     }
 }
