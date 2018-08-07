@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class RedditFragmentPagerAdapter extends FragmentPagerAdapter {
-    static final int NUM_ITEMS = 1;
+    static final int NUM_ITEMS = 2;
 
     public RedditFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -18,13 +18,19 @@ public class RedditFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return AllPostsFragment.newInstance("abc", "def");
+        if (position == 0) {
+            return AllPostsFragment.newInstance("abc", "def");
+        } else {
+            return HomePostsFragment.newInstance("abc", "def");
+        }
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position == 0) return "/r/All"; else return "Home";
+        if (position == 0) {
+            return "/r/All";
+        } else {
+            return "Yours";
+        }
     }
-
-
 }
