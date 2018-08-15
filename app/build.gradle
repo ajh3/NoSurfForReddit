@@ -19,14 +19,18 @@ android {
     buildToolsVersion '27.0.3'
 }
 
+def supportVer="27.1.1"
+def archVer="1.1.1"
+
 dependencies {
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:support-compat:27.1.1'
+    implementation "com.android.support:appcompat-v7:$supportVer"
+    implementation "com.android.support:support-compat:$supportVer"
     implementation 'io.karim:materialtabs:2.0.5'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
+    implementation "com.android.support:recyclerview-v7:$supportVer"
+    implementation "com.android.support:support-v4:$supportVer"
+    implementation "android.arch.lifecycle:extensions:$archVer"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -34,7 +38,7 @@ dependencies {
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == 'com.android.support' && details.requested.name == 'support-v4') {
-                details.useVersion "27.1.1"
+                details.useVersion "$supportVer"
             }
         }
     }

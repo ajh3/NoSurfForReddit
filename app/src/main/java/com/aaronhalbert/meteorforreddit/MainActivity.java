@@ -1,5 +1,6 @@
 package com.aaronhalbert.meteorforreddit;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(com.aaronhalbert.meteorforreddit.R.layout.activity_main);
 
+        RedditViewModel viewModel = ViewModelProviders.of(this).get(RedditViewModel.class);
+
+        viewModel.initApp();
+
         ViewPager pager = findViewById(com.aaronhalbert.meteorforreddit.R.id.pager);
         MaterialTabs tabs = findViewById(com.aaronhalbert.meteorforreddit.R.id.tabs);
 
@@ -26,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.enableDefaults();
         }
         */
+
+
 
     }
 
