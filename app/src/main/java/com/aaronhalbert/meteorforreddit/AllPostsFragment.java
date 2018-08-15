@@ -58,8 +58,8 @@ public class AllPostsFragment extends Fragment {
 
             @Override
             public void onChanged(@Nullable String[] strings) {
-                Log.d(getClass().toString(), "ZZZZ adapter in onChanged is " + rv.getAdapter().toString());
-                //rv.getAdapter().setTitleArray(strings);
+                Log.d(getClass().toString(), "Adapter gotten in onChanged() is " + rv.getAdapter().toString());
+                //rv.getAdapter().setMTitleArray(strings);
                 rv.getAdapter().notifyDataSetChanged();
 
 
@@ -80,7 +80,7 @@ public class AllPostsFragment extends Fragment {
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);
-        Log.d(getClass().toString(), "ZZZZ adapter set" + rv.getAdapter().toString());
+        Log.d(getClass().toString(), "Adapter set in onViewCreated() is " + rv.getAdapter().toString());
 
     }
 
