@@ -1,29 +1,38 @@
 package com.aaronhalbert.meteorforreddit;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
+import java.util.Arrays;
 
 public class RedditViewModel extends ViewModel {
     private Repository repository = Repository.getInstance();
-    private LiveData<String[]> titleCache;
+
+    private final LiveData<String[]> titles =
+            Transformations.switchMap(repository.getTitleLiveData(),
+                    new Function<String[], LiveData<String[]>>() {
+                        @Override
+                        public LiveData<String[]> apply(String[] input) {
+                            final MutableLiveData<String[]> titles = new MutableLiveData<>();
+                            titles.setValue(input);
+                            return titles;
+                        }
+                    });
 
     public void initApp() {
+
         repository.requestAppOnlyOAuthToken();
-        updateTitleCache();
-    }
-
-    public void updateTitleCache() {
-        final MutableLiveData<String[]> titles = new MutableLiveData<>();
-
-        titles.setValue(repository.getTitles());
-
-        titleCache = titles;
 
     }
 
     public LiveData<String[]> getTitles() {
-        return titleCache;
+        return titles;
     }
 
 }

@@ -15,8 +15,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         super();
     }
 
-    public void setMTitleArray(String[] mTitleArray) {
-        this.mTitleArray = mTitleArray;
+    public void setMTitleArray(String[] titles) {
+        mTitleArray = titles;
+    }
+
+    public String[] getMTitleArray() {
+        return mTitleArray;
     }
 
     @Override

@@ -26,9 +26,7 @@ public class Repository {
 
     private String accessToken;
 
-    private String[] titleArray = new String[25];
-
-
+    private MutableLiveData<String[]> titleLiveData = new MutableLiveData<String[]>();
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -82,17 +80,23 @@ public class Repository {
     }
 
     public void requestSubRedditListing() {
-        //final MutableLiveData<String[]> data = new MutableLiveData<>();
 
         riMain.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<RedditListingObject>() {
 
             @Override
             public void onResponse(Call<RedditListingObject> call, Response<RedditListingObject> response) {
+                String[] titleArray = new String[25];
 
                 for (int x = 0; x < 25; x++) {
+
                     titleArray[x] = response.body().getData().getChildren()[x].getData().getTitle();
+
+                    Log.d(getClass().toString(), "zzzz written into titlearray " + titleArray[x]);
                 }
 
+                Log.d(getClass().toString(), "zzzz ID of titleLiveData before reassignment is " + titleLiveData.toString());
+                titleLiveData.setValue(titleArray);
+                Log.d(getClass().toString(), "zzzz ID of titleLiveData after reassignment is " + titleLiveData.toString());
             }
 
             @Override
@@ -102,7 +106,7 @@ public class Repository {
         });
     }
 
-    public String[] getTitles() {
-        return titleArray;
+    public LiveData<String[]> getTitleLiveData() {
+        return titleLiveData;
     }
 }
