@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Url;
 
 public interface RetrofitInterface {
     String AUTHORIZATION_HEADER = "Authorization: Basic alBGNTlVRjVNYk1rV2c6";
@@ -14,14 +15,14 @@ public interface RetrofitInterface {
 
     @Headers({AUTHORIZATION_HEADER, USER_AGENT})
     @FormUrlEncoded
-    @POST("/api/v1/access_token")
+    @POST
     Call<AppOnlyOAuthToken> requestAppOnlyOAuthToken(
+            @Url String url,
             @Field("grant_type") String GRANT_TYPE,
             @Field("device_id") String DEVICE_ID);
 
-
     @Headers({USER_AGENT})
-    @GET("/r/all")
+    @GET("r/all")
     Call<RedditListingObject> requestSubRedditListing(@Header("Authorization") String authorization);
 
 }

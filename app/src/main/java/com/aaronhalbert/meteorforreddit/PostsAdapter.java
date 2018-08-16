@@ -45,13 +45,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
 
 
-    public class PostHolder extends RecyclerView.ViewHolder {
+    class PostHolder extends RecyclerView.ViewHolder {
         TextView mTitle = null;
         TextView mSubreddit = null;
         TextView mAuthor = null;
 
 
-        public PostHolder(View itemView) {
+        PostHolder(View itemView) {
             super(itemView);
 
             mTitle = itemView.findViewById(com.aaronhalbert.meteorforreddit.R.id.title);

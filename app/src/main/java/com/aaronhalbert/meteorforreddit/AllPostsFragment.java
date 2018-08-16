@@ -1,7 +1,5 @@
 package com.aaronhalbert.meteorforreddit;
 
-
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -14,10 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 
-
 import java.util.Arrays;
 import java.util.Objects;
-
 
 public class AllPostsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -25,8 +21,6 @@ public class AllPostsFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
-
-    private RedditViewModel viewModel;
 
     private RecyclerView rv = null;
 
@@ -52,7 +46,7 @@ public class AllPostsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
+        RedditViewModel viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
 
         viewModel.getTitles().observe(this, new Observer<String[]>() {
 

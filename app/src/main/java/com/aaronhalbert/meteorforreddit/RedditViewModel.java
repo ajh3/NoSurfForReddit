@@ -2,14 +2,9 @@ package com.aaronhalbert.meteorforreddit;
 
 import android.arch.core.util.Function;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.LiveData;
-import android.support.annotation.Nullable;
-import android.util.Log;
-
-import java.util.Arrays;
 
 public class RedditViewModel extends ViewModel {
     private Repository repository = Repository.getInstance();
