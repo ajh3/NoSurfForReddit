@@ -4,8 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
-import java.util.Arrays;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -30,8 +28,7 @@ public class Repository {
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
 
-    private Repository() {
-    }
+    private Repository() { }
 
     public static Repository getInstance() {
         if (repositoryInstance == null) repositoryInstance = new Repository();
@@ -48,13 +45,10 @@ public class Repository {
     private RetrofitInterface ri = retrofit.create(RetrofitInterface.class);
 
     public void requestAppOnlyOAuthToken() {
-
         ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
-
                 accessToken = response.body().getAccess_token();
-
                 requestSubRedditListing();
             }
 
@@ -65,8 +59,7 @@ public class Repository {
         });
     }
 
-    private void requestSubRedditListing() {
-
+    public void requestSubRedditListing() {
         ri.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<RedditListingObject>() {
 
             @Override
@@ -74,9 +67,7 @@ public class Repository {
                 String[] titleArray = new String[25];
 
                 for (int x = 0; x < 25; x++) {
-
                     titleArray[x] = response.body().getData().getChildren()[x].getData().getTitle();
-
                 }
 
                 titleLiveData.setValue(titleArray);
