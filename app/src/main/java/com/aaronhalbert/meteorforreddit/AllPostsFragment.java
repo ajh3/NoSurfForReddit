@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-public class AllPostsFragment extends Fragment {
+public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -24,6 +24,9 @@ public class AllPostsFragment extends Fragment {
 
     private RecyclerView rv = null;
 
+    private SwipeRefreshLayout swipeRefreshLayout = null;
+
+    RedditViewModel viewModel = null;
 
     public AllPostsFragment() {
         // Required empty public constructor
@@ -46,16 +49,18 @@ public class AllPostsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        RedditViewModel viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
 
         viewModel.getTitles().observe(this, new Observer<String[]>() {
 
             @Override
             public void onChanged(@Nullable String[] strings) {
-                Log.d(getClass().toString(), "zzzz onChanged called");
                 ((PostsAdapter) rv.getAdapter()).setMTitleArray(strings);
-                Log.d(getClass().toString(), "zzzz mTitleArray contents after being set are " + Arrays.toString(((PostsAdapter) rv.getAdapter()).getMTitleArray()));
                 ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
+
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
 
             }
         });
@@ -74,9 +79,16 @@ public class AllPostsFragment extends Fragment {
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);
-        Log.d(getClass().toString(), "zzzz Adapter set in onViewCreated() is " + rv.getAdapter().toString());
+
+        swipeRefreshLayout = getView().findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
     }
 
 
+    @Override
+    public void onRefresh() {
+        Log.d(getClass().getSimpleName(), "refresh");
+        viewModel.requestSubRedditListing();
+    }
 }

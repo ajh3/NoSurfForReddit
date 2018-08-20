@@ -30,4 +30,8 @@ public class RedditViewModel extends ViewModel {
         return titles;
     }
 
+    public void requestSubRedditListing() {
+        repository.requestSubRedditListing();
+    }
+
 }
