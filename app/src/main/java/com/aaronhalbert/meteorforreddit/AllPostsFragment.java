@@ -51,11 +51,10 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
 
-        viewModel.getTitles().observe(this, new Observer<String[]>() {
-
+        viewModel.getListing().observe(this, new Observer<RedditListingObject>() {
             @Override
-            public void onChanged(@Nullable String[] strings) {
-                ((PostsAdapter) rv.getAdapter()).setMTitleArray(strings);
+            public void onChanged(@Nullable RedditListingObject redditListingObject) {
+                ((PostsAdapter) rv.getAdapter()).setCurrentRedditListingObject(redditListingObject);
                 ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
 
                 if (swipeRefreshLayout.isRefreshing()) {
@@ -70,12 +69,12 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(com.aaronhalbert.meteorforreddit.R.layout.fragment_all_posts, container, false);
+        return inflater.inflate(R.layout.fragment_all_posts, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        rv = Objects.requireNonNull(getView()).findViewById(com.aaronhalbert.meteorforreddit.R.id.all_posts_recycler_view);
+        rv = Objects.requireNonNull(getView()).findViewById(R.id.all_posts_recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter());
         rv.setHasFixedSize(true);
@@ -88,7 +87,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        Log.d(getClass().getSimpleName(), "refresh");
         viewModel.requestSubRedditListing();
+
     }
 }

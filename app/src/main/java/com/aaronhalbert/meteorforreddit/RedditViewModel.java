@@ -9,14 +9,14 @@ import android.arch.lifecycle.LiveData;
 public class RedditViewModel extends ViewModel {
     private Repository repository = Repository.getInstance();
 
-    private final LiveData<String[]> titles =
-            Transformations.switchMap(repository.getTitleLiveData(),
-                    new Function<String[], LiveData<String[]>>() {
+    private final LiveData<RedditListingObject> listing =
+            Transformations.switchMap(repository.getListingLiveData(),
+                    new Function<RedditListingObject, LiveData<RedditListingObject>>() {
                         @Override
-                        public LiveData<String[]> apply(String[] input) {
-                            final MutableLiveData<String[]> titles = new MutableLiveData<>();
-                            titles.setValue(input);
-                            return titles;
+                        public LiveData<RedditListingObject> apply(RedditListingObject input) {
+                            final MutableLiveData<RedditListingObject> listing = new MutableLiveData<>();
+                            listing.setValue(input);
+                            return listing;
                         }
                     });
 
@@ -26,8 +26,8 @@ public class RedditViewModel extends ViewModel {
 
     }
 
-    public LiveData<String[]> getTitles() {
-        return titles;
+    public LiveData<RedditListingObject> getListing() {
+        return listing;
     }
 
     public void requestSubRedditListing() {

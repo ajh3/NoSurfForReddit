@@ -23,7 +23,7 @@ public class Repository {
 
     private String accessToken;
 
-    private MutableLiveData<String[]> titleLiveData = new MutableLiveData<String[]>();
+    private MutableLiveData<RedditListingObject> listingLiveData = new MutableLiveData<RedditListingObject>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -64,13 +64,17 @@ public class Repository {
 
             @Override
             public void onResponse(Call<RedditListingObject> call, Response<RedditListingObject> response) {
-                String[] titleArray = new String[25];
+                /* String[] titleArray = new String[25];
+                String[] thumbnailArray = new String[25];
 
                 for (int x = 0; x < 25; x++) {
                     titleArray[x] = response.body().getData().getChildren()[x].getData().getTitle();
-                }
+                    thumbnailArray[x] = response.body().getData().getChildren()[x].getData().getThumbnail();
+                } */
 
-                titleLiveData.setValue(titleArray);
+                listingLiveData.setValue(response.body());
+
+
             }
 
             @Override
@@ -80,7 +84,7 @@ public class Repository {
         });
     }
 
-    public LiveData<String[]> getTitleLiveData() {
-        return titleLiveData;
+    public LiveData<RedditListingObject> getListingLiveData() {
+        return listingLiveData;
     }
 }

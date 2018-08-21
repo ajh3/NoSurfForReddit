@@ -3,6 +3,8 @@ package com.aaronhalbert.meteorforreddit;
 public class RedditT3DataObject {
     private String subreddit;
     private String title;
+    private String thumbnail;
+    private int score;
 
 
     public String getSubreddit() {
@@ -12,4 +14,8 @@ public class RedditT3DataObject {
     public String getTitle() {
         return title;
     }
+
+    public String getThumbnail() { return thumbnail; }
+
+    public int getScore() { return score; }
 }

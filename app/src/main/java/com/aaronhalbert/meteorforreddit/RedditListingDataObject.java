@@ -1,9 +1,11 @@
 package com.aaronhalbert.meteorforreddit;
 
+import java.util.Arrays;
+
 public class RedditListingDataObject {
     private String modhash;
     private int dist;
-    private RedditT3Object[] children = new RedditT3Object[dist];
+    private RedditT3Object[] children;
     private String after;
     private String before;
 
@@ -26,4 +28,5 @@ public class RedditListingDataObject {
     public String getBefore() {
         return before;
     }
+
 }

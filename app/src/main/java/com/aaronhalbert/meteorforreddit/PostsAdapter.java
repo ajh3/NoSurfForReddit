@@ -2,6 +2,7 @@ package com.aaronhalbert.meteorforreddit;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,30 +10,29 @@ import android.widget.TextView;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
-    private String[] mTitleArray = new String[25];
+    private RedditListingObject currentRedditListingObject = null;
 
     PostsAdapter() {
-        super();
+        //super(); is this needed or not?
     }
 
-    public void setMTitleArray(String[] titles) {
-        mTitleArray = titles;
-    }
-
-    public String[] getMTitleArray() {
-        return mTitleArray;
+    public void setCurrentRedditListingObject(RedditListingObject currentRedditListingObject) {
+        this.currentRedditListingObject = currentRedditListingObject;
     }
 
     @Override
     public int getItemCount() {
-        return mTitleArray.length;
+        if (currentRedditListingObject != null) {
+            return currentRedditListingObject.getData().getDist();
+        }
+        else return 0;
     }
 
     @NonNull
     @Override
     public PostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(com.aaronhalbert.meteorforreddit.R.layout.list_item_view, viewGroup, false);
+                    .inflate(R.layout.list_item_view, viewGroup, false);
 
         return new PostHolder(view);
     }
@@ -40,21 +40,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.mTitle.setText(mTitleArray[i]);
+        postHolder.mTitle.setText(currentRedditListingObject.getData().getChildren()[i].getData().getTitle());
+        postHolder.mSubreddit.setText("/r/" + currentRedditListingObject.getData().getChildren()[i].getData().getSubreddit());
+        postHolder.mScore.setText(" • " + String.valueOf(currentRedditListingObject.getData().getChildren()[i].getData().getScore()));
     }
-
-
 
     class PostHolder extends RecyclerView.ViewHolder {
         TextView mTitle = null;
         TextView mSubreddit = null;
-        TextView mAuthor = null;
+        TextView mScore = null;
 
 
         PostHolder(View itemView) {
             super(itemView);
 
-            mTitle = itemView.findViewById(com.aaronhalbert.meteorforreddit.R.id.title);
+            mTitle = itemView.findViewById(R.id.title);
+            mSubreddit = itemView.findViewById(R.id.subreddit);
+            mScore = itemView.findViewById(R.id.score);
         }
     }
 
