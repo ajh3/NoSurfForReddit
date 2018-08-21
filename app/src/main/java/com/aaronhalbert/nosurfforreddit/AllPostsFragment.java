@@ -54,6 +54,9 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel.getListing().observe(this, new Observer<RedditListingObject>() {
             @Override
             public void onChanged(@Nullable RedditListingObject redditListingObject) {
+                Log.e(getClass().toString(), "onChanged");
+                //TODO: why is onChanged called twice on config change?
+
                 ((PostsAdapter) rv.getAdapter()).setCurrentRedditListingObject(redditListingObject);
                 ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
 

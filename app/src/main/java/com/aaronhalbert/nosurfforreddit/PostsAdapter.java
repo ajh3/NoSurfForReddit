@@ -23,16 +23,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     @Override
     public int getItemCount() {
         if (currentRedditListingObject != null) {
-            return currentRedditListingObject.getData().getDist();
-        }
-        else return 0;
+            return currentRedditListingObject
+                    .getData()
+                    .getDist();
+        } else return 0;
     }
 
     @NonNull
     @Override
     public PostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.list_item_view, viewGroup, false);
+                .inflate(R.layout.list_item_view, viewGroup, false);
 
         return new PostHolder(view);
     }
@@ -40,9 +41,21 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.mTitle.setText(currentRedditListingObject.getData().getChildren()[i].getData().getTitle());
-        postHolder.mSubreddit.setText("/r/" + currentRedditListingObject.getData().getChildren()[i].getData().getSubreddit());
-        postHolder.mScore.setText(" • " + String.valueOf(currentRedditListingObject.getData().getChildren()[i].getData().getScore()));
+        postHolder.mTitle.setText(currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getTitle());
+        postHolder.mSubreddit.setText("/r/" + currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getSubreddit());
+        postHolder.mScore.setText(" • " + String.valueOf(currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getScore()));
     }
 
     class PostHolder extends RecyclerView.ViewHolder {
