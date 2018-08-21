@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 import org.junit.Test;
 

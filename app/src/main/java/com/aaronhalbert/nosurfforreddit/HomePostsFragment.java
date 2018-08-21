@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 import android.content.Context;
 import android.net.Uri;

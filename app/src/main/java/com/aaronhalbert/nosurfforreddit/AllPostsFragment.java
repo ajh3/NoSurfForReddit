@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;

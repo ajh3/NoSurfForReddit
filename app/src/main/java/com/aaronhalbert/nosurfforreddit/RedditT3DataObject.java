@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 public class RedditT3DataObject {
     private String subreddit;

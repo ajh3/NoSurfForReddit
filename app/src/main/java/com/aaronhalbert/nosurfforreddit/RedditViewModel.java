@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.core.util.Function;
 import android.arch.lifecycle.MutableLiveData;

@@ -1,4 +1,4 @@
-package com.aaronhalbert.meteorforreddit;
+package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.StrictMode;
@@ -12,14 +12,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.aaronhalbert.meteorforreddit.R.layout.activity_main);
+        setContentView(com.aaronhalbert.nosurfforreddit.R.layout.activity_main);
 
         RedditViewModel viewModel = ViewModelProviders.of(this).get(RedditViewModel.class);
 
         viewModel.initApp();
 
-        ViewPager pager = findViewById(com.aaronhalbert.meteorforreddit.R.id.pager);
-        TabLayout tabs = findViewById(com.aaronhalbert.meteorforreddit.R.id.tabs);
+        ViewPager pager = findViewById(com.aaronhalbert.nosurfforreddit.R.id.pager);
+        TabLayout tabs = findViewById(com.aaronhalbert.nosurfforreddit.R.id.tabs);
 
         pager.setAdapter(new RedditFragmentPagerAdapter(getSupportFragmentManager()));
 
