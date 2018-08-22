@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,12 +81,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .into(postHolder.thumbnail);
     }
 
-    class PostHolder extends RecyclerView.ViewHolder {
+    class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title = null;
         TextView subreddit = null;
         TextView score = null;
         ImageView thumbnail = null;
-
 
         PostHolder(View itemView) {
             super(itemView);
@@ -94,6 +94,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             subreddit = itemView.findViewById(R.id.subreddit);
             score = itemView.findViewById(R.id.score);
             thumbnail = itemView.findViewById(R.id.thumbnail);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.e(getClass().getSimpleName(), "click");
         }
     }
 
