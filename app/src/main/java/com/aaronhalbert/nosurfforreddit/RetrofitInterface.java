@@ -25,7 +25,7 @@ public interface RetrofitInterface {
             @Field("device_id") String DEVICE_ID);
 
     @Headers({USER_AGENT})
-    @GET("r/all")
+    @GET("r/all/hot")
     Call<RedditListingObject> requestSubRedditListing(@Header("Authorization") String authorization);
 
 }
