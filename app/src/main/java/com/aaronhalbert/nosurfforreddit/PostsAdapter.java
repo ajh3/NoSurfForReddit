@@ -6,7 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
@@ -56,12 +59,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getChildren()[i]
                 .getData()
                 .getScore()));
+
+        Picasso.get().load(currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getThumbnail())
+                .fit()
+                .centerCrop()
+                .placeholder(R.drawable.textposticon64)
+                .into(postHolder.mThumbnail);
     }
 
     class PostHolder extends RecyclerView.ViewHolder {
         TextView mTitle = null;
         TextView mSubreddit = null;
         TextView mScore = null;
+        ImageView mThumbnail = null;
 
 
         PostHolder(View itemView) {
@@ -70,6 +84,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             mTitle = itemView.findViewById(R.id.title);
             mSubreddit = itemView.findViewById(R.id.subreddit);
             mScore = itemView.findViewById(R.id.score);
+            mThumbnail = itemView.findViewById(R.id.thumbnail);
         }
     }
 

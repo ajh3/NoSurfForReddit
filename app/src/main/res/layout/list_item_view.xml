@@ -17,12 +17,11 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64sp"
+            android:layout_height="64sp"
             android:layout_gravity="top"
             android:contentDescription="@string/thumbnail"
-            android:padding="2dp"
-            android:src="@drawable/snoo60" />
+            android:padding="2dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"

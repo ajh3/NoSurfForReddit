@@ -2,7 +2,10 @@ package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.util.Log;
+
+import com.squareup.picasso.Picasso;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -31,7 +34,9 @@ public class Repository {
     private Repository() { }
 
     public static Repository getInstance() {
-        if (repositoryInstance == null) repositoryInstance = new Repository();
+        if (repositoryInstance == null) {
+            repositoryInstance = new Repository();
+        }
 
         return repositoryInstance;
     }
@@ -74,7 +79,6 @@ public class Repository {
 
                 listingLiveData.setValue(response.body());
 
-
             }
 
             @Override
@@ -82,9 +86,12 @@ public class Repository {
                 Log.d(getClass().toString(), "requestSubRedditListing call failed");
             }
         });
+
+
     }
 
     public LiveData<RedditListingObject> getListingLiveData() {
         return listingLiveData;
     }
+
 }
