@@ -5,10 +5,11 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
 
-public class RedditViewModel extends ViewModel {
-    private Repository repository = Repository.getInstance();
+import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+
+public class NoSurfViewModel extends ViewModel {
+    private NoSurfRepository repository = NoSurfRepository.getInstance();
 
     private final LiveData<RedditListingObject> listing =
             Transformations.switchMap(repository.getListingLiveData(),

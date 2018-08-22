@@ -1,11 +1,10 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.reddit;
 
 public class RedditT3DataObject {
     private String subreddit;
     private String title;
     private String thumbnail;
     private int score;
-
 
     public String getSubreddit() {
         return subreddit;

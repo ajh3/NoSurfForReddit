@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -13,6 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+
 import java.util.Objects;
 
 public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -26,7 +31,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private SwipeRefreshLayout swipeRefreshLayout = null;
 
-    RedditViewModel viewModel = null;
+    NoSurfViewModel viewModel = null;
 
     public AllPostsFragment() {
         // Required empty public constructor
@@ -49,7 +54,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        viewModel = ViewModelProviders.of(getActivity()).get(RedditViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         viewModel.getListing().observe(this, new Observer<RedditListingObject>() {
             @Override
@@ -77,12 +82,12 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        rv = Objects.requireNonNull(getView()).findViewById(R.id.all_posts_recycler_view);
+        rv = Objects.requireNonNull(getView()).findViewById(R.id.recyclerview_all_posts);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.setAdapter(new PostsAdapter());
+        rv.setAdapter(new PostsAdapter(getActivity()));
         rv.setHasFixedSize(true);
 
-        swipeRefreshLayout = getView().findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = getView().findViewById(R.id.swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
     }

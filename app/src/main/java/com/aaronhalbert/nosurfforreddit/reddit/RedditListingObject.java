@@ -1,9 +1,7 @@
-package com.aaronhalbert.nosurfforreddit;
-
+package com.aaronhalbert.nosurfforreddit.reddit;
 
 public class RedditListingObject {
 
-    //List<RedditT3Object> children;
     private String kind;
     private RedditListingDataObject data;
 

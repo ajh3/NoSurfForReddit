@@ -2,10 +2,10 @@ package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.util.Log;
 
-import com.squareup.picasso.Picasso;
+import com.aaronhalbert.nosurfforreddit.reddit.RedditAppOnlyOAuthTokenObject;
+import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -15,8 +15,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Repository {
-    private static Repository repositoryInstance = null;
+public class NoSurfRepository {
+    private static NoSurfRepository repositoryInstance = null;
 
     private static final String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
@@ -31,11 +31,11 @@ public class Repository {
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
 
-    private Repository() { }
+    private NoSurfRepository() { }
 
-    public static Repository getInstance() {
+    public static NoSurfRepository getInstance() {
         if (repositoryInstance == null) {
-            repositoryInstance = new Repository();
+            repositoryInstance = new NoSurfRepository();
         }
 
         return repositoryInstance;
@@ -50,15 +50,15 @@ public class Repository {
     private RetrofitInterface ri = retrofit.create(RetrofitInterface.class);
 
     public void requestAppOnlyOAuthToken() {
-        ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, GRANT_TYPE, DEVICE_ID).enqueue(new Callback<AppOnlyOAuthToken>() {
+        ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, GRANT_TYPE, DEVICE_ID).enqueue(new Callback<RedditAppOnlyOAuthTokenObject>() {
             @Override
-            public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
+            public void onResponse(Call<RedditAppOnlyOAuthTokenObject> call, Response<RedditAppOnlyOAuthTokenObject> response) {
                 accessToken = response.body().getAccess_token();
                 requestSubRedditListing();
             }
 
             @Override
-            public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
+            public void onFailure(Call<RedditAppOnlyOAuthTokenObject> call, Throwable t) {
                 Log.d(getClass().toString(), "Auth call failed");
             }
         });

@@ -1,13 +1,16 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class RedditFragmentPagerAdapter extends FragmentPagerAdapter {
+import com.aaronhalbert.nosurfforreddit.fragments.AllPostsFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.HomePostsFragment;
+
+public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     static final int NUM_ITEMS = 2;
 
-    public RedditFragmentPagerAdapter(FragmentManager fm) {
+    public NoSurfFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

@@ -1,5 +1,8 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import com.aaronhalbert.nosurfforreddit.reddit.RedditAppOnlyOAuthTokenObject;
+import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -16,7 +19,7 @@ public interface RetrofitInterface {
     @Headers({AUTHORIZATION_HEADER, USER_AGENT})
     @FormUrlEncoded
     @POST
-    Call<AppOnlyOAuthToken> requestAppOnlyOAuthToken(
+    Call<RedditAppOnlyOAuthTokenObject> requestAppOnlyOAuthToken(
             @Url String url,
             @Field("grant_type") String GRANT_TYPE,
             @Field("device_id") String DEVICE_ID);

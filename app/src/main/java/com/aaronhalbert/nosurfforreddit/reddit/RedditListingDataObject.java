@@ -1,6 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
-
-import java.util.Arrays;
+package com.aaronhalbert.nosurfforreddit.reddit;
 
 public class RedditListingDataObject {
     private String modhash;

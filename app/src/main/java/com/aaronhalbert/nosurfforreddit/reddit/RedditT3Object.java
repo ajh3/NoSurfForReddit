@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.reddit;
 
 public class RedditT3Object {
     private String kind;

@@ -1,22 +1,27 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
 import com.squareup.picasso.Picasso;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
     private RedditListingObject currentRedditListingObject = null;
 
-    PostsAdapter() {
+    private Context context;
+
+    public PostsAdapter(Context context) {
         //super(); is this needed or not?
+        this.context = context;
     }
 
     public void setCurrentRedditListingObject(RedditListingObject currentRedditListingObject) {
@@ -36,7 +41,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     @Override
     public PostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.list_item_view, viewGroup, false);
+                .inflate(R.layout.row_single_post, viewGroup, false);
 
         return new PostHolder(view);
     }
@@ -44,17 +49,21 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.mTitle.setText(currentRedditListingObject
+        postHolder.title.setText(currentRedditListingObject
                 .getData()
                 .getChildren()[i]
                 .getData()
                 .getTitle());
-        postHolder.mSubreddit.setText("/r/" + currentRedditListingObject
+
+        postHolder.subreddit.setText(context.getString(R.string.subreddit_abbreviation,
+                currentRedditListingObject
                 .getData()
                 .getChildren()[i]
                 .getData()
-                .getSubreddit());
-        postHolder.mScore.setText(" • " + String.valueOf(currentRedditListingObject
+                .getSubreddit()));
+
+        postHolder.score.setText(context.getString(R.string.score,
+                currentRedditListingObject
                 .getData()
                 .getChildren()[i]
                 .getData()
@@ -68,23 +77,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .fit()
                 .centerCrop()
                 .placeholder(R.drawable.textposticon64)
-                .into(postHolder.mThumbnail);
+                .into(postHolder.thumbnail);
     }
 
     class PostHolder extends RecyclerView.ViewHolder {
-        TextView mTitle = null;
-        TextView mSubreddit = null;
-        TextView mScore = null;
-        ImageView mThumbnail = null;
+        TextView title = null;
+        TextView subreddit = null;
+        TextView score = null;
+        ImageView thumbnail = null;
 
 
         PostHolder(View itemView) {
             super(itemView);
 
-            mTitle = itemView.findViewById(R.id.title);
-            mSubreddit = itemView.findViewById(R.id.subreddit);
-            mScore = itemView.findViewById(R.id.score);
-            mThumbnail = itemView.findViewById(R.id.thumbnail);
+            title = itemView.findViewById(R.id.title);
+            subreddit = itemView.findViewById(R.id.subreddit);
+            score = itemView.findViewById(R.id.score);
+            thumbnail = itemView.findViewById(R.id.thumbnail);
         }
     }
 
