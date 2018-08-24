@@ -17,12 +17,14 @@ import com.squareup.picasso.Picasso;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
     private RedditListingObject currentRedditListingObject = null;
-
+    private RecyclerViewToFragmentCallback recyclerViewToFragmentCallback;
     private Context context;
 
-    public PostsAdapter(Context context) {
+    public PostsAdapter(Context context, RecyclerViewToFragmentCallback recyclerViewToFragmentCallback) {
         //super(); is this needed or not?
         this.context = context;
+        //this.recyclerViewToFragmentCallback = recyclerViewToFragmentCallback;
+        this.recyclerViewToFragmentCallback = (PostsAdapter.RecyclerViewToFragmentCallback) recyclerViewToFragmentCallback;
     }
 
     public void setCurrentRedditListingObject(RedditListingObject currentRedditListingObject) {
@@ -50,31 +52,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.title.setText(currentRedditListingObject
-                .getData()
-                .getChildren()[i]
-                .getData()
-                .getTitle());
+        postHolder.title.setText(getCurrentRedditListingObjectTitle(i));
 
         postHolder.subreddit.setText(context.getString(R.string.subreddit_abbreviation,
-                currentRedditListingObject
-                .getData()
-                .getChildren()[i]
-                .getData()
-                .getSubreddit()));
+                getCurrentRedditListingObjectSubreddit(i)));
 
         postHolder.score.setText(context.getString(R.string.score,
-                currentRedditListingObject
-                .getData()
-                .getChildren()[i]
-                .getData()
-                .getScore()));
+                getCurrentRedditListingObjectScore(i)));
 
-        Picasso.get().load(currentRedditListingObject
-                .getData()
-                .getChildren()[i]
-                .getData()
-                .getThumbnail())
+        Picasso.get().load(getCurrentRedditListingObjectThumbnail(i))
                 .fit()
                 .centerCrop()
                 .placeholder(R.drawable.textposticon64)
@@ -96,12 +82,70 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             thumbnail = itemView.findViewById(R.id.thumbnail);
 
             itemView.setOnClickListener(this);
+
         }
 
         @Override
         public void onClick(View v) {
-            Log.e(getClass().getSimpleName(), "click");
+            recyclerViewToFragmentCallback.onItemClick(getCurrentRedditListingObjectUrl(getAdapterPosition()),
+                    getCurrentRedditListingObjectIsSelf(getAdapterPosition()));
+
         }
+    }
+
+    //TODO make sure this is implemented where it needs to be
+    public interface RecyclerViewToFragmentCallback {
+        void onItemClick(String url, boolean isSelf);
+    }
+
+
+
+    private String getCurrentRedditListingObjectTitle(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getTitle();
+    }
+
+    private String getCurrentRedditListingObjectSubreddit(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getSubreddit();
+    }
+
+    private int getCurrentRedditListingObjectScore(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getScore();
+    }
+
+    private String getCurrentRedditListingObjectThumbnail(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getThumbnail();
+    }
+
+    private boolean getCurrentRedditListingObjectIsSelf(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getIsSelf();
+    }
+
+    private String getCurrentRedditListingObjectUrl(int i) {
+        return currentRedditListingObject
+                .getData()
+                .getChildren()[i]
+                .getData()
+                .getUrl();
     }
 
 }

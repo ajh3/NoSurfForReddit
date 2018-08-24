@@ -8,6 +8,8 @@ public class RedditT3DataObject {
     private String thumbnail;
     private int score;
     @SerializedName("is_self") private boolean isSelf;
+    private String permalink;
+    private String url;
 
     public String getSubreddit() {
         return subreddit;
@@ -22,4 +24,8 @@ public class RedditT3DataObject {
     public int getScore() { return score; }
 
     public boolean getIsSelf() { return isSelf; }
+
+    public String getPermalink() { return permalink; }
+
+    public String getUrl() { return url; }
 }
