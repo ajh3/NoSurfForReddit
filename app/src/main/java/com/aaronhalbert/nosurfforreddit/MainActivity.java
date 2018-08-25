@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.aaronhalbert.nosurfforreddit.R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
         NoSurfViewModel viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
@@ -50,12 +50,13 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
         //confirm the childFragmentManager being called below is ViewPagerFragment's childFragmentManager, the same one being passed into the FragmentPagerAdapter
         Log.e(getClass().toString(), getSupportFragmentManager().findFragmentById(R.id.main_activity_base_view).getChildFragmentManager().toString());
 
-        //... but trying to replace the ViewPager results in a blank screen... no Hello World text in sight
+        //... but trying to replace the ViewPager results in a blank screen... no Hello World text in sightf
+
         getSupportFragmentManager()
                 .findFragmentById(R.id.main_activity_base_view)
                 .getChildFragmentManager()
                 .beginTransaction()
-                .replace(R.id.pager, HelloWorldFragment.newInstance("abc", "def"))
+                .replace(R.id.view_pager_fragment_base_view, HelloWorldFragment.newInstance("abc", "def"))
                 .addToBackStack(null)
                 .commit();
     }
