@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.fragments.HelloWorldFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.HomePostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
@@ -39,6 +40,6 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
     @Override
     public void onItemClick(String url, boolean isSelf) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_base_view, new HomePostsFragment()).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_base_view, HelloWorldFragment.newInstance("abc", "def")).addToBackStack(null).commit();
     }
 }
