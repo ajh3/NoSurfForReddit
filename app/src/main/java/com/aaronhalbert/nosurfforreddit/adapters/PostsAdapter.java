@@ -16,14 +16,12 @@ import com.squareup.picasso.Picasso;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
     private Listing currentListing = null;
-    private RecyclerViewToFragmentCallback recyclerViewToFragmentCallback;
+    private RecyclerViewOnClickCallback recyclerViewOnClickCallback;
     private Context context;
 
-    public PostsAdapter(Context context, RecyclerViewToFragmentCallback recyclerViewToFragmentCallback) {
-        //super(); is this needed or not?
+    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback) {
         this.context = context;
-        //this.recyclerViewToFragmentCallback = recyclerViewToFragmentCallback;
-        this.recyclerViewToFragmentCallback = (PostsAdapter.RecyclerViewToFragmentCallback) recyclerViewToFragmentCallback;
+        this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
     }
 
     public void setCurrentListing(Listing currentListing) {
@@ -86,14 +84,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
         @Override
         public void onClick(View v) {
-            recyclerViewToFragmentCallback.onItemClick(getCurrentRedditListingObjectUrl(getAdapterPosition()),
+            recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(getAdapterPosition()),
                     getCurrentRedditListingObjectIsSelf(getAdapterPosition()));
 
         }
     }
 
     //TODO make sure this is implemented where it needs to be
-    public interface RecyclerViewToFragmentCallback {
+    public interface RecyclerViewOnClickCallback {
         void onItemClick(String url, boolean isSelf);
     }
 

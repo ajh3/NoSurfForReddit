@@ -84,7 +84,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onViewCreated(View view, Bundle savedInstanceState) {
         rv = Objects.requireNonNull(getView()).findViewById(R.id.recyclerview_all_posts);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewToFragmentCallback) getActivity()));
+        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));
         rv.setHasFixedSize(true);
 
         swipeRefreshLayout = getView().findViewById(R.id.swipe_to_refresh);

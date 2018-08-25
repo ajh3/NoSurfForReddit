@@ -11,7 +11,7 @@ import com.aaronhalbert.nosurfforreddit.fragments.HelloWorldFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.HomePostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
-public class MainActivity extends AppCompatActivity implements ViewPagerFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewToFragmentCallback {
+public class MainActivity extends AppCompatActivity implements ViewPagerFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
