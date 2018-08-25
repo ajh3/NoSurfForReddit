@@ -3,7 +3,6 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.squareup.picasso.Picasso;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
-    private RedditListingObject currentRedditListingObject = null;
+    private Listing currentListing = null;
     private RecyclerViewToFragmentCallback recyclerViewToFragmentCallback;
     private Context context;
 
@@ -27,14 +26,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         this.recyclerViewToFragmentCallback = (PostsAdapter.RecyclerViewToFragmentCallback) recyclerViewToFragmentCallback;
     }
 
-    public void setCurrentRedditListingObject(RedditListingObject currentRedditListingObject) {
-        this.currentRedditListingObject = currentRedditListingObject;
+    public void setCurrentListing(Listing currentListing) {
+        this.currentListing = currentListing;
     }
 
     @Override
     public int getItemCount() {
-        if (currentRedditListingObject != null) {
-            return currentRedditListingObject
+        if (currentListing != null) {
+            return currentListing
                     .getData()
                     .getDist();
         } else return 0;
@@ -99,51 +98,56 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     }
 
 
-
     private String getCurrentRedditListingObjectTitle(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
                 .getTitle();
     }
 
     private String getCurrentRedditListingObjectSubreddit(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
                 .getSubreddit();
     }
 
     private int getCurrentRedditListingObjectScore(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
                 .getScore();
     }
 
     private String getCurrentRedditListingObjectThumbnail(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
                 .getThumbnail();
     }
 
     private boolean getCurrentRedditListingObjectIsSelf(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
-                .getIsSelf();
+                .isIsSelf();
     }
 
     private String getCurrentRedditListingObjectUrl(int i) {
-        return currentRedditListingObject
+        return currentListing
                 .getData()
-                .getChildren()[i]
+                .getChildren()
+                .get(i)
                 .getData()
                 .getUrl();
     }

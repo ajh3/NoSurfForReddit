@@ -1,7 +1,7 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import com.aaronhalbert.nosurfforreddit.reddit.RedditAppOnlyOAuthTokenObject;
-import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -26,6 +26,6 @@ public interface RetrofitInterface {
 
     @Headers({USER_AGENT})
     @GET("r/all/hot")
-    Call<RedditListingObject> requestSubRedditListing(@Header("Authorization") String authorization);
+    Call<Listing> requestSubRedditListing(@Header("Authorization") String authorization);
 
 }

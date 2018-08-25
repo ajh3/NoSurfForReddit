@@ -6,17 +6,17 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 public class NoSurfViewModel extends ViewModel {
     private NoSurfRepository repository = NoSurfRepository.getInstance();
 
-    private final LiveData<RedditListingObject> listing =
+    private final LiveData<Listing> listing =
             Transformations.switchMap(repository.getListingLiveData(),
-                    new Function<RedditListingObject, LiveData<RedditListingObject>>() {
+                    new Function<Listing, LiveData<Listing>>() {
                         @Override
-                        public LiveData<RedditListingObject> apply(RedditListingObject input) {
-                            final MutableLiveData<RedditListingObject> listing = new MutableLiveData<>();
+                        public LiveData<Listing> apply(Listing input) {
+                            final MutableLiveData<Listing> listing = new MutableLiveData<>();
                             listing.setValue(input);
                             return listing;
                         }
@@ -28,7 +28,7 @@ public class NoSurfViewModel extends ViewModel {
 
     }
 
-    public LiveData<RedditListingObject> getListing() {
+    public LiveData<Listing> getListing() {
         return listing;
     }
 

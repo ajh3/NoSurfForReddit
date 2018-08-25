@@ -16,7 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.Objects;
 
@@ -56,13 +56,13 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
-        viewModel.getListing().observe(this, new Observer<RedditListingObject>() {
+        viewModel.getListing().observe(this, new Observer<Listing>() {
             @Override
-            public void onChanged(@Nullable RedditListingObject redditListingObject) {
+            public void onChanged(@Nullable Listing listing) {
                 Log.e(getClass().toString(), "onChanged");
                 //TODO: why is onChanged called twice on config change?
 
-                ((PostsAdapter) rv.getAdapter()).setCurrentRedditListingObject(redditListingObject);
+                ((PostsAdapter) rv.getAdapter()).setCurrentListing(listing);
                 ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
 
                 if (swipeRefreshLayout.isRefreshing()) {

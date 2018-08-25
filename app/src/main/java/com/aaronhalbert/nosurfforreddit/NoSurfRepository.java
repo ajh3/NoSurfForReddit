@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.reddit.RedditAppOnlyOAuthTokenObject;
-import com.aaronhalbert.nosurfforreddit.reddit.RedditListingObject;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -26,7 +26,7 @@ public class NoSurfRepository {
 
     private String accessToken;
 
-    private MutableLiveData<RedditListingObject> listingLiveData = new MutableLiveData<RedditListingObject>();
+    private MutableLiveData<Listing> listingLiveData = new MutableLiveData<Listing>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -65,10 +65,10 @@ public class NoSurfRepository {
     }
 
     public void requestSubRedditListing() {
-        ri.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<RedditListingObject>() {
+        ri.requestSubRedditListing("Bearer " + accessToken).enqueue(new Callback<Listing>() {
 
             @Override
-            public void onResponse(Call<RedditListingObject> call, Response<RedditListingObject> response) {
+            public void onResponse(Call<Listing> call, Response<Listing> response) {
                 /* String[] titleArray = new String[25];
                 String[] thumbnailArray = new String[25];
 
@@ -82,7 +82,7 @@ public class NoSurfRepository {
             }
 
             @Override
-            public void onFailure(Call<RedditListingObject> call, Throwable t) {
+            public void onFailure(Call<Listing> call, Throwable t) {
                 Log.d(getClass().toString(), "requestSubRedditListing call failed");
             }
         });
@@ -90,7 +90,7 @@ public class NoSurfRepository {
 
     }
 
-    public LiveData<RedditListingObject> getListingLiveData() {
+    public LiveData<Listing> getListingLiveData() {
         return listingLiveData;
     }
 
