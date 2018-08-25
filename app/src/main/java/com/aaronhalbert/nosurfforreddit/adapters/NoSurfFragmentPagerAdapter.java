@@ -13,6 +13,7 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
 
     public NoSurfFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
+        Log.e(getClass().toString(), fm.toString());
     }
 
     @Override

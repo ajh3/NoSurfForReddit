@@ -40,6 +40,23 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
     @Override
     public void onItemClick(String url, boolean isSelf) {
+
+        /* This works as expected
+
         getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_base_view, HelloWorldFragment.newInstance("abc", "def")).addToBackStack(null).commit();
+
+        */
+
+        //confirm the childFragmentManager here is the same one being passed into the FragmentPagerAdapter
+        Log.e(getClass().toString(), getSupportFragmentManager().findFragmentById(R.id.main_activity_base_view).getChildFragmentManager().toString());
+
+        //... but trying to replace the ViewPager results in a blank screen... no Hello World text in sight
+        getSupportFragmentManager()
+                .findFragmentById(R.id.main_activity_base_view)
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.pager, HelloWorldFragment.newInstance("abc", "def"))
+                .addToBackStack(null)
+                .commit();
     }
 }
