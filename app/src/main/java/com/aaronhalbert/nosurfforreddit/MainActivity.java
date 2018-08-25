@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
         */
 
-        //confirm the childFragmentManager here is the same one being passed into the FragmentPagerAdapter
+        //confirm the childFragmentManager here is ViewPagerFragment's childFragmentManager, the same one being passed into the FragmentPagerAdapter
         Log.e(getClass().toString(), getSupportFragmentManager().findFragmentById(R.id.main_activity_base_view).getChildFragmentManager().toString());
 
         //... but trying to replace the ViewPager results in a blank screen... no Hello World text in sight
