@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
         viewModel.initApp();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.main_activity_base_view, new ViewPagerFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_activity_base_view, ViewPagerFragment.newInstance("abc", "def")).commit();
 
         /* Disable StrictMode due to Untagged socket detected errors
         if (BuildConfig.DEBUG) {
