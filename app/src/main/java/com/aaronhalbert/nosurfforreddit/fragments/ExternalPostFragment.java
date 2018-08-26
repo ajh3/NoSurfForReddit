@@ -1,24 +1,25 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link HelloWorldFragment.OnFragmentInteractionListener} interface
+ * {@link ExternalPostFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HelloWorldFragment#newInstance} factory method to
+ * Use the {@link ExternalPostFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HelloWorldFragment extends Fragment {
+public class ExternalPostFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,9 +29,11 @@ public class HelloWorldFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private WebView browser;
+
     private OnFragmentInteractionListener mListener;
 
-    public HelloWorldFragment() {
+    public ExternalPostFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +43,11 @@ public class HelloWorldFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HelloWorldFragment.
+     * @return A new instance of fragment ExternalPostFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HelloWorldFragment newInstance(String param1, String param2) {
-        HelloWorldFragment fragment = new HelloWorldFragment();
+    public static ExternalPostFragment newInstance(String param1, String param2) {
+        ExternalPostFragment fragment = new ExternalPostFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,12 +64,19 @@ public class HelloWorldFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_hello_world, container, false);
+        View result = inflater.inflate(R.layout.fragment_external_post, container, false);
+
+        browser = result.findViewById(R.id.webkit);
+        browser.getSettings().setJavaScriptEnabled(true);
+        browser.loadUrl("https://www.google.com");
+
+        return result;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

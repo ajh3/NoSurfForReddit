@@ -4,11 +4,9 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
-import com.aaronhalbert.nosurfforreddit.fragments.HelloWorldFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.HomePostsFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.ExternalPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 public class MainActivity extends AppCompatActivity implements ViewPagerFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_base_view, HelloWorldFragment.newInstance("abc", "def"))
+                .replace(R.id.main_activity_base_view, ExternalPostFragment.newInstance("abc", "def"))
                 .addToBackStack(null)
                 .commit();
 
