@@ -83,7 +83,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.d(getClass().toString(), "requestSubRedditListing call failed");
+                Log.d(getClass().toString(), "requestSubRedditListing call failed: " + t.toString());
             }
         });
 

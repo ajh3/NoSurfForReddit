@@ -17,16 +17,8 @@ public class Child {
         return kind;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
-
     public Data_ getData() {
         return data;
-    }
-
-    public void setData(Data_ data) {
-        this.data = data;
     }
 
 }
