@@ -57,7 +57,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         postHolder.score.setText(context.getString(R.string.score,
                 getCurrentRedditListingObjectScore(i)));
 
-        Picasso.get().load(getCurrentRedditListingObjectThumbnail(i))
+        Picasso.get()
+                .load(getCurrentRedditListingObjectThumbnail(i))
                 .fit()
                 .centerCrop()
                 .placeholder(R.drawable.textposticon64)
