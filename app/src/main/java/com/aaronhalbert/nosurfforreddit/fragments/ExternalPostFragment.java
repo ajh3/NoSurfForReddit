@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,8 +57,12 @@ public class ExternalPostFragment extends Fragment {
 
         browser = result.findViewById(R.id.webkit);
         browser.getSettings().setJavaScriptEnabled(true);
+        browser.getSettings().setBuiltInZoomControls(true);
+        browser.getSettings().setDisplayZoomControls(false);
+        browser.getSettings().setLoadWithOverviewMode(true);
+        browser.getSettings().setUseWideViewPort(true);
         browser.loadUrl(url);
-
+        
         return result;
     }
 
