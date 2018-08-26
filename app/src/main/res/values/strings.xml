@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">NoSurfForReddit</string>
-    <string name="hello_blank_fragment">HelloWorldFragment</string>
+    <string name="home_posts_fragment">Home posts fragment</string>
+    <string name="hello_world_fragment">Hello world fragment</string>
     <string name="thumbnail">Thumbnail image</string>
     <string name="subreddit_abbreviation">/r/%1$s</string>
     <string name="score">\u0020• %1$d</string>
