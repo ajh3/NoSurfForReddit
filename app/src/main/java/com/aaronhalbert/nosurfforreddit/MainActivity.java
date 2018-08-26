@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_base_view, ExternalPostFragment.newInstance(url))
+                .add(R.id.main_activity_base_view, ExternalPostFragment.newInstance(url))
                 .addToBackStack(null)
                 .commit();
 
