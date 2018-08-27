@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("a", "b"))
+                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("a", "b"))
                     .addToBackStack(null)
                     .commit();
 

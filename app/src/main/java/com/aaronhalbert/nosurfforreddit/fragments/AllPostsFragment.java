@@ -53,7 +53,16 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_all_posts, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         viewModel.getListing().observe(this, new Observer<Listing>() {
@@ -61,6 +70,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             public void onChanged(@Nullable Listing listing) {
                 Log.e(getClass().toString(), "onChanged");
                 //TODO: why is onChanged called twice on config change?
+                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
 
                 ((PostsAdapter) rv.getAdapter()).setCurrentListing(listing);
                 ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
@@ -72,16 +82,6 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         });
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_all_posts, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
         rv = Objects.requireNonNull(getView()).findViewById(R.id.all_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));
@@ -98,6 +98,5 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel.requestSubRedditListing();
 
     }
-
 
 }
