@@ -81,8 +81,8 @@ public class ViewPagerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ViewPager pager = view.findViewById(R.id.pager);
-        TabLayout tabs = view.findViewById(R.id.tabs);
+        ViewPager pager = view.findViewById(R.id.view_pager_fragment_pager);
+        TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
 
         pager.setAdapter(new NoSurfFragmentPagerAdapter(getChildFragmentManager()));
 

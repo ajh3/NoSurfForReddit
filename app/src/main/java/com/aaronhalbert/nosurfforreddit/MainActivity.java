@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
         viewModel.initApp();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.main_activity_base_view, ViewPagerFragment.newInstance("abc", "def")).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance("abc", "def")).commit();
 
         /* Disable StrictMode due to Untagged socket detected errors
         if (BuildConfig.DEBUG) {
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_base_view, SelfPostFragment.newInstance("a", "b"))
+                    .add(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("a", "b"))
                     .addToBackStack(null)
                     .commit();
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_base_view, ExternalPostFragment.newInstance(url))
+                    .add(R.id.main_activity_frame_layout, ExternalPostFragment.newInstance(url))
                     .addToBackStack(null)
                     .commit();
         }

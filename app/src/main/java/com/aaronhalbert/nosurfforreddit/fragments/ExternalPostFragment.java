@@ -55,7 +55,7 @@ public class ExternalPostFragment extends Fragment {
                              Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_external_post, container, false);
 
-        browser = result.findViewById(R.id.webkit);
+        browser = result.findViewById(R.id.external_post_fragment_webview);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setBuiltInZoomControls(true);
         browser.getSettings().setDisplayZoomControls(false);
