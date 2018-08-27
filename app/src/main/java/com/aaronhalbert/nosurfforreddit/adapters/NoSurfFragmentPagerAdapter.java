@@ -34,7 +34,7 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return "/r/All";
         } else {
-            return "Yours";
+            return "Home";
         }
     }
 }
