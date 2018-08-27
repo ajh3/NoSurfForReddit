@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.ExternalPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 public class MainActivity extends AppCompatActivity implements ViewPagerFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
@@ -39,12 +40,24 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
     @Override
     public void onItemClick(String url, boolean isSelf) {
 
+        if (isSelf) {
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.main_activity_base_view, ExternalPostFragment.newInstance(url))
-                .addToBackStack(null)
-                .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.main_activity_base_view, SelfPostFragment.newInstance("a", "b"))
+                    .addToBackStack(null)
+                    .commit();
+
+        } else {
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.main_activity_base_view, ExternalPostFragment.newInstance(url))
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+
 
     }
 }
