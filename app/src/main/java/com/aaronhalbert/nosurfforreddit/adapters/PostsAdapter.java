@@ -13,9 +13,6 @@ import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
-
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
