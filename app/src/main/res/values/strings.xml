@@ -7,4 +7,7 @@
     <string name="subreddit_abbreviation">/r/%1$s</string>
     <string name="score">\u0020• %1$d</string>
     <string name="comments">Comments go here</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

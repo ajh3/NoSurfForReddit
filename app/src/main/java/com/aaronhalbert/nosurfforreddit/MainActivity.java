@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.fragments.ImageFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
-public class MainActivity extends AppCompatActivity implements ViewPagerFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
+public class MainActivity extends AppCompatActivity implements ImageFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

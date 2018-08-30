@@ -3,91 +3,70 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ViewPagerFragment.OnFragmentInteractionListener} interface
+ * {@link ImageFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ViewPagerFragment#newInstance} factory method to
+ * Use the {@link ImageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ViewPagerFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
+public class ImageFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String IMAGE_URL_KEY = "imageUrlKey";
     private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
+    // TODO: Rename and change types of parameters
+    private String imageUrlKey;
     private String mParam2;
 
-    //private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener mListener;
 
-    public ViewPagerFragment() {
+    public ImageFragment() {
         // Required empty public constructor
     }
 
-    public static ViewPagerFragment newInstance(String param1, String param2) {
-        ViewPagerFragment fragment = new ViewPagerFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param imageUrlKey Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment ImageFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static ImageFragment newInstance(String imageUrlKey, String param2) {
+        ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(IMAGE_URL_KEY, imageUrlKey);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            imageUrlKey = getArguments().getString(IMAGE_URL_KEY);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        Log.e(getClass().toString(), "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        Log.e(getClass().toString(), "onCreateView");
-
-        return inflater.inflate(R.layout.fragment_view_pager, container, false);
-
-
+        return inflater.inflate(R.layout.fragment_image, container, false);
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ViewPager pager = view.findViewById(R.id.view_pager_fragment_pager);
-        TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
-
-        pager.setAdapter(new NoSurfFragmentPagerAdapter(getChildFragmentManager()));
-
-        tabs.setupWithViewPager(pager);
-        tabs.setTabMode(TabLayout.MODE_FIXED);
-
-        Log.e(getClass().toString(), "onViewCreated");
-    }
-
-/*
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -105,8 +84,6 @@ public class ViewPagerFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-
-        Log.e(getClass().toString(), "onAttach");
     }
 
     @Override
@@ -114,8 +91,6 @@ public class ViewPagerFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-*/
 
     /**
      * This interface must be implemented by activities that contain this
@@ -127,11 +102,8 @@ public class ViewPagerFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-
-/*
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-*/
 }
