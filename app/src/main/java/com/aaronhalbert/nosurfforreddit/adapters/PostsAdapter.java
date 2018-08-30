@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {

@@ -26,7 +26,7 @@ public class NoSurfWebViewFragment extends Fragment {
 
     private WebView browser;
 
-    private OnFragmentInteractionListener mListener;
+    //private OnFragmentInteractionListener mListener;
 
     public NoSurfWebViewFragment() {
         // Required empty public constructor
@@ -65,13 +65,15 @@ public class NoSurfWebViewFragment extends Fragment {
         return result;
     }
 
-
+/*
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
+*/
+
 /*
     @Override
     public void onAttach(Context context) {
@@ -100,8 +102,11 @@ public class NoSurfWebViewFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+
+/*
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+*/
 }

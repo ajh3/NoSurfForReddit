@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -73,7 +74,9 @@ public class LinkPostFragment extends Fragment {
             public void onClick(View v) {
                 Log.e(getClass().toString(), url);
 
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                onImageClick();
+
+                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
@@ -90,12 +93,12 @@ public class LinkPostFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onImageClick() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onImageClick(url);
         }
     }
-/*
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -112,7 +115,7 @@ public class LinkPostFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-*/
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -125,6 +128,6 @@ public class LinkPostFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onImageClick(String url);
     }
 }

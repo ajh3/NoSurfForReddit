@@ -8,10 +8,11 @@ import android.os.Bundle;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.ImageFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
-public class MainActivity extends AppCompatActivity implements ImageFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
+public class MainActivity extends AppCompatActivity implements LinkPostFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +35,12 @@ public class MainActivity extends AppCompatActivity implements ImageFragment.OnF
 
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onImageClick(String url) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance("https://imgur.com/xZ9eOoe.gifv"))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
