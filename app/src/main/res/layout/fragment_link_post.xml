@@ -6,19 +6,19 @@
     android:orientation="vertical"
     tools:context=".fragments.LinkPostFragment">
 
+    <ImageView
+        android:id="@+id/link_post_fragment_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
     <TextView
-        android:id="@+id/self_post_fragment_title"
+        android:id="@+id/link_post_fragment_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp" />
+        android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/self_post_fragment_selftext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/self_post_fragment_comments"
+        android:id="@+id/link_post_fragment_comments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/comments" />

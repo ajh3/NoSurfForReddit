@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
-import com.aaronhalbert.nosurfforreddit.fragments.ExternalPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
@@ -38,13 +38,14 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
     }
 
     @Override
-    public void onItemClick(String url, boolean isSelf) {
+    public void onItemClick(String url, boolean isSelf, String imageUrl, String title, String selfText) {
+
 
         if (isSelf) {
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("a", "b"))
+                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText))
                     .addToBackStack(null)
                     .commit();
 
@@ -52,10 +53,11 @@ public class MainActivity extends AppCompatActivity implements ViewPagerFragment
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_frame_layout, ExternalPostFragment.newInstance(url))
+                    .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(imageUrl, url, title))
                     .addToBackStack(null)
                     .commit();
         }
+
 
 
 

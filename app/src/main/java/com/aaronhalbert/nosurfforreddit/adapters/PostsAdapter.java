@@ -83,17 +83,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
         }
 
+        //TODO the isSelf checking is a giant mess, should not be checking here and in MainActivity just to avoid crash on null imageUrl
         @Override
         public void onClick(View v) {
-            recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(getAdapterPosition()),
-                    getCurrentRedditListingObjectIsSelf(getAdapterPosition()));
+
+            int i = getAdapterPosition();
+
+            if (getCurrentRedditListingObjectIsSelf(i)) {
+                recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(i),
+                        getCurrentRedditListingObjectIsSelf(i),
+                        null,
+                        getCurrentRedditListingObjectTitle(i),
+                        getCurrentRedditListingObjectSelfText(i));
+            } else {
+                recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(i),
+                        getCurrentRedditListingObjectIsSelf(i),
+                        getCurrentRedditListingObjectImageUrl(i),
+                        getCurrentRedditListingObjectTitle(i),
+                        null);
+            }
+
 
         }
     }
 
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
-        void onItemClick(String url, boolean isSelf);
+        void onItemClick(String url, boolean isSelf, String imageUrl, String title, String selfText);
     }
 
 
@@ -149,6 +165,30 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .get(i)
                 .getData()
                 .getUrl();
+    }
+
+    private String getCurrentRedditListingObjectImageUrl(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getPreview()
+                .getImages()
+                .get(0)
+                .getSource()
+                .getUrl();
+
+    }
+
+    private String getCurrentRedditListingObjectSelfText(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getSelfText();
+
     }
 
 }

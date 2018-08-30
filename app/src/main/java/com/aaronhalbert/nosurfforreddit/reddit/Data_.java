@@ -36,6 +36,14 @@ public class Data_ {
     @Expose
     private String url;
 
+    @SerializedName("selfText")
+    @Expose
+    private String selfText;
+
+    @SerializedName("preview")
+    @Expose
+    private Preview preview;
+
 
     public String getSubreddit() {
         return subreddit;
@@ -63,5 +71,13 @@ public class Data_ {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getSelfText() {
+        return selfText;
+    }
+
+    public Preview getPreview() {
+        return preview;
     }
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,12 @@ import com.aaronhalbert.nosurfforreddit.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ExternalPostFragment.OnFragmentInteractionListener} interface
+ * {@link NoSurfWebViewFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ExternalPostFragment#newInstance} factory method to
+ * Use the {@link NoSurfWebViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ExternalPostFragment extends Fragment {
+public class NoSurfWebViewFragment extends Fragment {
     private static final String KEY_URL = "url";
 
     private String url;
@@ -29,12 +28,12 @@ public class ExternalPostFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public ExternalPostFragment() {
+    public NoSurfWebViewFragment() {
         // Required empty public constructor
     }
 
-    public static ExternalPostFragment newInstance(String url) {
-        ExternalPostFragment fragment = new ExternalPostFragment();
+    public static NoSurfWebViewFragment newInstance(String url) {
+        NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
         Bundle args = new Bundle();
         args.putString(KEY_URL, url);
         fragment.setArguments(args);
@@ -53,9 +52,9 @@ public class ExternalPostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.fragment_external_post, container, false);
+        View result = inflater.inflate(R.layout.fragment_nosurf_webview, container, false);
 
-        browser = result.findViewById(R.id.external_post_fragment_webview);
+        browser = result.findViewById(R.id.nosurf_webview_fragment_webview);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setBuiltInZoomControls(true);
         browser.getSettings().setDisplayZoomControls(false);

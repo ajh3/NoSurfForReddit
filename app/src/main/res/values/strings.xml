@@ -6,4 +6,5 @@
     <string name="thumbnail">Thumbnail image</string>
     <string name="subreddit_abbreviation">/r/%1$s</string>
     <string name="score">\u0020• %1$d</string>
+    <string name="comments">Comments go here</string>
 </resources>

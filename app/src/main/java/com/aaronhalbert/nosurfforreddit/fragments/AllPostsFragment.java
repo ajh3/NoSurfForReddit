@@ -65,6 +65,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onViewCreated(View view, Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
+        //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
         viewModel.getListing().observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {

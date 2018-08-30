@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="64sp"
-            android:layout_height="64sp"
+            android:layout_width="80sp"
+            android:layout_height="80sp"
             android:layout_gravity="top"
             android:contentDescription="@string/thumbnail"
             android:padding="2dp" />
