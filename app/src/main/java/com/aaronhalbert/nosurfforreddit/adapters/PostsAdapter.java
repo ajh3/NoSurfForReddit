@@ -9,9 +9,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
-import com.squareup.picasso.Picasso;
+
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
+
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
@@ -57,9 +61,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         postHolder.score.setText(context.getString(R.string.score,
                 getCurrentRedditListingObjectScore(i)));
 
-        Picasso.get()
+        GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(i))
-                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.textposticon64)
                 .into(postHolder.thumbnail);

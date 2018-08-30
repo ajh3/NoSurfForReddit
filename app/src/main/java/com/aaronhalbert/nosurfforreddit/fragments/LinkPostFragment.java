@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,9 +77,8 @@ public class LinkPostFragment extends Fragment {
             }
         });
 
-        Picasso.get()
+        GlideApp.with(this)
                 .load(imageUrl)
-                .fit()
                 .centerCrop()
                 .into(iv);
 
