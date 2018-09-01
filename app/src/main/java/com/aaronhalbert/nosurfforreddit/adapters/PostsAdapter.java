@@ -1,8 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,9 @@ import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
@@ -162,12 +167,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     }
 
     private String getCurrentRedditListingObjectThumbnail(int i) {
-        return currentListing
+
+        String encodedThumbnail = currentListing
                 .getData()
                 .getChildren()
                 .get(i)
                 .getData()
                 .getThumbnail();
+
+        return decodeUrl(encodedThumbnail);
     }
 
     private boolean getCurrentRedditListingObjectIsSelf(int i) {
@@ -180,16 +188,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     }
 
     private String getCurrentRedditListingObjectUrl(int i) {
-        return currentListing
+
+        String encodedObjectUrl = currentListing
                 .getData()
                 .getChildren()
                 .get(i)
                 .getData()
                 .getUrl();
+
+        return decodeUrl(encodedObjectUrl);
     }
 
     private String getCurrentRedditListingObjectImageUrl(int i) {
-        return currentListing
+
+        String encodedImageUrl = currentListing
                 .getData()
                 .getChildren()
                 .get(i)
@@ -199,6 +211,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .get(0)
                 .getSource()
                 .getUrl();
+
+        return decodeUrl(encodedImageUrl);
 
     }
 
@@ -238,6 +252,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     private String getVredditVideoUrl(String url) {
         return "hello";
+    }
+
+    private String decodeUrl(String url) {
+        if (Build.VERSION.SDK_INT >= 24) {
+            url = (Html.fromHtml(url, Html.FROM_HTML_MODE_COMPACT)).toString();
+        } else {
+            url = (Html.fromHtml(url).toString());
+        }
+        return url;
     }
 
 }
