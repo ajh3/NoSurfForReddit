@@ -36,7 +36,7 @@ public class Data_ {
     @Expose
     private String url;
 
-    @SerializedName("selfText")
+    @SerializedName("selftext")
     @Expose
     private String selfText;
 

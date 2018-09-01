@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,27 +91,46 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
             int i = getAdapterPosition();
 
-            if (getCurrentRedditListingObjectIsSelf(i)) {
-                recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(i),
-                        getCurrentRedditListingObjectIsSelf(i),
-                        null,
-                        getCurrentRedditListingObjectTitle(i),
+            String currentPostType = getCurrentPostType(i);
+
+            if (currentPostType == "self") {
+                recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
                         getCurrentRedditListingObjectSelfText(i));
+
+
             } else {
-                recyclerViewOnClickCallback.onItemClick(getCurrentRedditListingObjectUrl(i),
-                        getCurrentRedditListingObjectIsSelf(i),
+                recyclerViewOnClickCallback.launchLinkPost(getCurrentRedditListingObjectTitle(i),
                         getCurrentRedditListingObjectImageUrl(i),
-                        getCurrentRedditListingObjectTitle(i),
+                        getCurrentRedditListingObjectUrl(i),
                         null);
             }
 
+            /* TODO: finish this after implementing API access for imgur, gfycat
+            switch (currentPostType) {
+                case "self":
+                    recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
+                            getCurrentRedditListingObjectSelfText(i));
+                        break;
+                case "gifv":
+
+
+                case "gfycat":
+
+                case "vreddit":
+
+                case "otherLink":
+
+                default: break;
+            }
+            */
 
         }
     }
 
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
-        void onItemClick(String url, boolean isSelf, String imageUrl, String title, String selfText);
+        void launchSelfPost(String title, String selfText);
+        void launchLinkPost(String title, String imageUrl, String url, String gifUrl);
     }
 
 
@@ -190,6 +210,34 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getData()
                 .getSelfText();
 
+    }
+
+    private String getCurrentPostType(int i) {
+        //TODO: convert to use enum
+
+        if (getCurrentRedditListingObjectIsSelf(i)) {
+            return "self";
+        } else if (getCurrentRedditListingObjectUrl(i).contains(".gifv")) {
+            return "gifv";
+        } else if (getCurrentRedditListingObjectUrl(i).contains("gfycat")) {
+            return "gfycat";
+        } else if (getCurrentRedditListingObjectUrl(i).contains("v.redd.it")) {
+            return "vreddit";
+        } else {
+            return "otherLink";
+        }
+    }
+
+    private String getGifvVideoUrl(String url) {
+        return url.replaceAll(".gifv", ".mp4");
+    }
+
+    private String getGfycatVideoUrl(String url) {
+        return "hello";
+    }
+
+    private String getVredditVideoUrl(String url) {
+        return "hello";
     }
 
 }

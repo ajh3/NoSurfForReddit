@@ -15,12 +15,22 @@
         android:id="@+id/link_post_fragment_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="5dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
 
     <TextView
         android:id="@+id/link_post_fragment_comments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/comments" />
+        android:text="@string/comments"
+        android:padding="5dp" />
 
 </LinearLayout>

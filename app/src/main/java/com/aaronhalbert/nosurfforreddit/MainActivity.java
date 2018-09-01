@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.fragments.GifvFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ImageFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
@@ -34,38 +35,32 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
     }
 
 
-    @Override
-    public void onImageClick(String url) {
+    public void launchWebView(String url) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance("https://imgur.com/xZ9eOoe.gifv"))
+                .replace(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url))
                 .addToBackStack(null)
                 .commit();
     }
 
-    @Override
-    public void onItemClick(String url, boolean isSelf, String imageUrl, String title, String selfText) {
 
-
-        if (isSelf) {
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText))
-                    .addToBackStack(null)
-                    .commit();
-
-        } else {
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(imageUrl, url, title))
-                    .addToBackStack(null)
-                    .commit();
-        }
-
-
-
-
+    public void launchSelfPost(String title, String selfText) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText))
+                .addToBackStack(null)
+                .commit();
     }
+
+    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl))
+                .addToBackStack(null)
+                .commit();
+    }
+
+
+
+
 }

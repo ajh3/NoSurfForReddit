@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">NoSurfForReddit</string>
-    <string name="home_posts_fragment">Home posts fragment</string>
+    <string name="home_posts_fragment">Home posts placeholder</string>
     <string name="hello_world_fragment">Hello world fragment</string>
     <string name="self_post_fragment">Self post fragment</string>
     <string name="thumbnail">Thumbnail image</string>
     <string name="subreddit_abbreviation">/r/%1$s</string>
     <string name="score">\u0020• %1$d</string>
-    <string name="comments">Comments go here</string>
+    <string name="comments"><b>Comments placeholder</b></string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

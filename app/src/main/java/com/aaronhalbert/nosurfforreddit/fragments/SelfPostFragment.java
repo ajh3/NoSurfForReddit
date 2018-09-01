@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,8 @@ public class SelfPostFragment extends Fragment {
         tv.setText(title);
 
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
+
+        Log.e(getClass().toString(), "selftext is: " + selfText);
 
         if (selfText == null) {
             st.setVisibility(GONE);

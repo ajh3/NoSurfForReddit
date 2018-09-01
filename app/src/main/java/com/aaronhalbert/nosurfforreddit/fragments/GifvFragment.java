@@ -1,53 +1,53 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.VideoView;
 
-import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LinkPostFragment.OnFragmentInteractionListener} interface
+ * {@link GifvFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LinkPostFragment#newInstance} factory method to
+ * Use the {@link GifvFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LinkPostFragment extends Fragment {
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_IMAGE_URL = "imageUrl";
+public class GifvFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String KEY_URL = "url";
-    private static final String KEY_GIF_URL = "gifUrl";
+    private static final String ARG_PARAM2 = "param2";
 
-    private String title;
-    private String imageUrl;
+    // TODO: Rename and change types of parameters
     private String url;
-    private String gifUrl;
+    private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    //private OnFragmentInteractionListener mListener;
 
-    public LinkPostFragment() {
+    public GifvFragment() {
         // Required empty public constructor
     }
 
-
-    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl) {
-        LinkPostFragment fragment = new LinkPostFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param url Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment GifvFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static GifvFragment newInstance(String url, String param2) {
+        GifvFragment fragment = new GifvFragment();
         Bundle args = new Bundle();
-        args.putString(KEY_TITLE, title);
-        args.putString(KEY_IMAGE_URL, imageUrl);
         args.putString(KEY_URL, url);
-        args.putString(KEY_GIF_URL, gifUrl);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,48 +56,31 @@ public class LinkPostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            title = getArguments().getString(KEY_TITLE);
-            imageUrl = getArguments().getString(KEY_IMAGE_URL);
             url = getArguments().getString(KEY_URL);
-            gifUrl = getArguments().getString(KEY_GIF_URL);
-
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_gifv, container, false);
 
-        View v = inflater.inflate(R.layout.fragment_link_post, container, false);
+        VideoView videoView = v.findViewById(R.id.simpleVideoView);
 
-        ImageView iv = v.findViewById(R.id.link_post_fragment_image);
+        Uri uri = Uri.parse(url);
 
-        GlideApp.with(this)
-                .load(imageUrl)
-                .centerCrop()
-                .into(iv);
+        videoView.setVideoURI(uri);
 
-        TextView t = v.findViewById(R.id.link_post_fragment_title);
-        t.setText(title);
-
-        iv.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                launchWebView();
-
-                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            }
-        });
+        videoView.start();
 
         return v;
     }
-
+/*
     // TODO: Rename method, update argument and hook method into UI event
-    public void launchWebView() {
+    public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.launchWebView(url);
+            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -117,7 +100,7 @@ public class LinkPostFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
+*/
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -128,8 +111,11 @@ public class LinkPostFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+
+/*
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void launchWebView(String url);
+        void onFragmentInteraction(Uri uri);
     }
+*/
 }
