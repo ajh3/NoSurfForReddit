@@ -1,7 +1,8 @@
 package com.aaronhalbert.nosurfforreddit;
 
-import com.aaronhalbert.nosurfforreddit.reddit.RedditAppOnlyOAuthTokenObject;
+import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -13,19 +14,40 @@ import retrofit2.http.POST;
 import retrofit2.http.Url;
 
 public interface RetrofitInterface {
-    String AUTHORIZATION_HEADER = "Authorization: Basic alBGNTlVRjVNYk1rV2c6";
-    String USER_AGENT = "User-Agent: android:com.aaronhalbert.meteorforreddit:v0.01a (by /u/Suspicious_Advantage)";
+    String USER_AGENT = "User-Agent: android:com.aaronhalbert.nosurfforreddit:v0.01a (by /u/Suspicious_Advantage)";
 
-    @Headers({AUTHORIZATION_HEADER, USER_AGENT})
+    @Headers({USER_AGENT})
     @FormUrlEncoded
-    @POST
-    Call<RedditAppOnlyOAuthTokenObject> requestAppOnlyOAuthToken(
-            @Url String url,
-            @Field("grant_type") String GRANT_TYPE,
-            @Field("device_id") String DEVICE_ID);
+    @POST   // can't provide a relative URL here when using @Url
+    Call<AppOnlyOAuthToken> requestAppOnlyOAuthToken(
+            @Url String baseUrl,
+            @Field("grant_type") String grantType,
+            @Field("device_id") String deviceId,
+            @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("r/all/hot")
-    Call<Listing> requestSubRedditListing(@Header("Authorization") String authorization);
+    Call<Listing> requestAllSubredditsListing(
+            @Header("Authorization") String authorization);
+
+
+    @Headers({USER_AGENT})
+    @GET("hot")
+    Call<Listing> requestHomeSubredditsListing(
+            @Header("Authorization") String authorization);
+
+    /* Below code for user login */
+
+
+    @Headers({USER_AGENT})
+    @FormUrlEncoded
+    @POST
+    Call<UserOAuthToken> requestUserOAuthToken(
+            @Url String baseUrl,
+            @Field("grant_type") String grantType,
+            @Field("code") String code,
+            @Field("redirect_uri") String redirectUri,
+            @Header("Authorization") String authorization);
+
 
 }

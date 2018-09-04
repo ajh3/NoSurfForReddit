@@ -2,26 +2,31 @@ package com.aaronhalbert.nosurfforreddit.reddit;
 
 import com.google.gson.annotations.SerializedName;
 
-public class RedditAppOnlyOAuthTokenObject {
+public class UserOAuthToken {
     @SerializedName("access_token") private String accessToken;
     @SerializedName("token_type") private String tokenType;
     @SerializedName("expires_in") private int expiresIn;
     @SerializedName("scope") private String scope;
+    @SerializedName("refresh_token") private String refreshToken;
 
-    public String getAccess_token() {
+    public String getAccessToken() {
         return accessToken;
     }
 
-    public String getToken_type() {
+    public String getTokenType() {
         return tokenType;
     }
 
-    public int getExpires_in() {
+    public int getExpiresIn() {
         return expiresIn;
     }
 
     public String getScope() {
         return scope;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
 }

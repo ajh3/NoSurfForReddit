@@ -87,7 +87,6 @@ public class LinkPostFragment extends Fragment {
             public void onClick(View v) {
                 launchWebView();
 
-                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
