@@ -100,14 +100,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
             if (currentPostType.equals("self")) {
                 recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
-                        getCurrentRedditListingObjectSelfText(i));
+                        getCurrentRedditListingObjectSelfText(i),
+                        getCurrentRedditListingObjectId(i));
 
 
             } else {
                 recyclerViewOnClickCallback.launchLinkPost(getCurrentRedditListingObjectTitle(i),
                         getCurrentRedditListingObjectImageUrl(i),
                         getCurrentRedditListingObjectUrl(i),
-                        null);
+                        null,
+                        getCurrentRedditListingObjectId(i));
             }
 
             /* TODO: finish this after implementing API access for imgur, gfycat
@@ -134,8 +136,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
-        void launchSelfPost(String title, String selfText);
-        void launchLinkPost(String title, String imageUrl, String url, String gifUrl);
+        void launchSelfPost(String title, String selfText, String id);
+        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id);
     }
 
 
@@ -223,6 +225,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .get(i)
                 .getData()
                 .getSelfText();
+
+    }
+
+    private String getCurrentRedditListingObjectId(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getId();
 
     }
 

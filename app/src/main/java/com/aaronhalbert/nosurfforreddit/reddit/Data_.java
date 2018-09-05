@@ -44,6 +44,24 @@ public class Data_ {
     @Expose
     private Preview preview;
 
+    @SerializedName("id")
+    @Expose
+    private String id;
+
+    @SerializedName("author")
+    @Expose
+    private String author;
+
+    @SerializedName("body")
+    @Expose
+    private String body;
+
+    @SerializedName("body_html")
+    @Expose
+    private String bodyHtml;
+
+
+
 
     public String getSubreddit() {
         return subreddit;
@@ -79,5 +97,21 @@ public class Data_ {
 
     public Preview getPreview() {
         return preview;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getBodyHtml() {
+        return bodyHtml;
     }
 }

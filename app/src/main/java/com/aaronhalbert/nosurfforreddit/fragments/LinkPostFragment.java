@@ -1,9 +1,12 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +16,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.GlideApp;
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +42,10 @@ public class LinkPostFragment extends Fragment {
     private String gifUrl;
 
     private OnFragmentInteractionListener mListener;
+
+    NoSurfViewModel viewModel = null;
+
+    TextView comments = null;
 
     public LinkPostFragment() {
         // Required empty public constructor
@@ -69,16 +80,20 @@ public class LinkPostFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+
         View v = inflater.inflate(R.layout.fragment_link_post, container, false);
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
+        TextView t = v.findViewById(R.id.link_post_fragment_title);
+        comments = v.findViewById(R.id.link_post_fragment_comments);
 
         GlideApp.with(this)
                 .load(imageUrl)
                 .centerCrop()
                 .into(iv);
 
-        TextView t = v.findViewById(R.id.link_post_fragment_title);
+
         t.setText(title);
 
         iv.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +104,20 @@ public class LinkPostFragment extends Fragment {
 
             }
         });
+
+
+        //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
+        viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
+            @Override
+            public void onChanged(@Nullable List<Listing> commentListing) {
+                Log.e(getClass().toString(), "onChanged");
+                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
+
+                comments.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
+
+            }
+        });
+
 
         return v;
     }

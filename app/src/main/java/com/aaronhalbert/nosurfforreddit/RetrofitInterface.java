@@ -4,6 +4,8 @@ import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -11,6 +13,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface RetrofitInterface {
@@ -49,5 +53,11 @@ public interface RetrofitInterface {
             @Field("redirect_uri") String redirectUri,
             @Header("Authorization") String authorization);
 
+
+    @Headers({USER_AGENT})
+    @GET("comments/{article}")
+    Call<List<Listing>> requestPostCommentsListing(
+            @Header("Authorization") String authorization,
+            @Path("article") String article);
 
 }

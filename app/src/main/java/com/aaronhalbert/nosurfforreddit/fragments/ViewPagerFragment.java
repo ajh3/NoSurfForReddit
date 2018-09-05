@@ -57,15 +57,12 @@ public class ViewPagerFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        Log.e(getClass().toString(), "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        Log.e(getClass().toString(), "onCreateView");
 
         return inflater.inflate(R.layout.fragment_view_pager, container, false);
 
@@ -84,7 +81,6 @@ public class ViewPagerFragment extends Fragment {
         tabs.setupWithViewPager(pager);
         tabs.setTabMode(TabLayout.MODE_FIXED);
 
-        Log.e(getClass().toString(), "onViewCreated");
     }
 
 /*

@@ -20,14 +20,14 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements LinkPostFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback, HomePostsFragment.HomePostsLoginCallback {
 
-
+    NoSurfViewModel viewModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NoSurfViewModel viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
         viewModel.initApp();
 
@@ -66,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
     }
 
 
-    public void launchSelfPost(String title, String selfText) {
+    public void launchSelfPost(String title, String selfText, String id) {
+        viewModel.requestPostCommentsListing(id);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText))
@@ -74,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
                 .commit();
     }
 
-    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl) {
+    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id) {
+        viewModel.requestPostCommentsListing(id);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl))
@@ -103,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
                 + "&scope="
                 + SCOPE;
 
-        Log.e(getClass().toString(), STATE);
 
         launchWebView(loginUrl);
 

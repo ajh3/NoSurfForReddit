@@ -8,6 +8,8 @@ import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
 
+import java.util.List;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -35,6 +37,7 @@ public class NoSurfRepository {
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<Listing>();
     private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<Listing>();
+    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<List<Listing>>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -67,7 +70,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                Log.d(getClass().toString(), "Auth call failed");
+                Log.e(getClass().toString(), "Auth call failed");
             }
         });
     }
@@ -77,14 +80,10 @@ public class NoSurfRepository {
 
 
 
-        Log.e(getClass().toString(), authHeader);
-
         ri.requestUserOAuthToken(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, authHeader).enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 userAccessToken = response.body().getAccessToken();
-
-                Log.e(getClass().toString(), "ZZZZ: " + userAccessToken);
 
                 requestHomeSubredditsListing();
 
@@ -93,7 +92,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.d(getClass().toString(), "User auth call failed");
+                Log.e(getClass().toString(), "User auth call failed");
             }
         });
     }
@@ -116,7 +115,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.d(getClass().toString(), "requestAllSubredditsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "requestAllSubredditsListing call failed: " + t.toString());
             }
         });
 
@@ -141,7 +140,31 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.d(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
+            }
+        });
+
+
+    }
+
+    public void requestPostCommentsListing(String id) {
+
+        String bearerAuth = "Bearer " + userAccessToken;
+        Log.e(getClass().toString(), "running");
+
+        ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+
+            @Override
+            public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
+
+                Log.e(getClass().toString(), "requestPostCommentsListing called");
+                commentsLiveData.setValue(response.body());
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Listing>> call, Throwable t) {
+                Log.e(getClass().toString(), "requestPostCommentsListing call failed: " + t.toString());
             }
         });
 
@@ -156,6 +179,10 @@ public class NoSurfRepository {
 
     public LiveData<Listing> getHomePostsLiveData() {
         return homePostsLiveData;
+    }
+
+    public LiveData<List<Listing>> getCommentsLiveData() {
+        return commentsLiveData;
     }
 
 }

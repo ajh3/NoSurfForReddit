@@ -69,7 +69,6 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel.getAllPostsLiveData().observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
-                Log.e(getClass().toString(), "onChanged");
                 //TODO: why is onChanged called twice on config change?
                 //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
 

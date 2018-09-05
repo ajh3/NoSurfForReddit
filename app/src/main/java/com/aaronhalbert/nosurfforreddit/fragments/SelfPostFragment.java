@@ -1,7 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+
+import java.util.List;
 
 import static android.view.View.GONE;
 
@@ -24,6 +32,8 @@ public class SelfPostFragment extends Fragment {
     private String selfText;
 
     private OnFragmentInteractionListener mListener;
+
+    NoSurfViewModel viewModel = null;
 
     public SelfPostFragment() {
         // Required empty public constructor
@@ -52,21 +62,38 @@ public class SelfPostFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+
+
+
         View v = inflater.inflate(R.layout.fragment_self_post, container, false);
 
         TextView tv = v.findViewById(R.id.self_post_fragment_title);
+        TextView comments = v.findViewById(R.id.self_post_fragment_comments);
+        TextView st = v.findViewById(R.id.self_post_fragment_selftext);
 
         tv.setText(title);
 
-        TextView st = v.findViewById(R.id.self_post_fragment_selftext);
-
-        Log.e(getClass().toString(), "selftext is: " + selfText);
 
         if (selfText == null) {
             st.setVisibility(GONE);
         } else {
             st.setText(selfText);
         }
+
+
+        //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
+        viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
+            @Override
+            public void onChanged(@Nullable List<Listing> commentListing) {
+                Log.e(getClass().toString(), "onChanged");
+                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
+
+                Log.e(getClass().toString(), commentListing.toString());
+
+            }
+        });
+
 
 
 
