@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl))
+                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl, id))
                 .addToBackStack(null)
                 .commit();
     }

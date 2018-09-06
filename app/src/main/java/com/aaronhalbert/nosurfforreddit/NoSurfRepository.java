@@ -150,14 +150,12 @@ public class NoSurfRepository {
     public void requestPostCommentsListing(String id) {
 
         String bearerAuth = "Bearer " + userAccessToken;
-        Log.e(getClass().toString(), "running");
 
         ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
 
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
 
-                Log.e(getClass().toString(), "requestPostCommentsListing called");
                 commentsLiveData.setValue(response.body());
 
             }

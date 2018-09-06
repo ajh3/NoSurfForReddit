@@ -35,30 +35,38 @@ public class LinkPostFragment extends Fragment {
     private static final String KEY_IMAGE_URL = "imageUrl";
     private static final String KEY_URL = "url";
     private static final String KEY_GIF_URL = "gifUrl";
+    private static final String KEY_ID = "id";
 
     private String title;
     private String imageUrl;
     private String url;
     private String gifUrl;
+    private String id;
 
     private OnFragmentInteractionListener mListener;
 
     NoSurfViewModel viewModel = null;
 
-    TextView comments = null;
+    TextView firstComment = null;
+    TextView secondComment = null;
+    TextView thirdComment = null;
+
+    View secondDivider = null;
+    View thirdDivider = null;
 
     public LinkPostFragment() {
         // Required empty public constructor
     }
 
 
-    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl) {
+    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl, String id) {
         LinkPostFragment fragment = new LinkPostFragment();
         Bundle args = new Bundle();
         args.putString(KEY_TITLE, title);
         args.putString(KEY_IMAGE_URL, imageUrl);
         args.putString(KEY_URL, url);
         args.putString(KEY_GIF_URL, gifUrl);
+        args.putString(KEY_ID, id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,6 +79,7 @@ public class LinkPostFragment extends Fragment {
             imageUrl = getArguments().getString(KEY_IMAGE_URL);
             url = getArguments().getString(KEY_URL);
             gifUrl = getArguments().getString(KEY_GIF_URL);
+            id = getArguments().getString(KEY_ID);
 
         }
     }
@@ -86,7 +95,12 @@ public class LinkPostFragment extends Fragment {
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
         TextView t = v.findViewById(R.id.link_post_fragment_title);
-        comments = v.findViewById(R.id.link_post_fragment_comments);
+        firstComment = v.findViewById(R.id.link_post_fragment_first_comment);
+        secondComment = v.findViewById(R.id.link_post_fragment_second_comment);
+        thirdComment = v.findViewById(R.id.link_post_fragment_third_comment);
+
+        secondDivider = v.findViewById(R.id.link_post_fragment_second_divider);
+        thirdDivider = v.findViewById(R.id.link_post_fragment_third_divider);
 
         GlideApp.with(this)
                 .load(imageUrl)
@@ -110,10 +124,24 @@ public class LinkPostFragment extends Fragment {
         viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
-                Log.e(getClass().toString(), "onChanged");
+                Log.e(getClass().toString(), "post id: " + id + " comment id: " + commentListing.get(0).getData().getChildren().get(0).getData().getId());
+
+                if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
+                    Log.e(getClass().toString(), "they are equal");
+                    firstComment.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
+                    secondComment.setText(commentListing.get(1).getData().getChildren().get(1).getData().getBody());
+                    thirdComment.setText(commentListing.get(1).getData().getChildren().get(2).getData().getBody());
+
+                    secondDivider.setVisibility(View.VISIBLE);
+                    thirdDivider.setVisibility(View.VISIBLE);
+                }
+
+                //comments.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
+
+
                 //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
 
-                comments.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
+
 
             }
         });
