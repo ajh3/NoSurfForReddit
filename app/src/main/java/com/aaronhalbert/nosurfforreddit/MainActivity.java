@@ -6,12 +6,16 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.GifvFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.HomePostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ImageFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
@@ -54,6 +58,31 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
         }
         */
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options, menu);
+
+        return (super.onCreateOptionsMenu(menu));   //is calling super needed?
+        //return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                return true;
+
+            case R.id.settings:
+                launchPreferences();
+                return true;
+
+            case R.id.about:
+                return true;
+        }
+        return (super.onOptionsItemSelected(item)); //what does this do?
     }
 
 
@@ -111,6 +140,14 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
         launchWebView(loginUrl);
 
 
+    }
+
+    public void launchPreferences() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance("a", "b"))
+                .addToBackStack(null)
+                .commit();
     }
 
     private String generateRandomAlphaNumericString() {

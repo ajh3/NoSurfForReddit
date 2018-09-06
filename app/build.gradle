@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.generatedDensities = ['hdpi', 'xxhdpi']
     }
     buildTypes {
         release {
@@ -23,18 +24,18 @@ def supportVer = "27.1.1"
 def archVer = "1.1.1"
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$supportVer"
+    implementation "com.android.support:support-v4:$supportVer"
     implementation "com.android.support:support-compat:$supportVer"
+    implementation "com.android.support:appcompat-v7:$supportVer"
+    implementation "com.android.support:preference-v7:$supportVer"
     implementation "com.android.support:design:$supportVer"
+    implementation "com.android.support:recyclerview-v7:$supportVer"
+    implementation "android.arch.lifecycle:extensions:$archVer"
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation "com.android.support:recyclerview-v7:$supportVer"
-    implementation "com.android.support:support-v4:$supportVer"
-    implementation "android.arch.lifecycle:extensions:$archVer"
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'com.google.android.exoplayer:exoplayer:2.8.4'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
