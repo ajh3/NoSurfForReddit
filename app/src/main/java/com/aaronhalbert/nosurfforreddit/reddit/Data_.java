@@ -60,7 +60,9 @@ public class Data_ {
     @Expose
     private String bodyHtml;
 
-
+    @SerializedName("num_comments")
+    @Expose
+    private int numComments;
 
 
     public String getSubreddit() {
@@ -113,5 +115,9 @@ public class Data_ {
 
     public String getBodyHtml() {
         return bodyHtml;
+    }
+
+    public int getNumComments() {
+        return numComments;
     }
 }

@@ -65,6 +65,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         postHolder.score.setText(context.getString(R.string.score,
                 getCurrentRedditListingObjectScore(i)));
 
+        postHolder.numComments.setText(context.getString(R.string.num_comments,
+                getCurrentRedditListingObjectNumComments(i)));
+
         GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(i))
                 .centerCrop()
@@ -76,6 +79,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         TextView title = null;
         TextView subreddit = null;
         TextView score = null;
+        TextView numComments = null;
         ImageView thumbnail = null;
 
         PostHolder(View itemView) {
@@ -85,6 +89,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             subreddit = itemView.findViewById(R.id.subreddit);
             score = itemView.findViewById(R.id.score);
             thumbnail = itemView.findViewById(R.id.thumbnail);
+            numComments = itemView.findViewById(R.id.num_comments);
 
             itemView.setOnClickListener(this);
 
@@ -236,6 +241,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getData()
                 .getId();
 
+    }
+
+    private int getCurrentRedditListingObjectNumComments(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getNumComments();
     }
 
     private String getCurrentPostType(int i) {
