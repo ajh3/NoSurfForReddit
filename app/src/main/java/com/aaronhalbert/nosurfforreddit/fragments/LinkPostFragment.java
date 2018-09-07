@@ -107,7 +107,6 @@ public class LinkPostFragment extends Fragment {
                 .centerCrop()
                 .into(iv);
 
-
         t.setText(title);
 
         iv.setOnClickListener(new View.OnClickListener() {
@@ -119,13 +118,10 @@ public class LinkPostFragment extends Fragment {
             }
         });
 
-
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
         viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
-                Log.e(getClass().toString(), "post id: " + id + " comment id: " + commentListing.get(0).getData().getChildren().get(0).getData().getId());
-
                 if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
                     Log.e(getClass().toString(), "they are equal");
                     firstComment.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
@@ -135,18 +131,9 @@ public class LinkPostFragment extends Fragment {
                     secondDivider.setVisibility(View.VISIBLE);
                     thirdDivider.setVisibility(View.VISIBLE);
                 }
-
-                //comments.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
-
-
                 //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
-
-
-
             }
         });
-
-
         return v;
     }
 

@@ -2,11 +2,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context=".fragments.LinkPostFragment">
 
@@ -34,7 +34,7 @@
         <TextView
             android:id="@+id/link_post_fragment_first_comment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp" />
 
         <View
@@ -49,7 +49,7 @@
         <TextView
             android:id="@+id/link_post_fragment_second_comment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp" />
 
         <View
@@ -64,7 +64,7 @@
         <TextView
             android:id="@+id/link_post_fragment_third_comment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp" />
 
     </LinearLayout>

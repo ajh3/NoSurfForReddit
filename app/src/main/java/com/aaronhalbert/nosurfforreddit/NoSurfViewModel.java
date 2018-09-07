@@ -63,11 +63,10 @@ public class NoSurfViewModel extends AndroidViewModel {
             requestHomeSubredditsListing();
         } else {
             repository.requestAppOnlyOAuthToken();
-            requestAllSubredditsListing();
         }
     }
 
-    private boolean isUserLoggedIn() {
+    public boolean isUserLoggedIn() {
         return ((preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null)) != null);
     }
 

@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
-
-
         viewModel.initApp();
 
         getSupportFragmentManager().beginTransaction().add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance("abc", "def")).commit();
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
             viewModel.requestUserOAuthToken(code);
 
-        } else {
+        } else if (!viewModel.isUserLoggedIn()){
             launchLoginScreen();
         }
 
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText))
+                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText, id))
                 .addToBackStack(null)
                 .commit();
     }

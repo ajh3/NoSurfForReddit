@@ -77,6 +77,8 @@ public class NoSurfRepository {
                         .edit()
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
                         .apply();
+
+                requestAllSubredditsListing(true);
             }
 
             @Override
@@ -99,6 +101,9 @@ public class NoSurfRepository {
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
                         .apply();
+
+                requestAllSubredditsListing(true);
+                requestHomeSubredditsListing(true);
             }
 
             @Override
