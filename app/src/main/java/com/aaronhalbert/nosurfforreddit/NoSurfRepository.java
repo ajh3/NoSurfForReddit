@@ -64,6 +64,8 @@ public class NoSurfRepository {
         return repositoryInstance;
     }
 
+    /* Called if the user has never logged in before, so user can browse /r/all */
+
     public void requestAppOnlyOAuthToken() {
         ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, authHeader).enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
@@ -75,8 +77,6 @@ public class NoSurfRepository {
                         .edit()
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
                         .apply();
-
-                requestAllSubredditsListing();
             }
 
             @Override
@@ -99,8 +99,6 @@ public class NoSurfRepository {
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
                         .apply();
-
-                requestHomeSubredditsListing();
             }
 
             @Override
@@ -134,10 +132,18 @@ public class NoSurfRepository {
         });
     }
 
-    public void requestAllSubredditsListing() {
+    public void requestAllSubredditsListing(boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        String appOnlyAccessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
-        String bearerAuth = "Bearer " + appOnlyAccessToken;
+        String accessToken;
+        String bearerAuth;
+
+        if (isUserLoggedIn) {
+            accessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+            bearerAuth = "Bearer " + accessToken;
+        } else {
+            accessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
+            bearerAuth = "Bearer " + accessToken;
+        }
 
         ri.requestAllSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
             @Override
@@ -152,29 +158,42 @@ public class NoSurfRepository {
         });
     }
 
+    /* Should only be called when user is logged in */
 
-    public void requestHomeSubredditsListing() {
+    public void requestHomeSubredditsListing(boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
         String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String bearerAuth = "Bearer " + userAccessToken;
 
-        ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
-            @Override
-            public void onResponse(Call<Listing> call, Response<Listing> response) {
-                homePostsLiveData.setValue(response.body());
-            }
+        if (isUserLoggedIn) {
+            ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
+                @Override
+                public void onResponse(Call<Listing> call, Response<Listing> response) {
+                    homePostsLiveData.setValue(response.body());
+                }
 
-            @Override
-            public void onFailure(Call<Listing> call, Throwable t) {
-                Log.e(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
-            }
-        });
+                @Override
+                public void onFailure(Call<Listing> call, Throwable t) {
+                    Log.e(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
+                }
+            });
+        } else {
+            // do nothing
+        }
     }
 
-    public void requestPostCommentsListing(String id) {
+    public void requestPostCommentsListing(String id, boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
-        String bearerAuth = "Bearer " + userAccessToken;
+        String accessToken;
+        String bearerAuth;
+
+        if (isUserLoggedIn) {
+            accessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+            bearerAuth = "Bearer " + accessToken;
+        } else {
+            accessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
+            bearerAuth = "Bearer " + accessToken;
+        }
 
         ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
             @Override
@@ -188,6 +207,8 @@ public class NoSurfRepository {
             }
         });
     }
+
+
 
     public LiveData<Listing> getAllPostsLiveData() {
         return allPostsLiveData;

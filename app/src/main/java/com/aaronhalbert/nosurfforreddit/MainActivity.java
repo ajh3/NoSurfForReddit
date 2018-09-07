@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
+
+
         viewModel.initApp();
 
         getSupportFragmentManager().beginTransaction().add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance("abc", "def")).commit();

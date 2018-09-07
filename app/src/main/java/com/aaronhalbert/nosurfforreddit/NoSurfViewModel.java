@@ -6,6 +6,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.LiveData;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -14,7 +15,10 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import java.util.List;
 
 public class NoSurfViewModel extends AndroidViewModel {
+    private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
+
     private NoSurfRepository repository = NoSurfRepository.getInstance(getApplication());
+    private SharedPreferences preferences = getApplication().getSharedPreferences(getApplication().getPackageName() + "oauth", getApplication().MODE_PRIVATE);
 
     private final LiveData<Listing> allPostsLiveData =
             Transformations.switchMap(repository.getAllPostsLiveData(),
@@ -54,7 +58,17 @@ public class NoSurfViewModel extends AndroidViewModel {
     }
 
     public void initApp() {
-        repository.requestAppOnlyOAuthToken();
+        if (isUserLoggedIn()) {
+            requestAllSubredditsListing();
+            requestHomeSubredditsListing();
+        } else {
+            repository.requestAppOnlyOAuthToken();
+            requestAllSubredditsListing();
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        return ((preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null)) != null);
     }
 
     public LiveData<Listing> getAllPostsLiveData() {
@@ -70,15 +84,15 @@ public class NoSurfViewModel extends AndroidViewModel {
     }
 
     public void requestAllSubredditsListing() {
-        repository.requestAllSubredditsListing();
+        repository.requestAllSubredditsListing(isUserLoggedIn());
     }
 
     public void requestHomeSubredditsListing() {
-        repository.requestHomeSubredditsListing();
+        repository.requestHomeSubredditsListing(isUserLoggedIn());
     }
 
     public void requestPostCommentsListing(String id) {
-        repository.requestPostCommentsListing(id);
+        repository.requestPostCommentsListing(id, isUserLoggedIn());
     }
 
     public void requestUserOAuthToken(String code) {
