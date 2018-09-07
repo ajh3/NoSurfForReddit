@@ -55,6 +55,16 @@ public interface RetrofitInterface {
 
 
     @Headers({USER_AGENT})
+    @FormUrlEncoded
+    @POST
+    Call<UserOAuthToken> refreshExpiredUserOAuthToken(
+            @Url String baseUrl,
+            @Field("grant_type") String grantType,
+            @Field("refresh_token") String refreshToken,
+            @Header("Authorization") String authorization);
+
+
+    @Headers({USER_AGENT})
     @GET("comments/{article}")
     Call<List<Listing>> requestPostCommentsListing(
             @Header("Authorization") String authorization,

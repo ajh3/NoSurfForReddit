@@ -1,18 +1,20 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import android.app.Application;
 import android.arch.core.util.Function;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
 
-public class NoSurfViewModel extends ViewModel {
-    private NoSurfRepository repository = NoSurfRepository.getInstance();
+public class NoSurfViewModel extends AndroidViewModel {
+    private NoSurfRepository repository = NoSurfRepository.getInstance(getApplication());
 
     private final LiveData<Listing> allPostsLiveData =
             Transformations.switchMap(repository.getAllPostsLiveData(),
@@ -47,10 +49,12 @@ public class NoSurfViewModel extends ViewModel {
                         }
                     });
 
+    public NoSurfViewModel(@NonNull Application application) {
+        super(application);
+    }
+
     public void initApp() {
-
         repository.requestAppOnlyOAuthToken();
-
     }
 
     public LiveData<Listing> getAllPostsLiveData() {
@@ -74,14 +78,10 @@ public class NoSurfViewModel extends ViewModel {
     }
 
     public void requestPostCommentsListing(String id) {
-
         repository.requestPostCommentsListing(id);
     }
 
     public void requestUserOAuthToken(String code) {
         repository.requestUserOAuthToken(code);
     }
-
-
-
 }

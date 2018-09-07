@@ -2,6 +2,8 @@ package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
@@ -19,21 +21,22 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NoSurfRepository {
-    private static NoSurfRepository repositoryInstance = null;
-
     private static final String APP_ONLY_GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static final String USER_GRANT_TYPE = "authorization_code";
+    private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
     private static final String OAUTH_BASE_URL = "https://www.reddit.com/api/v1/access_token";
     private static final String API_BASE_URL = "https://oauth.reddit.com/";
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
-
+    private static final String KEY_APP_ONLY_TOKEN = "appOnlyAccessToken";
+    private static final String KEY_USER_ACCESS_TOKEN = "userAccessToken";
+    private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
     private static final String authHeader = okhttp3.Credentials.basic(CLIENT_ID, "");
 
+    private static NoSurfRepository repositoryInstance = null;
 
-    private String appOnlyAccessToken;
-    private String userAccessToken;
+    private static Context context;
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<Listing>();
     private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<Listing>();
@@ -41,16 +44,6 @@ public class NoSurfRepository {
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
-
-    private NoSurfRepository() { }
-
-    public static NoSurfRepository getInstance() {
-        if (repositoryInstance == null) {
-            repositoryInstance = new NoSurfRepository();
-        }
-
-        return repositoryInstance;
-    }
 
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(API_BASE_URL)
@@ -60,34 +53,54 @@ public class NoSurfRepository {
 
     private RetrofitInterface ri = retrofit.create(RetrofitInterface.class);
 
+    private NoSurfRepository() { }
+
+    public static NoSurfRepository getInstance(Context context) {
+        if (repositoryInstance == null) {
+            repositoryInstance = new NoSurfRepository();
+
+            NoSurfRepository.context = context;
+        }
+        return repositoryInstance;
+    }
+
     public void requestAppOnlyOAuthToken() {
         ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, authHeader).enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
-                appOnlyAccessToken = response.body().getAccessToken();
+                String appOnlyAccessToken = response.body().getAccessToken();
+                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+
+                preferences
+                        .edit()
+                        .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
+                        .apply();
+
                 requestAllSubredditsListing();
             }
 
             @Override
             public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), "Auth call failed");
+                Log.e(getClass().toString(), "App-only auth call failed");
             }
         });
     }
 
-
     public void requestUserOAuthToken(String code) {
-
-
-
         ri.requestUserOAuthToken(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, authHeader).enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
-                userAccessToken = response.body().getAccessToken();
+                String userAccessToken = response.body().getAccessToken();
+                String userAccessRefreshToken = response.body().getRefreshToken();
+                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+
+                preferences
+                        .edit()
+                        .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
+                        .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
+                        .apply();
 
                 requestHomeSubredditsListing();
-
-
             }
 
             @Override
@@ -97,20 +110,39 @@ public class NoSurfRepository {
         });
     }
 
+    public void refreshExpiredUserOAuthToken() {
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        String userAccessRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
 
+        ri.refreshExpiredUserOAuthToken(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, authHeader).enqueue(new Callback<UserOAuthToken>() {
+            @Override
+            public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
+                String userAccessToken = response.body().getAccessToken();
 
+                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+
+                preferences
+                        .edit()
+                        .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
+                        .apply();
+            }
+
+            @Override
+            public void onFailure(Call<UserOAuthToken> call, Throwable t) {
+                Log.e(getClass().toString(), "Refresh auth call failed");
+            }
+        });
+    }
 
     public void requestAllSubredditsListing() {
-
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        String appOnlyAccessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
         String bearerAuth = "Bearer " + appOnlyAccessToken;
 
         ri.requestAllSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
-
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-
                 allPostsLiveData.setValue(response.body());
-
             }
 
             @Override
@@ -118,24 +150,18 @@ public class NoSurfRepository {
                 Log.e(getClass().toString(), "requestAllSubredditsListing call failed: " + t.toString());
             }
         });
-
-
     }
 
 
-
-
     public void requestHomeSubredditsListing() {
-
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String bearerAuth = "Bearer " + userAccessToken;
 
         ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
-
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-
                 homePostsLiveData.setValue(response.body());
-
             }
 
             @Override
@@ -143,21 +169,17 @@ public class NoSurfRepository {
                 Log.e(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
             }
         });
-
-
     }
 
     public void requestPostCommentsListing(String id) {
-
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String bearerAuth = "Bearer " + userAccessToken;
 
         ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
-
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-
                 commentsLiveData.setValue(response.body());
-
             }
 
             @Override
@@ -165,11 +187,7 @@ public class NoSurfRepository {
                 Log.e(getClass().toString(), "requestPostCommentsListing call failed: " + t.toString());
             }
         });
-
-
     }
-
-
 
     public LiveData<Listing> getAllPostsLiveData() {
         return allPostsLiveData;
@@ -182,5 +200,4 @@ public class NoSurfRepository {
     public LiveData<List<Listing>> getCommentsLiveData() {
         return commentsLiveData;
     }
-
 }
