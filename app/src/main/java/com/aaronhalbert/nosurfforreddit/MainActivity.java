@@ -24,6 +24,8 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements LinkPostFragment.OnFragmentInteractionListener, PostsAdapter.RecyclerViewOnClickCallback, HomePostsFragment.HomePostsLoginCallback {
 
+    private static final String TAG_VIEW_PAGER = "viewPager";
+
     NoSurfViewModel viewModel = null;
 
     @Override
@@ -35,7 +37,12 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
 
         viewModel.initApp();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance("abc", "def")).commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance("abc", "def"), TAG_VIEW_PAGER)
+                    .commit();
+        }
 
         Intent intent = getIntent();
         if ((intent.getAction()).equals(Intent.ACTION_VIEW)) {
