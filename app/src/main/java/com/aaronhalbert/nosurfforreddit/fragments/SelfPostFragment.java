@@ -88,7 +88,7 @@ public class SelfPostFragment extends Fragment {
 
         t.setText(title);
 
-        if (selfText == null) {
+        if (selfText.isEmpty()) {
             st.setVisibility(GONE);
         } else {
             st.setText(selfText);
