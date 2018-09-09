@@ -10,15 +10,19 @@ public class Data {
     @SerializedName("modhash")
     @Expose
     private String modhash;
+
     @SerializedName("dist")
     @Expose
     private int dist;
+
     @SerializedName("children")
     @Expose
     private List<Child> children = null;
+
     @SerializedName("after")
     @Expose
     private String after;
+
     @SerializedName("before")
     @Expose
     private String before;

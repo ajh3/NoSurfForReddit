@@ -24,7 +24,7 @@
             android:padding="5dp" />
 
         <View
-            android:id="@+id/link_post_fragment_first_divider"
+            android:id="@+id/link_post_fragment_divider_under_title"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
@@ -38,7 +38,7 @@
             android:padding="10dp" />
 
         <View
-            android:id="@+id/link_post_fragment_second_divider"
+            android:id="@+id/link_post_fragment_divider_under_first_comment"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
@@ -53,7 +53,7 @@
             android:padding="10dp" />
 
         <View
-            android:id="@+id/link_post_fragment_third_divider"
+            android:id="@+id/link_post_fragment_divider_under_second_comment"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"

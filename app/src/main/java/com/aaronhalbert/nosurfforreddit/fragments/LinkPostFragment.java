@@ -20,6 +20,8 @@ import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
@@ -95,12 +97,17 @@ public class LinkPostFragment extends Fragment {
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
         TextView t = v.findViewById(R.id.link_post_fragment_title);
-        firstComment = v.findViewById(R.id.link_post_fragment_first_comment);
-        secondComment = v.findViewById(R.id.link_post_fragment_second_comment);
-        thirdComment = v.findViewById(R.id.link_post_fragment_third_comment);
 
-        secondDivider = v.findViewById(R.id.link_post_fragment_second_divider);
-        thirdDivider = v.findViewById(R.id.link_post_fragment_third_divider);
+        final TextView[] comments = new TextView[3];
+
+        comments[0] = v.findViewById(R.id.link_post_fragment_first_comment);
+        comments[1] = v.findViewById(R.id.link_post_fragment_second_comment);
+        comments[2] = v.findViewById(R.id.link_post_fragment_third_comment);
+
+        final View[] dividers = new View[2];
+
+        dividers[0] = v.findViewById(R.id.link_post_fragment_divider_under_first_comment);
+        dividers[1] = v.findViewById(R.id.link_post_fragment_divider_under_second_comment);
 
         GlideApp.with(this)
                 .load(imageUrl)
@@ -123,13 +130,16 @@ public class LinkPostFragment extends Fragment {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
                 if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
-                    Log.e(getClass().toString(), "they are equal");
-                    firstComment.setText(commentListing.get(1).getData().getChildren().get(0).getData().getBody());
-                    secondComment.setText(commentListing.get(1).getData().getChildren().get(1).getData().getBody());
-                    thirdComment.setText(commentListing.get(1).getData().getChildren().get(2).getData().getBody());
+                    int numComments = commentListing.get(1).getData().getChildren().size();
+                    if (numComments > 3) numComments = 3;
 
-                    secondDivider.setVisibility(View.VISIBLE);
-                    thirdDivider.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < numComments; i++) {
+                        comments[i].setText(commentListing.get(1).getData().getChildren().get(i).getData().getBody());
+                    }
+
+                    for (int i = 0; i < (numComments - 1); i++) {
+                        dividers[i].setVisibility(View.VISIBLE);
+                    }
                 }
                 //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
             }
