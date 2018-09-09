@@ -71,7 +71,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(i))
                 .centerCrop()
-                .placeholder(R.drawable.textposticon64)
                 .into(postHolder.thumbnail);
     }
 
@@ -182,7 +181,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getData()
                 .getThumbnail();
 
-        return decodeUrl(encodedThumbnail);
+        if (encodedThumbnail.equals("default")) {
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_128";
+        } else if (encodedThumbnail.equals("self")) {
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_thumbnail_128";
+        } else if (encodedThumbnail.equals("nsfw")) {
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_128";
+        } else {
+            return decodeUrl(encodedThumbnail);
+        }
     }
 
     private boolean getCurrentRedditListingObjectIsSelf(int i) {
@@ -208,19 +215,22 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     private String getCurrentRedditListingObjectImageUrl(int i) {
 
-        String encodedImageUrl = currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getPreview()
-                .getImages()
-                .get(0)
-                .getSource()
-                .getUrl();
+        if (currentListing.getData().getChildren().get(i).getData().getPreview() == null) {
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_512";
+        } else {
+            String encodedImageUrl = currentListing
+                    .getData()
+                    .getChildren()
+                    .get(i)
+                    .getData()
+                    .getPreview()
+                    .getImages()
+                    .get(0)
+                    .getSource()
+                    .getUrl();
 
-        return decodeUrl(encodedImageUrl);
-
+            return decodeUrl(encodedImageUrl);
+        }
     }
 
     private String getCurrentRedditListingObjectSelfText(int i) {
