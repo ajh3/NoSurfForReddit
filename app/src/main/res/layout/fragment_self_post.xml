@@ -22,7 +22,7 @@
             android:id="@+id/self_post_fragment_selftext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:padding="5dp" />
 
         <View
