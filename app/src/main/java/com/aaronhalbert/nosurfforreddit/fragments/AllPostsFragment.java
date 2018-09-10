@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,8 +83,9 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         });
 
-        rv = Objects.requireNonNull(getView()).findViewById(R.id.all_posts_fragment_recyclerview);
+        rv = getView().findViewById(R.id.all_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));
         rv.setHasFixedSize(true);
 
