@@ -8,7 +8,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.menu_link_and_self_post_fragments.runner.AndroidJUnitRunner"
         vectorDrawables.generatedDensities = ['hdpi', 'xxhdpi']
     }
     buildTypes {
@@ -37,8 +37,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.menu_link_and_self_post_fragments:runner:1.0.2'
+    androidTestImplementation 'com.android.support.menu_link_and_self_post_fragments.espresso:espresso-core:3.0.2'
 
 
 }

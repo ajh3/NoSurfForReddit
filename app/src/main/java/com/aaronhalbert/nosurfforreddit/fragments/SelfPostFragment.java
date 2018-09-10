@@ -8,6 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -65,6 +68,7 @@ public class SelfPostFragment extends Fragment {
             selfText = getArguments().getString(KEY_SELFTEXT);
             id = getArguments().getString(KEY_ID);
         }
+        setHasOptionsMenu(true);
     }
 
 
@@ -119,5 +123,22 @@ public class SelfPostFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_link_and_self_post_fragments, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                return true;
+            case R.id.about:
+                return true;
+        }
+        return (super.onOptionsItemSelected(item)); //what does this do?
     }
 }

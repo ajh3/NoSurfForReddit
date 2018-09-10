@@ -1,16 +1,15 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +37,7 @@ public class ViewPagerFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     public static ViewPagerFragment newInstance(String param1, String param2) {
         ViewPagerFragment fragment = new ViewPagerFragment();
         Bundle args = new Bundle();
@@ -56,6 +56,7 @@ public class ViewPagerFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
 
     }
 
@@ -82,6 +83,9 @@ public class ViewPagerFragment extends Fragment {
         tabs.setTabMode(TabLayout.MODE_FIXED);
 
     }
+
+
+
 
 /*
 

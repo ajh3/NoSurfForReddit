@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -79,6 +82,7 @@ public class LinkPostFragment extends Fragment {
             id = getArguments().getString(KEY_ID);
 
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -147,6 +151,23 @@ public class LinkPostFragment extends Fragment {
         if (mListener != null) {
             mListener.launchWebView(url);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_link_and_self_post_fragments, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                return true;
+            case R.id.about:
+                return true;
+        }
+        return (super.onOptionsItemSelected(item)); //what does this do?
     }
 
     @Override
