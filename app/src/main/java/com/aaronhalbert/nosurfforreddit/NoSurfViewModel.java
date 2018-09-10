@@ -62,7 +62,7 @@ public class NoSurfViewModel extends AndroidViewModel {
             requestAllSubredditsListing();
             requestHomeSubredditsListing();
         } else {
-            repository.requestAppOnlyOAuthToken();
+            repository.requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
         }
     }
 

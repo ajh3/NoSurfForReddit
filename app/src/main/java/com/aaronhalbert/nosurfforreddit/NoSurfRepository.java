@@ -65,10 +65,12 @@ public class NoSurfRepository {
     }
 
     /* Called if the user has never logged in before, so user can browse /r/all */
+    /* Also called to "refresh" the app-only token, there is no separate method */
 
-    public void requestAppOnlyOAuthToken() {
+    public void requestAppOnlyOAuthToken(final String callback, final String id) {
         ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, authHeader)
                 .enqueue(new Callback<AppOnlyOAuthToken>() {
+
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
                 String appOnlyAccessToken = response.body().getAccessToken();
@@ -79,7 +81,16 @@ public class NoSurfRepository {
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
                         .apply();
 
-                requestAllSubredditsListing(true);
+                switch (callback) {
+                    case "requestAllSubredditsListing":
+                        requestAllSubredditsListing(false);
+                        break;
+                    case "requestPostCommentsListing":
+                        requestPostCommentsListing(id, false);
+                        break;
+                    case "":
+                        break;
+                }
             }
 
             @Override
@@ -115,7 +126,7 @@ public class NoSurfRepository {
         });
     }
 
-    public void refreshExpiredUserOAuthToken() {
+    private void refreshExpiredUserOAuthToken(final String callback, final String id) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
         String userAccessRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
 
@@ -131,6 +142,18 @@ public class NoSurfRepository {
                         .edit()
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
                         .apply();
+
+                switch (callback) {
+                    case "requestAllSubredditsListing":
+                        requestAllSubredditsListing(true);
+                        break;
+                    case "requestHomeSubredditsListing":
+                        requestHomeSubredditsListing(true);
+                        break;
+                    case "requestPostCommentsListing":
+                        requestPostCommentsListing(id, true);
+                        break;
+                }
             }
 
             @Override
@@ -140,9 +163,11 @@ public class NoSurfRepository {
         });
     }
 
-    public void requestAllSubredditsListing(boolean isUserLoggedIn) {
+    /* Can be called when user is logged in or out */
+
+    public void requestAllSubredditsListing(final boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        String accessToken;
+        final String accessToken;
         String bearerAuth;
 
         if (isUserLoggedIn) {
@@ -156,9 +181,10 @@ public class NoSurfRepository {
         ri.requestAllSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-                if (response.code() == 401) {
-                    refreshExpiredUserOAuthToken();
-                    requestAllSubredditsListing(true);
+                if ((response.code() == 401) && (isUserLoggedIn)) {
+                    refreshExpiredUserOAuthToken("requestAllSubredditsListing", null);
+                } else if ((response.code() == 401) && (!isUserLoggedIn)) {
+                    requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -171,11 +197,11 @@ public class NoSurfRepository {
         });
     }
 
-    /* Should only be called when user is logged in */
+    /* Should only run when user is logged in */
 
-    public void requestHomeSubredditsListing(boolean isUserLoggedIn) {
+    public void requestHomeSubredditsListing(final boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+        final String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String bearerAuth = "Bearer " + userAccessToken;
 
         if (isUserLoggedIn) {
@@ -183,8 +209,7 @@ public class NoSurfRepository {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == 401) {
-                        refreshExpiredUserOAuthToken();
-                        requestAllSubredditsListing(true);
+                        refreshExpiredUserOAuthToken("requestHomeSubredditsListing", null);
                     } else {
                         homePostsLiveData.setValue(response.body());
                     }
@@ -200,7 +225,9 @@ public class NoSurfRepository {
         }
     }
 
-    public void requestPostCommentsListing(String id, boolean isUserLoggedIn) {
+    /* Can be called when user is logged in or out */
+
+    public void requestPostCommentsListing(final String id, final boolean isUserLoggedIn) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
         String accessToken;
         String bearerAuth;
@@ -216,9 +243,10 @@ public class NoSurfRepository {
         ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                if (response.code() == 401) {
-                    refreshExpiredUserOAuthToken();
-                    requestAllSubredditsListing(true);
+                if ((response.code() == 401) && (isUserLoggedIn)) {
+                    refreshExpiredUserOAuthToken("requestPostCommentsListing", id);
+                } else if ((response.code() == 401) && (!isUserLoggedIn)) {
+                    requestAppOnlyOAuthToken("requestPostCommentsListing", id);
                 } else {
                     commentsLiveData.setValue(response.body());
                 }
