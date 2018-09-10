@@ -67,7 +67,8 @@ public class NoSurfRepository {
     /* Called if the user has never logged in before, so user can browse /r/all */
 
     public void requestAppOnlyOAuthToken() {
-        ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, authHeader).enqueue(new Callback<AppOnlyOAuthToken>() {
+        ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, authHeader)
+                .enqueue(new Callback<AppOnlyOAuthToken>() {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
                 String appOnlyAccessToken = response.body().getAccessToken();
@@ -89,7 +90,8 @@ public class NoSurfRepository {
     }
 
     public void requestUserOAuthToken(String code) {
-        ri.requestUserOAuthToken(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, authHeader).enqueue(new Callback<UserOAuthToken>() {
+        ri.requestUserOAuthToken(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, authHeader)
+                .enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
@@ -117,7 +119,8 @@ public class NoSurfRepository {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
         String userAccessRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
 
-        ri.refreshExpiredUserOAuthToken(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, authHeader).enqueue(new Callback<UserOAuthToken>() {
+        ri.refreshExpiredUserOAuthToken(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, authHeader)
+                .enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
@@ -153,7 +156,12 @@ public class NoSurfRepository {
         ri.requestAllSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-                allPostsLiveData.setValue(response.body());
+                if (response.code() == 401) {
+                    refreshExpiredUserOAuthToken();
+                    requestAllSubredditsListing(true);
+                } else {
+                    allPostsLiveData.setValue(response.body());
+                }
             }
 
             @Override
@@ -174,7 +182,12 @@ public class NoSurfRepository {
             ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
-                    homePostsLiveData.setValue(response.body());
+                    if (response.code() == 401) {
+                        refreshExpiredUserOAuthToken();
+                        requestAllSubredditsListing(true);
+                    } else {
+                        homePostsLiveData.setValue(response.body());
+                    }
                 }
 
                 @Override
@@ -203,7 +216,12 @@ public class NoSurfRepository {
         ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                commentsLiveData.setValue(response.body());
+                if (response.code() == 401) {
+                    refreshExpiredUserOAuthToken();
+                    requestAllSubredditsListing(true);
+                } else {
+                    commentsLiveData.setValue(response.body());
+                }
             }
 
             @Override
