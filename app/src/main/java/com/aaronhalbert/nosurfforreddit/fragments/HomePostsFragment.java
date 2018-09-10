@@ -88,7 +88,7 @@ public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.On
             }
         });
 
-        rv = Objects.requireNonNull(getView()).findViewById(R.id.home_posts_fragment_recyclerview);
+        rv = getView().findViewById(R.id.home_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));

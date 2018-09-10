@@ -33,7 +33,7 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return "/r/All";
         } else {
-            return "Home";
+            return "Your Subreddits";
         }
     }
 }
