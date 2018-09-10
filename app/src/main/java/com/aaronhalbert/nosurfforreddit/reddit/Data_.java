@@ -40,6 +40,10 @@ public class Data_ {
     @Expose
     private String selfText;
 
+    @SerializedName("selftext_html")
+    @Expose
+    private String selfTextHtml;
+
     @SerializedName("preview")
     @Expose
     private Preview preview;
@@ -95,6 +99,10 @@ public class Data_ {
 
     public String getSelfText() {
         return selfText;
+    }
+
+    public String getSelfTextHtml() {
+        return selfTextHtml;
     }
 
     public Preview getPreview() {

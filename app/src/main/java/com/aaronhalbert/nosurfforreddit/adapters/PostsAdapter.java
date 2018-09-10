@@ -243,6 +243,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     }
 
+    private String getCurrentRedditListingObjectSelfTextHtml(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getSelfTextHtml();
+
+    }
+
     private String getCurrentRedditListingObjectId(int i) {
         return currentListing
                 .getData()
