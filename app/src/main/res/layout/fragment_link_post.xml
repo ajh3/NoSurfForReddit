@@ -10,11 +10,6 @@
         android:orientation="vertical"
         tools:context=".fragments.LinkPostFragment">
 
-        <ImageView
-            android:id="@+id/link_post_fragment_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
         <TextView
             android:id="@+id/link_post_fragment_title"
             android:layout_width="match_parent"
@@ -23,13 +18,10 @@
             android:textStyle="bold"
             android:padding="5dp" />
 
-        <View
-            android:id="@+id/link_post_fragment_divider_under_title"
+        <ImageView
+            android:id="@+id/link_post_fragment_image"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
+            android:layout_height="200dp" />
 
         <TextView
             android:id="@+id/link_post_fragment_first_comment"
