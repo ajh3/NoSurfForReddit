@@ -146,7 +146,7 @@ public class LinkPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
-                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
                         } else {
                             String unescaped = Html.fromHtml(commentListing.get(1)
@@ -156,7 +156,7 @@ public class LinkPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml()).toString();
                             Spanned formatted = Html.fromHtml(unescaped);
-                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
                         }
                     }
@@ -171,17 +171,15 @@ public class LinkPostFragment extends Fragment {
         return v;
     }
 
-    CharSequence trimTrailingNewLines(CharSequence source) {
-
-        if(source == null)
-            return "";
+    CharSequence trimTrailingWhitespace(CharSequence source) {
+        if (source == null) return "";
 
         int i = source.length();
 
-        // loop back to the first non-whitespace character
-        while(--i >= 0 && Character.isWhitespace(source.charAt(i))) {
-        }
+        //decrement i and check if that character is whitespace
+        do { --i; } while (i >= 0 && Character.isWhitespace(source.charAt(i)));
 
+        //tick i up by 1 to return the full non-whitespace sequence
         return source.subSequence(0, i+1);
     }
 
