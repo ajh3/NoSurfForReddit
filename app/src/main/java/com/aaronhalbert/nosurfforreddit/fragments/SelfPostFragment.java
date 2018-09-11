@@ -3,9 +3,12 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +25,7 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
 
+import static android.text.Html.FROM_HTML_MODE_LEGACY;
 import static android.view.View.GONE;
 
 public class SelfPostFragment extends Fragment {
@@ -100,7 +104,17 @@ public class SelfPostFragment extends Fragment {
         if (selfText.isEmpty()) {
             st.setVisibility(GONE);
         } else {
-            st.setText(selfText);
+            if (Build.VERSION.SDK_INT >= 24) {
+                String unescaped = Html.fromHtml(selfText, FROM_HTML_MODE_LEGACY).toString();
+                Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
+                st.setText(formatted);
+            } else {
+                String unescaped = Html.fromHtml(selfText).toString();
+                Spanned formatted = Html.fromHtml(unescaped);
+                st.setText(formatted);
+            }
+
+
         }
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
@@ -112,7 +126,25 @@ public class SelfPostFragment extends Fragment {
                     if (numComments > 3) numComments = 3;
 
                     for (int i = 0; i < numComments; i++) {
-                        comments[i].setText(commentListing.get(1).getData().getChildren().get(i).getData().getBody());
+                        if (Build.VERSION.SDK_INT >= 24) {
+                            String unescaped = Html.fromHtml(commentListing.get(1)
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
+                            Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
+                            comments[i].setText(formatted);
+                        } else {
+                            String unescaped = Html.fromHtml(commentListing.get(1)
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getBodyHtml()).toString();
+                            Spanned formatted = Html.fromHtml(unescaped);
+                            comments[i].setText(formatted);
+                        }
                     }
 
                     for (int i = 0; i < (numComments - 1); i++) {

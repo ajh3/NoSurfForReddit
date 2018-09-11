@@ -104,7 +104,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
             if (currentPostType.equals("self")) {
                 recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
-                        getCurrentRedditListingObjectSelfText(i),
+                        getCurrentRedditListingObjectSelfTextHtml(i),
                         getCurrentRedditListingObjectId(i));
 
 

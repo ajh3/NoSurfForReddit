@@ -18,6 +18,14 @@
             android:textStyle="bold"
             android:padding="5dp" />
 
+        <View
+            android:id="@+id/self_post_fragment_divider_under_title"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
         <TextView
             android:id="@+id/self_post_fragment_selftext"
             android:layout_width="match_parent"
@@ -26,7 +34,7 @@
             android:padding="5dp" />
 
         <View
-            android:id="@+id/self_post_fragment_divider_under_title"
+            android:id="@+id/self_post_fragment_divider_under_selftext"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"

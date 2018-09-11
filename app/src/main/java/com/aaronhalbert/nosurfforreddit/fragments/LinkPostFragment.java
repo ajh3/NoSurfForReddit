@@ -3,9 +3,12 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +24,8 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
+
+import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -133,7 +138,25 @@ public class LinkPostFragment extends Fragment {
                     if (numComments > 3) numComments = 3;
 
                     for (int i = 0; i < numComments; i++) {
-                        comments[i].setText(commentListing.get(1).getData().getChildren().get(i).getData().getBody());
+                        if (Build.VERSION.SDK_INT >= 24) {
+                            String unescaped = Html.fromHtml(commentListing.get(1)
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
+                            Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
+                            comments[i].setText(formatted);
+                        } else {
+                            String unescaped = Html.fromHtml(commentListing.get(1)
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getBodyHtml()).toString();
+                            Spanned formatted = Html.fromHtml(unescaped);
+                            comments[i].setText(formatted);
+                        }
                     }
 
                     for (int i = 0; i < (numComments - 1); i++) {
