@@ -146,12 +146,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
 
     private String getCurrentRedditListingObjectTitle(int i) {
-        return currentListing
+        String title = currentListing
                 .getData()
                 .getChildren()
                 .get(i)
                 .getData()
                 .getTitle();
+
+        //decode post title in case it contains HTML special entities
+        String decodedTitle = decodeUrl(title);
+
+        return decodedTitle;
     }
 
     private String getCurrentRedditListingObjectSubreddit(int i) {
@@ -301,12 +306,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     }
 
     private String decodeUrl(String url) {
+        String decodedUrl;
+
         if (Build.VERSION.SDK_INT >= 24) {
-            url = (Html.fromHtml(url, Html.FROM_HTML_MODE_COMPACT)).toString();
+            decodedUrl = (Html.fromHtml(url, Html.FROM_HTML_MODE_LEGACY)).toString();
         } else {
-            url = (Html.fromHtml(url).toString());
+            decodedUrl = (Html.fromHtml(url).toString());
         }
-        return url;
+        return decodedUrl;
     }
 
 }
