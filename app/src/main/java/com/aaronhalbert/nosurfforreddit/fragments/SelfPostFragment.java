@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +28,8 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import java.util.List;
 
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
+import static android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
+import static android.text.Html.toHtml;
 import static android.view.View.GONE;
 
 public class SelfPostFragment extends Fragment {
@@ -107,11 +111,13 @@ public class SelfPostFragment extends Fragment {
             if (Build.VERSION.SDK_INT >= 24) {
                 String unescaped = Html.fromHtml(selfText, FROM_HTML_MODE_LEGACY).toString();
                 Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
-                st.setText(formatted);
+                Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                st.setText(trailingNewLinesStripped);
             } else {
                 String unescaped = Html.fromHtml(selfText).toString();
                 Spanned formatted = Html.fromHtml(unescaped);
-                st.setText(formatted);
+                Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                st.setText(trailingNewLinesStripped);
             }
 
 
@@ -134,7 +140,8 @@ public class SelfPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
-                            comments[i].setText(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            comments[i].setText(trailingNewLinesStripped);
                         } else {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
@@ -143,7 +150,8 @@ public class SelfPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml()).toString();
                             Spanned formatted = Html.fromHtml(unescaped);
-                            comments[i].setText(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            comments[i].setText(trailingNewLinesStripped);
                         }
                     }
 
@@ -155,6 +163,20 @@ public class SelfPostFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    CharSequence trimTrailingNewLines(CharSequence source) {
+
+        if(source == null)
+            return "";
+
+        int i = source.length();
+
+        // loop back to the first non-whitespace character
+        while(--i >= 0 && Character.isWhitespace(source.charAt(i))) {
+        }
+
+        return source.subSequence(0, i+1);
     }
 
     @Override

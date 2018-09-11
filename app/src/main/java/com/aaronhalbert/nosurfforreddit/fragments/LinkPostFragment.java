@@ -146,7 +146,8 @@ public class LinkPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
-                            comments[i].setText(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            comments[i].setText(trailingNewLinesStripped);
                         } else {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
@@ -155,7 +156,8 @@ public class LinkPostFragment extends Fragment {
                                     .getData()
                                     .getBodyHtml()).toString();
                             Spanned formatted = Html.fromHtml(unescaped);
-                            comments[i].setText(formatted);
+                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingNewLines(formatted);
+                            comments[i].setText(trailingNewLinesStripped);
                         }
                     }
 
@@ -167,6 +169,20 @@ public class LinkPostFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    CharSequence trimTrailingNewLines(CharSequence source) {
+
+        if(source == null)
+            return "";
+
+        int i = source.length();
+
+        // loop back to the first non-whitespace character
+        while(--i >= 0 && Character.isWhitespace(source.charAt(i))) {
+        }
+
+        return source.subSequence(0, i+1);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
