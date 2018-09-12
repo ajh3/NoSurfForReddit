@@ -104,6 +104,8 @@ public class SelfPostFragment extends Fragment {
         TextView t = v.findViewById(R.id.self_post_fragment_title);
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
 
+        View dividerUnderSelftext = v.findViewById(R.id.self_post_fragment_divider_under_selftext);
+
         final TextView[] comments = new TextView[3];
 
         comments[0] = v.findViewById(R.id.self_post_fragment_first_comment);
@@ -117,8 +119,9 @@ public class SelfPostFragment extends Fragment {
 
         t.setText(title);
 
-        if (selfText.isEmpty()) {
+        if ((selfText == null) || selfText.isEmpty()) {
             st.setVisibility(GONE);
+            dividerUnderSelftext.setVisibility(GONE);
         } else {
             if (Build.VERSION.SDK_INT >= 24) {
                 String unescaped = Html.fromHtml(selfText, FROM_HTML_MODE_LEGACY).toString();
