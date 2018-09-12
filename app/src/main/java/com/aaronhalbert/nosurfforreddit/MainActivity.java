@@ -73,12 +73,12 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
     }
 
 
-    public void launchSelfPost(String title, String selfText, String id) {
+    public void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score) {
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText, id))
+                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText, id, subreddit, author, score))
                 .addToBackStack(null)
                 .commit();
     }

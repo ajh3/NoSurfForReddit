@@ -38,11 +38,17 @@ public class SelfPostFragment extends Fragment {
     private static final String KEY_TITLE = "title";
     private static final String KEY_SELFTEXT = "selfText";
     private static final String KEY_ID = "id";
+    private static final String KEY_SUBREDDIT = "subreddit";
+    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_SCORE = "score";
 
     // TODO: Rename and change types of parameters
     private String title;
     private String selfText;
     private String id;
+    private String subreddit;
+    private String author;
+    private int score;
 
     NoSurfViewModel viewModel = null;
 
@@ -58,12 +64,15 @@ public class SelfPostFragment extends Fragment {
     }
 
     // TODO: Rename and change types and number of parameters
-    public static SelfPostFragment newInstance(String title, String selfText, String id) {
+    public static SelfPostFragment newInstance(String title, String selfText, String id, String subreddit, String author, int score) {
         SelfPostFragment fragment = new SelfPostFragment();
         Bundle args = new Bundle();
         args.putString(KEY_TITLE, title);
         args.putString(KEY_SELFTEXT, selfText);
         args.putString(KEY_ID, id);
+        args.putString(KEY_SUBREDDIT, subreddit);
+        args.putString(KEY_AUTHOR, author);
+        args.putInt(KEY_SCORE, score);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,6 +84,9 @@ public class SelfPostFragment extends Fragment {
             title = getArguments().getString(KEY_TITLE);
             selfText = getArguments().getString(KEY_SELFTEXT);
             id = getArguments().getString(KEY_ID);
+            subreddit = getArguments().getString(KEY_SUBREDDIT);
+            author = getArguments().getString(KEY_AUTHOR);
+            score = getArguments().getInt(KEY_SCORE);
         }
         setHasOptionsMenu(true);
     }

@@ -59,14 +59,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
         postHolder.title.setText(getCurrentRedditListingObjectTitle(i));
 
-        postHolder.subreddit.setText(context.getString(R.string.subreddit_abbreviation,
-                getCurrentRedditListingObjectSubreddit(i)));
+        String details = context.getString(R.string.subreddit_abbreviation, getCurrentRedditListingObjectSubreddit(i))
+                + context.getString(R.string.score, getCurrentRedditListingObjectScore(i))
+                + context.getString(R.string.num_comments, getCurrentRedditListingObjectNumComments(i));
 
-        postHolder.score.setText(context.getString(R.string.score,
-                getCurrentRedditListingObjectScore(i)));
-
-        postHolder.numComments.setText(context.getString(R.string.num_comments,
-                getCurrentRedditListingObjectNumComments(i)));
+        postHolder.details.setText(details);
 
         GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(i))
@@ -76,19 +73,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title = null;
-        TextView subreddit = null;
-        TextView score = null;
-        TextView numComments = null;
+        TextView details = null;
         ImageView thumbnail = null;
 
         PostHolder(View itemView) {
             super(itemView);
 
             title = itemView.findViewById(R.id.title);
-            subreddit = itemView.findViewById(R.id.subreddit);
-            score = itemView.findViewById(R.id.score);
+            details = itemView.findViewById(R.id.details);
             thumbnail = itemView.findViewById(R.id.thumbnail);
-            numComments = itemView.findViewById(R.id.num_comments);
 
             itemView.setOnClickListener(this);
 
@@ -105,7 +98,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             if (currentPostType.equals("self")) {
                 recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
                         getCurrentRedditListingObjectSelfTextHtml(i),
-                        getCurrentRedditListingObjectId(i));
+                        getCurrentRedditListingObjectId(i),
+                        getCurrentRedditListingObjectSubreddit(i),
+                        getCurrentRedditListingObjectAuthor(i),
+                        getCurrentRedditListingObjectScore(i));
 
 
             } else {
@@ -140,7 +136,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
-        void launchSelfPost(String title, String selfText, String id);
+        void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
         void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id);
     }
 
@@ -154,9 +150,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getTitle();
 
         //decode post title in case it contains HTML special entities
-        String decodedTitle = decodeUrl(title);
-
-        return decodedTitle;
+        return decodeUrl(title);
     }
 
     private String getCurrentRedditListingObjectSubreddit(int i) {
@@ -275,6 +269,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .get(i)
                 .getData()
                 .getNumComments();
+    }
+
+    private String getCurrentRedditListingObjectAuthor(int i) {
+        return currentListing
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getAuthor();
     }
 
     private String getCurrentPostType(int i) {
