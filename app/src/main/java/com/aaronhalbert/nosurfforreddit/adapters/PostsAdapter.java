@@ -109,7 +109,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                         getCurrentRedditListingObjectImageUrl(i),
                         getCurrentRedditListingObjectUrl(i),
                         null,
-                        getCurrentRedditListingObjectId(i));
+                        getCurrentRedditListingObjectId(i),
+                        getCurrentRedditListingObjectSubreddit(i),
+                        getCurrentRedditListingObjectAuthor(i),
+                        getCurrentRedditListingObjectScore(i));
             }
 
             /* TODO: finish this after implementing API access for imgur, gfycat
@@ -137,7 +140,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
         void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
-        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id);
+        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score);
     }
 
 

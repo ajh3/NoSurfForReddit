@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements LinkPostFragment.
                 .commit();
     }
 
-    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id) {
+    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score) {
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl, id))
+                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl, id, subreddit, author, score))
                 .addToBackStack(null)
                 .commit();
     }

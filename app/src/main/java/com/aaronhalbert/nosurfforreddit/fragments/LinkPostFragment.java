@@ -41,12 +41,18 @@ public class LinkPostFragment extends Fragment {
     private static final String KEY_URL = "url";
     private static final String KEY_GIF_URL = "gifUrl";
     private static final String KEY_ID = "id";
+    private static final String KEY_SUBREDDIT = "subreddit";
+    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_SCORE = "score";
 
     private String title;
     private String imageUrl;
     private String url;
     private String gifUrl;
     private String id;
+    private String subreddit;
+    private String author;
+    private int score;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +70,7 @@ public class LinkPostFragment extends Fragment {
     }
 
 
-    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl, String id) {
+    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score) {
         LinkPostFragment fragment = new LinkPostFragment();
         Bundle args = new Bundle();
         args.putString(KEY_TITLE, title);
@@ -72,6 +78,10 @@ public class LinkPostFragment extends Fragment {
         args.putString(KEY_URL, url);
         args.putString(KEY_GIF_URL, gifUrl);
         args.putString(KEY_ID, id);
+        args.putString(KEY_SUBREDDIT, subreddit);
+        args.putString(KEY_AUTHOR, author);
+        args.putInt(KEY_SCORE, score);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -85,6 +95,9 @@ public class LinkPostFragment extends Fragment {
             url = getArguments().getString(KEY_URL);
             gifUrl = getArguments().getString(KEY_GIF_URL);
             id = getArguments().getString(KEY_ID);
+            subreddit = getArguments().getString(KEY_SUBREDDIT);
+            author = getArguments().getString(KEY_AUTHOR);
+            score = getArguments().getInt(KEY_SCORE);
 
         }
         setHasOptionsMenu(true);
@@ -101,6 +114,7 @@ public class LinkPostFragment extends Fragment {
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
         TextView t = v.findViewById(R.id.link_post_fragment_title);
+        TextView details = v.findViewById(R.id.link_post_fragment_post_details);
 
         final TextView[] comments = new TextView[3];
 
@@ -119,6 +133,9 @@ public class LinkPostFragment extends Fragment {
                 .into(iv);
 
         t.setText(title);
+
+        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score + " points";
+        details.setText(postDetails);
 
         iv.setOnClickListener(new View.OnClickListener() {
 

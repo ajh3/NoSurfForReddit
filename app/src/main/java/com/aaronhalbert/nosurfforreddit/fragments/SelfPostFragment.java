@@ -103,6 +103,7 @@ public class SelfPostFragment extends Fragment {
 
         TextView t = v.findViewById(R.id.self_post_fragment_title);
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
+        TextView details = v.findViewById(R.id.self_post_fragment_post_details);
 
         View dividerUnderSelftext = v.findViewById(R.id.self_post_fragment_divider_under_selftext);
 
@@ -118,6 +119,9 @@ public class SelfPostFragment extends Fragment {
         dividers[1] = v.findViewById(R.id.self_post_fragment_divider_under_second_comment);
 
         t.setText(title);
+
+        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score + " points";
+        details.setText(postDetails);
 
         if ((selfText == null) || selfText.isEmpty()) { //why does IDE complain when conditions are put in opposite order?
             st.setVisibility(GONE);
