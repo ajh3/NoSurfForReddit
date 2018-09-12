@@ -13,7 +13,7 @@
             android:id="@+id/link_post_fragment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
