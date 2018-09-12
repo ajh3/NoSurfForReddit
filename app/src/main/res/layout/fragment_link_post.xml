@@ -16,14 +16,12 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:padding="5dp"
-
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/link_post_fragment_image"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_title"/>
 
         <TextView
@@ -31,7 +29,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_image"/>
 
         <View
@@ -42,7 +39,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:visibility="gone"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_first_comment"/>
 
         <TextView
@@ -50,7 +46,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_divider_under_first_comment"/>
 
         <View
@@ -61,7 +56,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:visibility="gone"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_second_comment"/>
 
         <TextView
@@ -69,7 +63,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-
             app:layout_constraintTop_toBottomOf="@id/link_post_fragment_divider_under_second_comment"/>
 
     </android.support.constraint.ConstraintLayout>
