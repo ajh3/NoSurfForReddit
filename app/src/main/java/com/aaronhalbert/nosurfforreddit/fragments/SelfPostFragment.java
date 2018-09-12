@@ -119,7 +119,7 @@ public class SelfPostFragment extends Fragment {
 
         t.setText(title);
 
-        if ((selfText == null) || selfText.isEmpty()) {
+        if ((selfText == null) || selfText.isEmpty()) { //why does IDE complain when conditions are put in opposite order?
             st.setVisibility(GONE);
             dividerUnderSelftext.setVisibility(GONE);
         } else {
