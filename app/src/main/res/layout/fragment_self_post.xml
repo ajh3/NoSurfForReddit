@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
-            android:id="@+id/self_post_fragment_post_details"
+            android:id="@+id/self_post_fragment_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="5dp"
@@ -34,15 +34,14 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_post_details"/>
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_details"/>
 
         <TextView
             android:id="@+id/self_post_fragment_selftext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_title"/>
 
         <View
@@ -50,16 +49,27 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/self_post_fragment_selftext"/>
+
+        <TextView
+            android:id="@+id/self_post_fragment_first_comment_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_selftext"/>
 
         <TextView
             android:id="@+id/self_post_fragment_first_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_selftext"/>
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_first_comment_details"/>
 
         <View
             android:id="@+id/self_post_fragment_divider_under_first_comment"
@@ -72,11 +82,23 @@
             app:layout_constraintTop_toBottomOf="@id/self_post_fragment_first_comment"/>
 
         <TextView
+            android:id="@+id/self_post_fragment_second_comment_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_first_comment"/>
+
+        <TextView
             android:id="@+id/self_post_fragment_second_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_first_comment"/>
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_second_comment_details"/>
 
         <View
             android:id="@+id/self_post_fragment_divider_under_second_comment"
@@ -89,11 +111,23 @@
             app:layout_constraintTop_toBottomOf="@id/self_post_fragment_second_comment"/>
 
         <TextView
+            android:id="@+id/self_post_fragment_third_comment_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_second_comment"/>
+
+        <TextView
             android:id="@+id/self_post_fragment_third_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_divider_under_second_comment"/>
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/self_post_fragment_third_comment_details"/>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

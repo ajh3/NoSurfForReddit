@@ -114,7 +114,7 @@ public class LinkPostFragment extends Fragment {
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
         TextView t = v.findViewById(R.id.link_post_fragment_title);
-        TextView details = v.findViewById(R.id.link_post_fragment_post_details);
+        TextView details = v.findViewById(R.id.link_post_fragment_details);
 
         final TextView[] comments = new TextView[3];
 
@@ -122,10 +122,18 @@ public class LinkPostFragment extends Fragment {
         comments[1] = v.findViewById(R.id.link_post_fragment_second_comment);
         comments[2] = v.findViewById(R.id.link_post_fragment_third_comment);
 
+        final TextView[] commentsDetails = new TextView[3];
+
+        commentsDetails[0] = v.findViewById(R.id.link_post_fragment_first_comment_details);
+        commentsDetails[1] = v.findViewById(R.id.link_post_fragment_second_comment_details);
+        commentsDetails[2] = v.findViewById(R.id.link_post_fragment_third_comment_details);
+
         final View[] dividers = new View[2];
 
         dividers[0] = v.findViewById(R.id.link_post_fragment_divider_under_first_comment);
         dividers[1] = v.findViewById(R.id.link_post_fragment_divider_under_second_comment);
+
+        final View dividerUnderImage = v.findViewById(R.id.link_post_fragment_divider_under_image);
 
         GlideApp.with(this)
                 .load(imageUrl)
@@ -134,9 +142,10 @@ public class LinkPostFragment extends Fragment {
 
         t.setText(title);
 
-        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score + " points";
+        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score;
         details.setText(postDetails);
 
+        //TODO: launch in external browser?
         iv.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -165,6 +174,15 @@ public class LinkPostFragment extends Fragment {
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
                             Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
+                            comments[i].setVisibility(View.VISIBLE);
+
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+
+                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+
+                            commentsDetails[i].setText(commentDetails);
+                            commentsDetails[i].setVisibility(View.VISIBLE);
                         } else {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
@@ -175,7 +193,20 @@ public class LinkPostFragment extends Fragment {
                             Spanned formatted = Html.fromHtml(unescaped);
                             Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
+                            comments[i].setVisibility(View.VISIBLE);
+
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+
+                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+
+                            commentsDetails[i].setText(commentDetails);
+                            commentsDetails[i].setVisibility(View.VISIBLE);
                         }
+                    }
+
+                    if (numComments > 0) {
+                        dividerUnderImage.setVisibility(View.VISIBLE);
                     }
 
                     for (int i = 0; i < (numComments - 1); i++) {

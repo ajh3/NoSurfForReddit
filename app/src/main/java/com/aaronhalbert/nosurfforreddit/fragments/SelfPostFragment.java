@@ -103,15 +103,21 @@ public class SelfPostFragment extends Fragment {
 
         TextView t = v.findViewById(R.id.self_post_fragment_title);
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
-        TextView details = v.findViewById(R.id.self_post_fragment_post_details);
+        TextView details = v.findViewById(R.id.self_post_fragment_details);
 
-        View dividerUnderSelftext = v.findViewById(R.id.self_post_fragment_divider_under_selftext);
+        final View dividerUnderSelftext = v.findViewById(R.id.self_post_fragment_divider_under_selftext);
 
         final TextView[] comments = new TextView[3];
 
         comments[0] = v.findViewById(R.id.self_post_fragment_first_comment);
         comments[1] = v.findViewById(R.id.self_post_fragment_second_comment);
         comments[2] = v.findViewById(R.id.self_post_fragment_third_comment);
+
+        final TextView[] commentsDetails = new TextView[3];
+
+        commentsDetails[0] = v.findViewById(R.id.self_post_fragment_first_comment_details);
+        commentsDetails[1] = v.findViewById(R.id.self_post_fragment_second_comment_details);
+        commentsDetails[2] = v.findViewById(R.id.self_post_fragment_third_comment_details);
 
         final View[] dividers = new View[2];
 
@@ -120,26 +126,26 @@ public class SelfPostFragment extends Fragment {
 
         t.setText(title);
 
-        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score + " points";
+        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score;
         details.setText(postDetails);
 
-        if ((selfText == null) || selfText.isEmpty()) { //why does IDE complain when conditions are put in opposite order?
-            st.setVisibility(GONE);
-            dividerUnderSelftext.setVisibility(GONE);
-        } else {
+        if (!(selfText == null) && !(selfText.isEmpty())) {
             if (Build.VERSION.SDK_INT >= 24) {
+
                 String unescaped = Html.fromHtml(selfText, FROM_HTML_MODE_LEGACY).toString();
                 Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
                 Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                 st.setText(trailingNewLinesStripped);
+                st.setVisibility(View.VISIBLE);
+
             } else {
+
                 String unescaped = Html.fromHtml(selfText).toString();
                 Spanned formatted = Html.fromHtml(unescaped);
                 Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                 st.setText(trailingNewLinesStripped);
+                st.setVisibility(View.VISIBLE);
             }
-
-
         }
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
@@ -149,6 +155,8 @@ public class SelfPostFragment extends Fragment {
                 if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
                     int numComments = commentListing.get(1).getData().getChildren().size();
                     if (numComments > 3) numComments = 3;
+
+                    if ((numComments > 0) && !(selfText == null) && !(selfText.isEmpty())) dividerUnderSelftext.setVisibility(View.VISIBLE);
 
                     for (int i = 0; i < numComments; i++) {
                         if (Build.VERSION.SDK_INT >= 24) {
@@ -161,6 +169,15 @@ public class SelfPostFragment extends Fragment {
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
                             Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
+                            comments[i].setVisibility(View.VISIBLE);
+
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+
+                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+
+                            commentsDetails[i].setText(commentDetails);
+                            commentsDetails[i].setVisibility(View.VISIBLE);
                         } else {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
@@ -171,6 +188,15 @@ public class SelfPostFragment extends Fragment {
                             Spanned formatted = Html.fromHtml(unescaped);
                             Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
                             comments[i].setText(trailingNewLinesStripped);
+                            comments[i].setVisibility(View.VISIBLE);
+
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+
+                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+
+                            commentsDetails[i].setText(commentDetails);
+                            commentsDetails[i].setVisibility(View.VISIBLE);
                         }
                     }
 
