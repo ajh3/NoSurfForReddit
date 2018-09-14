@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,9 +9,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +18,7 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
-public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -35,14 +31,12 @@ public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.On
 
     NoSurfViewModel viewModel = null;
 
-    private HomePostsLoginCallback mListener;
-
-    public HomePostsFragment() {
+    public SubscribedPostsFragment() {
         // Required empty public constructor
     }
 
-    public static HomePostsFragment newInstance(String param1, String param2) {
-        HomePostsFragment fragment = new HomePostsFragment();
+    public static SubscribedPostsFragment newInstance(String param1, String param2) {
+        SubscribedPostsFragment fragment = new SubscribedPostsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -57,14 +51,13 @@ public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.On
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        setHasOptionsMenu(true);
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home_posts, container, false);
+        return inflater.inflate(R.layout.fragment_subscribed_posts, container, false);
     }
 
     @Override
@@ -97,28 +90,13 @@ public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.On
         swipeRefreshLayout = getView().findViewById(R.id.home_posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh:
-                onRefresh();
-                return true;
-            case R.id.settings:
-                //launchPreferences();
-                return true;
-            case R.id.about:
-                return true;
+        if (!viewModel.isUserLoggedIn()) {
+            //getChildFragmentManager().beginTransaction().add(SubscribedPostsForkFragment.newInstance("a", "b")).addToBackStack(null).commit();
         }
-        return (super.onOptionsItemSelected(item)); //what does this do?
+
     }
+
+
 
     @Override
     public void onRefresh() {
@@ -126,34 +104,5 @@ public class HomePostsFragment extends Fragment implements SwipeRefreshLayout.On
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void launchLoginScreen() {
-        if (mListener != null) {
-            mListener.launchLoginScreen();
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof HomePostsFragment.HomePostsLoginCallback) {
-            mListener = (HomePostsFragment.HomePostsLoginCallback) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement HomePostsLoginCallback");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    //TODO make sure this is implemented where it needs to be
-    public interface HomePostsLoginCallback {
-        void launchLoginScreen();
-
-    }
 
 }

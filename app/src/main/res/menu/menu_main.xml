@@ -10,17 +10,24 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/login"
+        android:title="@string/login"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/settings"
-        android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/settings"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/about"
-        android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/about"
         app:showAsAction="never"/>
-
 
 
 </menu>

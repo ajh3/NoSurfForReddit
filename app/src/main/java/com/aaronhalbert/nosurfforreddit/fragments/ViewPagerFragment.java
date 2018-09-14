@@ -1,11 +1,15 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
@@ -31,7 +36,11 @@ public class ViewPagerFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    //private OnFragmentInteractionListener mListener;
+    ViewPager pager;
+
+    NoSurfViewModel viewModel = null;
+
+    private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
 
     public ViewPagerFragment() {
         // Required empty public constructor
@@ -57,6 +66,7 @@ public class ViewPagerFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
     }
 
@@ -74,64 +84,21 @@ public class ViewPagerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ViewPager pager = view.findViewById(R.id.view_pager_fragment_pager);
+        pager = view.findViewById(R.id.view_pager_fragment_pager);
+        Log.e(getClass().toString(), "pager assigned in VPF");
+
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
 
-        pager.setAdapter(new NoSurfFragmentPagerAdapter(getChildFragmentManager()));
+        pager.setAdapter(new NoSurfFragmentPagerAdapter(getChildFragmentManager(), viewModel));
+
 
         tabs.setupWithViewPager(pager);
         tabs.setTabMode(TabLayout.MODE_FIXED);
 
     }
 
+    public NoSurfFragmentPagerAdapter getNoSurfFragmentPagerAdapter() {
 
-
-
-/*
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        return (NoSurfFragmentPagerAdapter) pager.getAdapter();
     }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-
-        Log.e(getClass().toString(), "onAttach");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-*/
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
-/*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-*/
 }

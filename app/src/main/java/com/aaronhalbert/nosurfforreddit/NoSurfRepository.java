@@ -79,7 +79,7 @@ public class NoSurfRepository {
                 preferences
                         .edit()
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
-                        .apply();
+                        .commit();
 
                 switch (callback) {
                     case "requestAllSubredditsListing":
@@ -109,11 +109,17 @@ public class NoSurfRepository {
                 String userAccessRefreshToken = response.body().getRefreshToken();
                 SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
 
+                Log.e(getClass().toString(), "refresh token being written in: " + userAccessRefreshToken);
+
                 preferences
                         .edit()
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
-                        .apply();
+                        .commit();
+
+                String qwer = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
+
+                Log.e(getClass().toString(), "refresh token that was written in: " + qwer);
 
                 requestAllSubredditsListing(true);
                 requestHomeSubredditsListing(true);
@@ -141,7 +147,7 @@ public class NoSurfRepository {
                 preferences
                         .edit()
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
-                        .apply();
+                        .commit();
 
                 switch (callback) {
                     case "requestAllSubredditsListing":
