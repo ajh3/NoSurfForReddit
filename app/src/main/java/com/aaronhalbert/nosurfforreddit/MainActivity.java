@@ -57,13 +57,6 @@ public class MainActivity extends AppCompatActivity implements
                     .commit();
         }
 
-        viewModel.getUserOAuthRefreshTokenLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                viewPagerFragment.getNoSurfFragmentPagerAdapter().notifyDataSetChanged();
-            }
-        });
-
         Intent intent = getIntent();
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
 
