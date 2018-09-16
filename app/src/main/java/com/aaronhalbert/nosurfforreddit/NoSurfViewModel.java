@@ -6,7 +6,6 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.LiveData;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -18,7 +17,6 @@ public class NoSurfViewModel extends AndroidViewModel {
     private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
 
     private NoSurfRepository repository = NoSurfRepository.getInstance(getApplication());
-    private SharedPreferences preferences = getApplication().getSharedPreferences(getApplication().getPackageName() + "oauth", getApplication().MODE_PRIVATE);
 
     private final LiveData<Listing> allPostsLiveData =
             Transformations.switchMap(repository.getAllPostsLiveData(),
@@ -53,21 +51,19 @@ public class NoSurfViewModel extends AndroidViewModel {
                         }
                     });
 
+    private final LiveData<String> userOAuthRefreshTokenLiveData =
+            Transformations.switchMap(repository.getUserOAuthRefreshTokenLiveData(),
+                    new Function<String, LiveData<String>>() {
+                        @Override
+                        public LiveData<String> apply(String input) {
+                            final MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
+                            userOAuthRefreshTokenLiveData.setValue(input);
+                            return userOAuthRefreshTokenLiveData;
+                        }
+                    });
+
     public NoSurfViewModel(@NonNull Application application) {
         super(application);
-    }
-
-    public void initApp() {
-        if (isUserLoggedIn()) {
-            requestAllSubredditsListing();
-            requestHomeSubredditsListing();
-        } else {
-            repository.requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
-        }
-    }
-
-    public boolean isUserLoggedIn() {
-        return ((preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null)) != null);
     }
 
     public LiveData<Listing> getAllPostsLiveData() {
@@ -80,6 +76,27 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     public LiveData<List<Listing>> getCommentsLiveData() {
         return commentsLiveData;
+    }
+
+    public LiveData<String> getUserOAuthRefreshTokenLiveData() {
+        return userOAuthRefreshTokenLiveData;
+    }
+
+    public void initApp() {
+        repository.initializeTokensFromSharedPrefs();
+
+        if (isUserLoggedIn()) {
+            requestAllSubredditsListing();
+            requestHomeSubredditsListing();
+        } else {
+            repository.requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
+        }
+    }
+
+    public boolean isUserLoggedIn() {
+        String userOAuthRefreshToken = repository.getUserOAuthRefreshTokenLiveData().getValue();    // get straight from repository because the switchMap transformation seems to be asynchronous
+
+        return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
     }
 
     public void requestAllSubredditsListing() {
@@ -96,5 +113,9 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     public void requestUserOAuthToken(String code) {
         repository.requestUserOAuthToken(code);
+    }
+
+    public void logout() {
+        repository.logout();
     }
 }

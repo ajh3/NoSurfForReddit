@@ -133,8 +133,6 @@ public class LinkPostFragment extends Fragment {
         dividers[0] = v.findViewById(R.id.link_post_fragment_divider_under_first_comment);
         dividers[1] = v.findViewById(R.id.link_post_fragment_divider_under_second_comment);
 
-        final View dividerUnderImage = v.findViewById(R.id.link_post_fragment_divider_under_image);
-
         GlideApp.with(this)
                 .load(imageUrl)
                 .centerCrop()
@@ -203,10 +201,6 @@ public class LinkPostFragment extends Fragment {
                             commentsDetails[i].setText(commentDetails);
                             commentsDetails[i].setVisibility(View.VISIBLE);
                         }
-                    }
-
-                    if (numComments > 0) {
-                        dividerUnderImage.setVisibility(View.VISIBLE);
                     }
 
                     for (int i = 0; i < (numComments - 1); i++) {

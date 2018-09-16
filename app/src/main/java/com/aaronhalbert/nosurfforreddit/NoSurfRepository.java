@@ -34,13 +34,19 @@ public class NoSurfRepository {
     private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
     private static final String authHeader = okhttp3.Credentials.basic(CLIENT_ID, "");
 
+    String previousCommentId;
+
     private static NoSurfRepository repositoryInstance = null;
 
     private static Context context;
 
-    private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<Listing>();
-    private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<Listing>();
-    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<List<Listing>>();
+    private MutableLiveData<String> userOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
+    private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
+    private MutableLiveData<String> appOnlyOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
+
+    private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -76,10 +82,13 @@ public class NoSurfRepository {
                 String appOnlyAccessToken = response.body().getAccessToken();
                 SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
 
+                //"cache" token in a LiveData
+                appOnlyOAuthTokenLiveData.setValue(appOnlyAccessToken);
+
                 preferences
                         .edit()
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
-                        .commit();
+                        .apply();
 
                 switch (callback) {
                     case "requestAllSubredditsListing":
@@ -109,17 +118,15 @@ public class NoSurfRepository {
                 String userAccessRefreshToken = response.body().getRefreshToken();
                 SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
 
-                Log.e(getClass().toString(), "refresh token being written in: " + userAccessRefreshToken);
+                //"cache" tokens in a LiveData
+                userOAuthTokenLiveData.setValue(userAccessToken);
+                userOAuthRefreshTokenLiveData.setValue(userAccessRefreshToken);
 
                 preferences
                         .edit()
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
-                        .commit();
-
-                String qwer = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
-
-                Log.e(getClass().toString(), "refresh token that was written in: " + qwer);
+                        .apply();
 
                 requestAllSubredditsListing(true);
                 requestHomeSubredditsListing(true);
@@ -133,8 +140,7 @@ public class NoSurfRepository {
     }
 
     private void refreshExpiredUserOAuthToken(final String callback, final String id) {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        String userAccessRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
+        String userAccessRefreshToken = userOAuthRefreshTokenLiveData.getValue();
 
         ri.refreshExpiredUserOAuthToken(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, authHeader)
                 .enqueue(new Callback<UserOAuthToken>() {
@@ -144,10 +150,13 @@ public class NoSurfRepository {
 
                 SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
 
+                //"cache" token in a LiveData
+                userOAuthTokenLiveData.setValue(userAccessToken);
+
                 preferences
                         .edit()
                         .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
-                        .commit();
+                        .apply();
 
                 switch (callback) {
                     case "requestAllSubredditsListing":
@@ -172,15 +181,14 @@ public class NoSurfRepository {
     /* Can be called when user is logged in or out */
 
     public void requestAllSubredditsListing(final boolean isUserLoggedIn) {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
         final String accessToken;
         String bearerAuth;
 
         if (isUserLoggedIn) {
-            accessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+            accessToken = userOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
         } else {
-            accessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
+            accessToken = appOnlyOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
         }
 
@@ -206,9 +214,7 @@ public class NoSurfRepository {
     /* Should only run when user is logged in */
 
     public void requestHomeSubredditsListing(final boolean isUserLoggedIn) {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
-        final String userAccessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
-        String bearerAuth = "Bearer " + userAccessToken;
+        String bearerAuth = "Bearer " + userOAuthTokenLiveData.getValue();
 
         if (isUserLoggedIn) {
             ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
@@ -233,26 +239,39 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void requestPostCommentsListing(final String id, final boolean isUserLoggedIn) {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+    public void requestPostCommentsListing(String id, final boolean isUserLoggedIn) {
         String accessToken;
         String bearerAuth;
+        String idToPass;
+
+        //to let refresh button refresh last comments
+        if (id.equals("previous") && previousCommentId == null) {
+            return;
+        } else if (id.equals("previous")) {
+            idToPass = previousCommentId;
+        } else {
+            previousCommentId = idToPass = id;
+        }
+
+        final String finalIdToPass = idToPass; // need a final String for the anonymous inner class
+
+        Log.e(getClass().toString(), finalIdToPass);
 
         if (isUserLoggedIn) {
-            accessToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+            accessToken = userOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
         } else {
-            accessToken = preferences.getString(KEY_APP_ONLY_TOKEN, null);
+            accessToken = appOnlyOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
         }
 
-        ri.requestPostCommentsListing(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+        ri.requestPostCommentsListing(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
-                    refreshExpiredUserOAuthToken("requestPostCommentsListing", id);
+                    refreshExpiredUserOAuthToken("requestPostCommentsListing", finalIdToPass);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
-                    requestAppOnlyOAuthToken("requestPostCommentsListing", id);
+                    requestAppOnlyOAuthToken("requestPostCommentsListing", finalIdToPass);
                 } else {
                     commentsLiveData.setValue(response.body());
                 }
@@ -264,6 +283,30 @@ public class NoSurfRepository {
             }
         });
     }
+
+    public void logout() {
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+
+        userOAuthTokenLiveData.setValue("");
+        userOAuthRefreshTokenLiveData.setValue("");
+
+        preferences
+                .edit()
+                .putString(KEY_USER_ACCESS_TOKEN, "")
+                .putString(KEY_USER_ACCESS_REFRESH_TOKEN, "")
+                .apply();
+    }
+
+    public void initializeTokensFromSharedPrefs() {
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+
+        String userOAuthToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
+        String userOAuthRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
+
+        userOAuthTokenLiveData.setValue(userOAuthToken);
+        userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
+    }
+
 
 
 
@@ -277,5 +320,9 @@ public class NoSurfRepository {
 
     public LiveData<List<Listing>> getCommentsLiveData() {
         return commentsLiveData;
+    }
+
+    public LiveData<String> getUserOAuthRefreshTokenLiveData() {
+        return userOAuthRefreshTokenLiveData;
     }
 }

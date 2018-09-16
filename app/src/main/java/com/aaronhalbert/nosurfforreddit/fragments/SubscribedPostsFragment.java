@@ -51,7 +51,6 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
@@ -77,7 +76,6 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
-
             }
         });
 
@@ -89,20 +87,10 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
 
         swipeRefreshLayout = getView().findViewById(R.id.home_posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
-
-        if (!viewModel.isUserLoggedIn()) {
-            //getChildFragmentManager().beginTransaction().add(SubscribedPostsForkFragment.newInstance("a", "b")).addToBackStack(null).commit();
-        }
-
     }
-
-
 
     @Override
     public void onRefresh() {
         viewModel.requestHomeSubredditsListing();
-
     }
-
-
 }
