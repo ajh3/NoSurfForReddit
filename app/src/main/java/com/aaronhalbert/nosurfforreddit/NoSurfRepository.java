@@ -104,7 +104,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), "App-only auth call failed");
+                Log.e(getClass().toString(), "--> App-only auth call failed");
             }
         });
     }
@@ -134,7 +134,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), "User auth call failed");
+                Log.e(getClass().toString(), "--> User auth call failed");
             }
         });
     }
@@ -173,7 +173,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), "Refresh auth call failed");
+                Log.e(getClass().toString(), "--> Refresh auth call failed");
             }
         });
     }
@@ -185,6 +185,7 @@ public class NoSurfRepository {
         String bearerAuth;
 
         if (isUserLoggedIn) {
+            Log.e(getClass().toString(), "--> user logged in, requesting all...");
             accessToken = userOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
         } else {
@@ -196,8 +197,10 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
+                    Log.e(getClass().toString(), "--> response code 401 while requesting all, refreshing expired token...");
                     refreshExpiredUserOAuthToken("requestAllSubredditsListing", null);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
+                    Log.e(getClass().toString(), "--> response code 401 while requesting app-only all, requesting new app-only token...");
                     requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
                 } else {
                     allPostsLiveData.setValue(response.body());
@@ -206,7 +209,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.e(getClass().toString(), "requestAllSubredditsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "--> requestAllSubredditsListing call failed: " + t.toString());
             }
         });
     }
@@ -217,10 +220,12 @@ public class NoSurfRepository {
         String bearerAuth = "Bearer " + userOAuthTokenLiveData.getValue();
 
         if (isUserLoggedIn) {
+            Log.e(getClass().toString(), "--> user logged in, requesting home...");
             ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == 401) {
+                        Log.e(getClass().toString(), "--> response code 401 while requesting home, refreshing expired token...");
                         refreshExpiredUserOAuthToken("requestHomeSubredditsListing", null);
                     } else {
                         homePostsLiveData.setValue(response.body());
@@ -229,7 +234,7 @@ public class NoSurfRepository {
 
                 @Override
                 public void onFailure(Call<Listing> call, Throwable t) {
-                    Log.e(getClass().toString(), "requestHomeSubredditsListing call failed: " + t.toString());
+                    Log.e(getClass().toString(), "--> requestHomeSubredditsListing call failed: " + t.toString());
                 }
             });
         } else {
@@ -255,8 +260,6 @@ public class NoSurfRepository {
 
         final String finalIdToPass = idToPass; // need a final String for the anonymous inner class
 
-        Log.e(getClass().toString(), finalIdToPass);
-
         if (isUserLoggedIn) {
             accessToken = userOAuthTokenLiveData.getValue();
             bearerAuth = "Bearer " + accessToken;
@@ -279,7 +282,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<List<Listing>> call, Throwable t) {
-                Log.e(getClass().toString(), "requestPostCommentsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "--> requestPostCommentsListing call failed: " + t.toString());
             }
         });
     }

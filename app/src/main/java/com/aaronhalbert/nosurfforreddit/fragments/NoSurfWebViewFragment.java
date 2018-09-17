@@ -4,10 +4,14 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.aaronhalbert.nosurfforreddit.R;
 
@@ -25,8 +29,6 @@ public class NoSurfWebViewFragment extends Fragment {
     private String url;
 
     private WebView browser;
-
-    //private OnFragmentInteractionListener mListener;
 
     public NoSurfWebViewFragment() {
         // Required empty public constructor
@@ -53,60 +55,19 @@ public class NoSurfWebViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_nosurf_webview, container, false);
+        Log.e(getClass().toString(), Boolean.toString(result.isHardwareAccelerated()));
 
         browser = result.findViewById(R.id.nosurf_webview_fragment_webview);
-        browser.getSettings().setJavaScriptEnabled(true);
-        browser.getSettings().setBuiltInZoomControls(true);
-        browser.getSettings().setDisplayZoomControls(false);
-        browser.getSettings().setLoadWithOverviewMode(true);
-        browser.getSettings().setUseWideViewPort(true);
+        WebSettings browserSettings = browser.getSettings();
+        browserSettings.setDomStorageEnabled(true); // Imgur needs this
+        browserSettings.setJavaScriptEnabled(true);
+        browserSettings.setBuiltInZoomControls(true);
+        browserSettings.setDisplayZoomControls(false);
+        browserSettings.setLoadWithOverviewMode(true);
+        browserSettings.setUseWideViewPort(true);
+        browser.setWebViewClient(new WebViewClient()); // load all user clicks inside the WebView
         browser.loadUrl(url);
         
         return result;
     }
-
-/*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-*/
-
-/*
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-*/
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
-/*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-*/
 }

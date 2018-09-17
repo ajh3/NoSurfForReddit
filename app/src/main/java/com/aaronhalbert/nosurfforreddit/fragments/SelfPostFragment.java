@@ -221,21 +221,4 @@ public class SelfPostFragment extends Fragment {
         //tick i up by 1 to return the full non-whitespace sequence
         return source.subSequence(0, i+1);
     }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_link_and_self_post_fragments, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
-                return true;
-            case R.id.about:
-                return true;
-        }
-        return (super.onOptionsItemSelected(item)); //what does this do?
-    }
 }

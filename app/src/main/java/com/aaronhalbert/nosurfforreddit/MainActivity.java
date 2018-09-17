@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity implements
         preferences = getSharedPreferences(getPackageName() + "oauth", MODE_PRIVATE);
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
-        viewModel.initApp();
-
         if (savedInstanceState == null) {
+            viewModel.initApp();
+
             viewPagerFragment = ViewPagerFragment.newInstance("abc", "def");
 
             getSupportFragmentManager()
@@ -57,7 +57,19 @@ public class MainActivity extends AppCompatActivity implements
                     .commit();
         }
 
-        Intent intent = getIntent();
+
+
+        /* Disable StrictMode due to Untagged socket detected errors
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults();
+        }
+        */
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
 
             Uri uri = intent.getData();
@@ -71,12 +83,6 @@ public class MainActivity extends AppCompatActivity implements
                 viewModel.requestUserOAuthToken(code);
             }
         }
-
-        /* Disable StrictMode due to Untagged socket detected errors
-        if (BuildConfig.DEBUG) {
-            StrictMode.enableDefaults();
-        }
-        */
     }
 
     @Override
@@ -175,6 +181,8 @@ public class MainActivity extends AppCompatActivity implements
                 + DURATION
                 + "&scope="
                 + SCOPE;
+
+
 
             launchWebView(loginUrl);
     }
