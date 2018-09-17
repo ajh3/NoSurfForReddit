@@ -14,7 +14,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface RetrofitInterface {
@@ -30,20 +29,6 @@ public interface RetrofitInterface {
             @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
-    @GET("r/all/hot")
-    Call<Listing> requestAllSubredditsListing(
-            @Header("Authorization") String authorization);
-
-
-    @Headers({USER_AGENT})
-    @GET("hot")
-    Call<Listing> requestHomeSubredditsListing(
-            @Header("Authorization") String authorization);
-
-    /* Below code for user login */
-
-
-    @Headers({USER_AGENT})
     @FormUrlEncoded
     @POST
     Call<UserOAuthToken> requestUserOAuthToken(
@@ -52,7 +37,6 @@ public interface RetrofitInterface {
             @Field("code") String code,
             @Field("redirect_uri") String redirectUri,
             @Header("Authorization") String authorization);
-
 
     @Headers({USER_AGENT})
     @FormUrlEncoded
@@ -63,11 +47,19 @@ public interface RetrofitInterface {
             @Field("refresh_token") String refreshToken,
             @Header("Authorization") String authorization);
 
+    @Headers({USER_AGENT})
+    @GET("r/all/hot")
+    Call<Listing> requestAllSubredditsListing(
+            @Header("Authorization") String authorization);
+
+    @Headers({USER_AGENT})
+    @GET("hot")
+    Call<Listing> requestHomeSubredditsListing(
+            @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("comments/{article}")
     Call<List<Listing>> requestPostCommentsListing(
             @Header("Authorization") String authorization,
             @Path("article") String article);
-
 }
