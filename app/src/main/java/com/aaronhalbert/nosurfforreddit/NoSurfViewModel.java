@@ -9,6 +9,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
@@ -117,5 +118,13 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     public void logout() {
         repository.logout();
+    }
+
+    public void insertReadPostId(String id) {
+        repository.insertReadPostId(new ReadPostId(id));
+    }
+
+    public LiveData<List<ReadPostId>> getReadPostIdLiveData() {
+        return repository.getReadPostIdLiveData();
     }
 }

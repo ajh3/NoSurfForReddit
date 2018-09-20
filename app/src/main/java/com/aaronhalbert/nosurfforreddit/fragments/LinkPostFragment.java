@@ -228,7 +228,7 @@ public class LinkPostFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(url);
+            mListener.launchWebView(url, null);
         }
     }
 
@@ -261,6 +261,6 @@ public class LinkPostFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void launchWebView(String url);
+        void launchWebView(String url, String tag);
     }
 }

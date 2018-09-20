@@ -10,6 +10,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.menu_link_and_self_post_fragments.runner.AndroidJUnitRunner"
         vectorDrawables.generatedDensities = ['hdpi', 'xxhdpi']
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -37,6 +42,8 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.8.4'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'com.android.support:support-v4:27.1.1'
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

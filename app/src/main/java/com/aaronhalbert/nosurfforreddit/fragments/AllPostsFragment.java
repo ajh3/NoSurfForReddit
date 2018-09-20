@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_PARAM1 = "param1";
@@ -78,6 +83,17 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     swipeRefreshLayout.setRefreshing(false);
                 }
 
+            }
+        });
+
+        viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
+            @Override
+            public void onChanged(@Nullable List<ReadPostId> readPostIds) {
+                Log.e(getClass().toString(), "room database updated");
+                for(ReadPostId id : readPostIds) {
+                    Log.e(getClass().toString(), id.getReadPostId());
+                    pick up here and figure out best way to implement
+                }
             }
         });
 

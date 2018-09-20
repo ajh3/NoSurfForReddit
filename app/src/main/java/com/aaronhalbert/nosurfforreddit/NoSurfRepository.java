@@ -1,11 +1,16 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
+import com.aaronhalbert.nosurfforreddit.db.ReadPostIdDao;
+import com.aaronhalbert.nosurfforreddit.db.ReadPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
@@ -36,9 +41,12 @@ public class NoSurfRepository {
 
     String previousCommentId;
 
-    private static NoSurfRepository repositoryInstance = null;
+    private static NoSurfRepository repositoryInstance;
+    private static Application application;
 
-    private static Context context;
+    private static ReadPostIdDao readPostIdDao;
+    private static LiveData<List<ReadPostId>> readPostIdLiveData;
+    private static ReadPostIdRoomDatabase db;
 
     private MutableLiveData<String> userOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
     private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
@@ -61,11 +69,14 @@ public class NoSurfRepository {
 
     private NoSurfRepository() { }
 
-    public static NoSurfRepository getInstance(Context context) {
+    public static NoSurfRepository getInstance(Application application) {
         if (repositoryInstance == null) {
             repositoryInstance = new NoSurfRepository();
 
-            NoSurfRepository.context = context;
+            NoSurfRepository.application = application;
+            NoSurfRepository.db = ReadPostIdRoomDatabase.getDatabase(application);
+            NoSurfRepository.readPostIdDao = db.readPostIdDao();
+            readPostIdLiveData = readPostIdDao.getAllReadPostIds(); //assigning this seems weird?
         }
         return repositoryInstance;
     }
@@ -80,7 +91,7 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
                 String appOnlyAccessToken = response.body().getAccessToken();
-                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" token in a LiveData
                 appOnlyOAuthTokenLiveData.setValue(appOnlyAccessToken);
@@ -116,7 +127,7 @@ public class NoSurfRepository {
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
                 String userAccessRefreshToken = response.body().getRefreshToken();
-                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" tokens in a LiveData
                 userOAuthTokenLiveData.setValue(userAccessToken);
@@ -148,7 +159,7 @@ public class NoSurfRepository {
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
 
-                SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" token in a LiveData
                 userOAuthTokenLiveData.setValue(userAccessToken);
@@ -288,7 +299,7 @@ public class NoSurfRepository {
     }
 
     public void logout() {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
         userOAuthTokenLiveData.setValue("");
         userOAuthRefreshTokenLiveData.setValue("");
@@ -301,7 +312,7 @@ public class NoSurfRepository {
     }
 
     public void initializeTokensFromSharedPrefs() {
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName() + "oauth", context.MODE_PRIVATE);
+        SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
         String userOAuthToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String userOAuthRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
@@ -328,4 +339,29 @@ public class NoSurfRepository {
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {
         return userOAuthRefreshTokenLiveData;
     }
+
+    public LiveData<List<ReadPostId>> getReadPostIdLiveData() {
+        return readPostIdLiveData;
+    }
+
+    public void insertReadPostId(ReadPostId id) {
+        new InsertAsyncTask(readPostIdDao).execute(id);
+    }
+
+    private static class InsertAsyncTask extends AsyncTask<ReadPostId, Void, Void> {
+        private ReadPostIdDao asyncTaskDao;
+
+        InsertAsyncTask(ReadPostIdDao dao) {
+            asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final ReadPostId... params) {
+            asyncTaskDao.insertReadPostId(params[0]);
+            Log.e(getClass().toString(), "id inserted in background");
+            return null;
+        }
+    }
+
+
 }

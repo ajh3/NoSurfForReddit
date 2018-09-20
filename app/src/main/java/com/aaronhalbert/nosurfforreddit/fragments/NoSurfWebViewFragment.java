@@ -1,6 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -55,7 +59,6 @@ public class NoSurfWebViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_nosurf_webview, container, false);
-        Log.e(getClass().toString(), Boolean.toString(result.isHardwareAccelerated()));
 
         browser = result.findViewById(R.id.nosurf_webview_fragment_webview);
         WebSettings browserSettings = browser.getSettings();
@@ -65,7 +68,22 @@ public class NoSurfWebViewFragment extends Fragment {
         browserSettings.setDisplayZoomControls(false);
         browserSettings.setLoadWithOverviewMode(true);
         browserSettings.setUseWideViewPort(true);
-        browser.setWebViewClient(new WebViewClient()); // load all user clicks inside the WebView
+        browser.setWebViewClient(new WebViewClient() { // needed to load all user clicks inside the WebView
+
+            @Override
+            @TargetApi(21) //TODO: support down to 19
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+
+                if (URLUtil.isNetworkUrl(url)) {
+                    return false;
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                    return true;
+                }
+            }
+        });
         browser.loadUrl(url);
         
         return result;

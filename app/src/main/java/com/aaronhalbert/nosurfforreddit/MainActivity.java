@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements
         LinkPostFragment.OnFragmentInteractionListener,
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String KEY_USER_ACCESS_TOKEN = "userAccessToken";
     private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
+    private static final String TAG_WEBVIEW_LOGIN = "webviewLoginTag";
+    private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
 
     NoSurfViewModel viewModel;
     ViewPagerFragment viewPagerFragment;
@@ -53,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_frame_layout, viewPagerFragment)
+                    .add(R.id.main_activity_frame_layout, viewPagerFragment, TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
 
@@ -71,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements
         super.onNewIntent(intent);
 
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+
+            //TODO: solve the UI flickering
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN);
+
+            if (loginFragment != null) {
+                fm.beginTransaction().remove(loginFragment).commit();
+            }
 
             Uri uri = intent.getData();
             String error = uri.getQueryParameter("error");
@@ -133,15 +146,18 @@ public class MainActivity extends AppCompatActivity implements
         return super.onPrepareOptionsMenu(menu); //what does this do?
     }
 
-    public void launchWebView(String url) {
+    public void launchWebView(String url, String tag) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url))
+                .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
                 .addToBackStack(null)
                 .commit();
     }
 
     public void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score) {
+
+        viewModel.insertReadPostId(id);
+
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
@@ -152,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score) {
+        viewModel.insertReadPostId(id);
+
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
@@ -182,9 +200,7 @@ public class MainActivity extends AppCompatActivity implements
                 + "&scope="
                 + SCOPE;
 
-
-
-            launchWebView(loginUrl);
+        launchWebView(loginUrl, TAG_WEBVIEW_LOGIN);
     }
 
     public void logout() {
