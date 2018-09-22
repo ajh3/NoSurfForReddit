@@ -77,11 +77,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(i))) {
             postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             postHolder.title.setTextColor(0xFFBABABA);
-            Log.e(getClass().toString(), "striking thru...");
         } else {
             postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
             postHolder.title.setTextColor(0xFF008000);
-            Log.e(getClass().toString(), "not striking thru...");
         }
     }
 
@@ -107,8 +105,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
             int i = getAdapterPosition();
 
-            //bindViewHolder(this, i);
-
             String currentPostType = getCurrentPostType(i);
 
             if (currentPostType.equals("self")) {
@@ -131,7 +127,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                         getCurrentRedditListingObjectScore(i));
             }
 
-            /* TODO: finish this after implementing API access for imgur, gfycat
+            /* TODO: finish this after implementing API access for imgur, gfycat, use enum instead of strings
             switch (currentPostType) {
                 case "self":
                     recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
@@ -149,12 +145,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 default: break;
             }
             */
-
         }
     }
 
 
-
+    //TODO: pull out methods being re-used here
 
     private String getCurrentRedditListingObjectTitle(int i) {
         String title = currentListing
