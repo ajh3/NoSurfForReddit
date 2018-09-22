@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -23,18 +24,22 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import java.util.Arrays;
 import java.util.List;
 
-public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
-    private RecyclerView rv = null;
+    private List<ReadPostId> mReadPostIds;
 
-    private SwipeRefreshLayout swipeRefreshLayout = null;
+    private RecyclerView rv;
 
-    NoSurfViewModel viewModel = null;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private Listing latestListing;
+
+    NoSurfViewModel viewModel;
 
     public AllPostsFragment() {
         // Required empty public constructor
@@ -57,27 +62,19 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_all_posts, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
+
         viewModel.getAllPostsLiveData().observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
-                //TODO: why is onChanged called twice on config change?
-                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
+                latestListing = listing;
 
-                ((PostsAdapter) rv.getAdapter()).setCurrentListing(listing);
-                ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
+                PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
+
+                postsAdapter.setCurrentListing(latestListing);
+                postsAdapter.notifyDataSetChanged();
 
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
@@ -90,22 +87,34 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onChanged(@Nullable List<ReadPostId> readPostIds) {
                 Log.e(getClass().toString(), "room database updated");
-                for(ReadPostId id : readPostIds) {
-                    Log.e(getClass().toString(), id.getReadPostId());
-                    pick up here and figure out best way to implement
-                }
+                mReadPostIds = readPostIds;
             }
         });
+    }
 
-        rv = getView().findViewById(R.id.all_posts_fragment_recyclerview);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.e(getClass().toString(), "onCreateView");
+
+        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
+
+        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this);
+
+        rv = v.findViewById(R.id.all_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));
+        rv.setAdapter(postsAdapter);
+        postsAdapter.setCurrentListing(latestListing);
         rv.setHasFixedSize(true);
 
-        swipeRefreshLayout = getView().findViewById(R.id.all_posts_fragment_swipe_to_refresh);
+
+        swipeRefreshLayout = v.findViewById(R.id.all_posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
+        Log.e(getClass().toString(), rv.toString());
+
+        return v;
     }
 
 
@@ -115,4 +124,14 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     }
 
+    public String[] getReadPostIds() {
+        int size = mReadPostIds.size();
+        String[] readPostIds = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            readPostIds[i] = mReadPostIds.get(i).getReadPostId();
+        }
+
+        return readPostIds;
+    }
 }

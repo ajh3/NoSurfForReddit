@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +17,19 @@ import android.support.v7.widget.RecyclerView;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
-public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+import java.util.List;
+
+public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
+
+    private List<ReadPostId> mReadPostIds;
 
     private RecyclerView rv = null;
 
@@ -79,10 +85,18 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
             }
         });
 
+        viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
+            @Override
+            public void onChanged(@Nullable List<ReadPostId> readPostIds) {
+                Log.e(getClass().toString(), "room database updated");
+                mReadPostIds = readPostIds;
+            }
+        });
+
         rv = getView().findViewById(R.id.home_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity()));
+        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this));
         rv.setHasFixedSize(true);
 
         swipeRefreshLayout = getView().findViewById(R.id.home_posts_fragment_swipe_to_refresh);
@@ -92,5 +106,16 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onRefresh() {
         viewModel.requestHomeSubredditsListing();
+    }
+
+    public String[] getReadPostIds() {
+        int size = mReadPostIds.size();
+        String[] readPostIds = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            readPostIds[i] = mReadPostIds.get(i).getReadPostId();
+        }
+
+        return readPostIds;
     }
 }

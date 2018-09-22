@@ -155,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score) {
-
         viewModel.insertReadPostId(id);
 
         viewModel.requestPostCommentsListing(id);

@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.util.Objects;
+
 /**
  * A basic class representing an entity that is a row in a one-column database table.
  *
@@ -28,7 +30,6 @@ public class ReadPostId {
     public String getReadPostId() {
         return this.readPostId;
     }
-
 
 }
 

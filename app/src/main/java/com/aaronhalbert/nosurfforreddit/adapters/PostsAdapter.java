@@ -1,6 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,18 +16,24 @@ import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
 
     private Listing currentListing = null;
     private RecyclerViewOnClickCallback recyclerViewOnClickCallback;
+    private LoadListOfReadPostIds loadListOfReadPostIds;
     private Context context;
 
-    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback) {
+    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds) {
         this.context = context;
         this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
+        this.loadListOfReadPostIds = loadListOfReadPostIds;
     }
 
     public void setCurrentListing(Listing currentListing) {
@@ -50,27 +58,37 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         return new PostHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        postHolder.title.setText(getCurrentRedditListingObjectTitle(i));
-
         String details = context.getString(R.string.subreddit_abbreviation, getCurrentRedditListingObjectSubreddit(i))
                 + context.getString(R.string.score, getCurrentRedditListingObjectScore(i))
                 + context.getString(R.string.num_comments, getCurrentRedditListingObjectNumComments(i));
 
+        postHolder.title.setText(getCurrentRedditListingObjectTitle(i));
         postHolder.details.setText(details);
 
         GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(i))
                 .centerCrop()
                 .into(postHolder.thumbnail);
+
+        String[] readPostIds = loadListOfReadPostIds.getReadPostIds();
+
+        if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(i))) {
+            postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            postHolder.title.setTextColor(0xFFBABABA);
+            Log.e(getClass().toString(), "striking thru...");
+        } else {
+            postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+            postHolder.title.setTextColor(0xFF008000);
+            Log.e(getClass().toString(), "not striking thru...");
+        }
     }
 
     class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title = null;
-        TextView details = null;
-        ImageView thumbnail = null;
+        TextView title;
+        TextView details;
+        ImageView thumbnail;
 
         PostHolder(View itemView) {
             super(itemView);
@@ -88,6 +106,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         public void onClick(View v) {
 
             int i = getAdapterPosition();
+
+            //bindViewHolder(this, i);
 
             String currentPostType = getCurrentPostType(i);
 
@@ -133,11 +153,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         }
     }
 
-    //TODO make sure this is implemented where it needs to be
-    public interface RecyclerViewOnClickCallback {
-        void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
-        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score);
-    }
+
 
 
     private String getCurrentRedditListingObjectTitle(int i) {
@@ -316,6 +332,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             decodedUrl = (Html.fromHtml(url).toString());
         }
         return decodedUrl;
+    }
+
+    //TODO make sure this is implemented where it needs to be
+    public interface RecyclerViewOnClickCallback {
+        void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
+        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score);
+    }
+
+    public interface LoadListOfReadPostIds {
+        String[] getReadPostIds();
     }
 
 }
