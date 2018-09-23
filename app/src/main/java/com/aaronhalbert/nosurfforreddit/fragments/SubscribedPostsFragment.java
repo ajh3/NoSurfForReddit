@@ -31,11 +31,15 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
 
     private List<ReadPostId> mReadPostIds;
 
-    private RecyclerView rv = null;
+    private RecyclerView rv;
 
-    private SwipeRefreshLayout swipeRefreshLayout = null;
+    private int lastClickedRow;
 
-    NoSurfViewModel viewModel = null;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private Listing latestListing;
+
+    NoSurfViewModel viewModel;
 
     public SubscribedPostsFragment() {
         // Required empty public constructor
@@ -57,55 +61,63 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_subscribed_posts, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
+
         viewModel.getHomePostsLiveData().observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
-                //TODO: why is onChanged called twice on config change?
-                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
+                latestListing = listing;
+                PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
 
-                ((PostsAdapter) rv.getAdapter()).setCurrentListing(listing);
-                ((PostsAdapter) rv.getAdapter()).notifyDataSetChanged();
+                postsAdapter.setCurrentListing(latestListing);
+                postsAdapter.notifyDataSetChanged();
 
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
+
             }
         });
 
         viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
             @Override
             public void onChanged(@Nullable List<ReadPostId> readPostIds) {
-                Log.e(getClass().toString(), "room database updated");
+                PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
                 mReadPostIds = readPostIds;
+                postsAdapter.notifyItemChanged(lastClickedRow);
             }
         });
+    }
 
-        rv = getView().findViewById(R.id.home_posts_fragment_recyclerview);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.fragment_subscribed_posts, container, false);
+
+        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this);
+
+        rv = v.findViewById(R.id.home_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        rv.setAdapter(new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this));
+        rv.setAdapter(postsAdapter);
+        postsAdapter.setCurrentListing(latestListing);
         rv.setHasFixedSize(true);
 
-        swipeRefreshLayout = getView().findViewById(R.id.home_posts_fragment_swipe_to_refresh);
+
+        swipeRefreshLayout = v.findViewById(R.id.home_posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
+
+        return v;
     }
 
     @Override
     public void onRefresh() {
         viewModel.requestHomeSubredditsListing();
+
     }
 
     public String[] getReadPostIds() {
@@ -117,5 +129,9 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
         }
 
         return readPostIds;
+    }
+
+    public void setLastClickedRow(int lastClickedRow) {
+        this.lastClickedRow = lastClickedRow;
     }
 }

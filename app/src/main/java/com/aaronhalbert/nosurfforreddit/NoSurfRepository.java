@@ -358,7 +358,6 @@ public class NoSurfRepository {
         @Override
         protected Void doInBackground(final ReadPostId... params) {
             asyncTaskDao.insertReadPostId(params[0]);
-            Log.e(getClass().toString(), "id inserted in background");
             return null;
         }
     }

@@ -30,6 +30,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     private LoadListOfReadPostIds loadListOfReadPostIds;
     private Context context;
 
+
     public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds) {
         this.context = context;
         this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
@@ -79,7 +80,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
             postHolder.title.setTextColor(0xFFBABABA);
         } else {
             postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            postHolder.title.setTextColor(0xFF008000);
+            postHolder.title.setTextColor(-1979711488);
         }
     }
 
@@ -104,6 +105,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         public void onClick(View v) {
 
             int i = getAdapterPosition();
+            loadListOfReadPostIds.setLastClickedRow(i);
+
 
             String currentPostType = getCurrentPostType(i);
 
@@ -337,6 +340,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
     public interface LoadListOfReadPostIds {
         String[] getReadPostIds();
+        void setLastClickedRow(int lastClickedRow);
     }
 
 }

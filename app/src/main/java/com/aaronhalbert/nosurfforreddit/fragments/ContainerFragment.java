@@ -66,15 +66,6 @@ public class ContainerFragment extends Fragment {
         }
 
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_container, container, false);
-
-        boolean isUserLoggedIn = viewModel.isUserLoggedIn();
-        setContainerChildFragment(isUserLoggedIn);
 
         viewModel.getUserOAuthRefreshTokenLiveData().observe(this, new Observer<String>() {
             @Override
@@ -84,7 +75,15 @@ public class ContainerFragment extends Fragment {
             }
         });
 
-        return v;
+        boolean isUserLoggedIn = viewModel.isUserLoggedIn();
+        setContainerChildFragment(isUserLoggedIn);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.fragment_container, container, false);
     }
 
     public void setContainerChildFragment(boolean isUserLoggedIn) {

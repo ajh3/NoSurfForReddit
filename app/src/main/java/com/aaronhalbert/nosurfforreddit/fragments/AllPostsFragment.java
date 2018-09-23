@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -21,7 +20,6 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
@@ -34,6 +32,8 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     private List<ReadPostId> mReadPostIds;
 
     private RecyclerView rv;
+
+    private int lastClickedRow;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -70,7 +70,6 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onChanged(@Nullable Listing listing) {
                 latestListing = listing;
-
                 PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
 
                 postsAdapter.setCurrentListing(latestListing);
@@ -86,8 +85,9 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
             @Override
             public void onChanged(@Nullable List<ReadPostId> readPostIds) {
-                Log.e(getClass().toString(), "room database updated");
+                PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
                 mReadPostIds = readPostIds;
+                postsAdapter.notifyItemChanged(lastClickedRow);
             }
         });
     }
@@ -95,7 +95,6 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e(getClass().toString(), "onCreateView");
 
         View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
 
@@ -111,8 +110,6 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         swipeRefreshLayout = v.findViewById(R.id.all_posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
-
-        Log.e(getClass().toString(), rv.toString());
 
         return v;
     }
@@ -133,5 +130,9 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
 
         return readPostIds;
+    }
+
+    public void setLastClickedRow(int lastClickedRow) {
+        this.lastClickedRow = lastClickedRow;
     }
 }
