@@ -4,4 +4,9 @@
         android:defaultValue="false"
         android:title="@string/dark_mode"
         android:key="darkMode" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:title="@string/external_browser"
+        android:key="externalBrowser"
+        android:summary="@string/external_browser_summary"/>
 </PreferenceScreen>

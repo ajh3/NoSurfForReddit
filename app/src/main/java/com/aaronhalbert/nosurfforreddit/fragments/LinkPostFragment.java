@@ -4,9 +4,11 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -47,6 +49,8 @@ public class LinkPostFragment extends Fragment {
     private static final String KEY_AUTHOR = "author";
     private static final String KEY_SCORE = "score";
 
+    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+
     private String title;
     private String imageUrl;
     private String url;
@@ -56,7 +60,11 @@ public class LinkPostFragment extends Fragment {
     private String author;
     private int score;
 
+    boolean externalBrowser;
+
     private OnFragmentInteractionListener mListener;
+
+    SharedPreferences preferences;
 
     NoSurfViewModel viewModel = null;
 
@@ -103,6 +111,9 @@ public class LinkPostFragment extends Fragment {
 
         }
         setHasOptionsMenu(true);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
     }
 
     @Override
@@ -150,8 +161,11 @@ public class LinkPostFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                launchWebView();
-
+                if (externalBrowser) {
+                    launchExternalBrowser();
+                } else {
+                    launchWebView();
+                }
             }
         });
 
@@ -230,6 +244,13 @@ public class LinkPostFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void launchWebView() {
         if (mListener != null) {
+            mListener.launchWebView(url, null);
+        }
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void launchExternalBrowser() {
+        if (mListener != null) {
             //mListener.launchWebView(url, null);
             //TODO: pull this out into separate method, no longer need listener?
             Uri uri = Uri.parse(url);
@@ -237,6 +258,8 @@ public class LinkPostFragment extends Fragment {
             startActivity(intent);
         }
     }
+
+
 
     @Override
     public void onAttach(Context context) {
