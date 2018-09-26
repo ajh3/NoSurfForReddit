@@ -3,6 +3,8 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -228,7 +230,11 @@ public class LinkPostFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(url, null);
+            //mListener.launchWebView(url, null);
+            //TODO: pull this out into separate method, no longer need listener?
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
         }
     }
 
