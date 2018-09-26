@@ -5,7 +5,5 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-        <item name="colorControlNormal">@color/colorYellow</item>
     </style>
-
 </resources>

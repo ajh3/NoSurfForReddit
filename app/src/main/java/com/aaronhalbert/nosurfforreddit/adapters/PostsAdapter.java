@@ -77,10 +77,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
 
         if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(i))) {
             postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            postHolder.title.setTextColor(0xFFBABABA);
+            //postHolder.title.setTextColor(0xFFBABABA);
         } else {
             postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            postHolder.title.setTextColor(-1979711488);
+            //postHolder.title.setTextColor(-1979711488);
         }
     }
 
