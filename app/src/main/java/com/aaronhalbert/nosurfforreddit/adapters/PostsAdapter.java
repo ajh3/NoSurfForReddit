@@ -194,11 +194,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getThumbnail();
 
         if (encodedThumbnail.equals("default")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_128";
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
         } else if (encodedThumbnail.equals("self")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_thumbnail_128";
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
         } else if (encodedThumbnail.equals("nsfw")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_128";
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
         } else {
             return decodeUrl(encodedThumbnail);
         }
@@ -228,7 +228,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
     private String getCurrentRedditListingObjectImageUrl(int i) {
 
         if (currentListing.getData().getChildren().get(i).getData().getPreview() == null) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_512";
+            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
         } else {
             String encodedImageUrl = currentListing
                     .getData()

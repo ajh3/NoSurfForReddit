@@ -4,5 +4,4 @@
         android:defaultValue="false"
         android:title="@string/dark_mode"
         android:key="darkMode" />
-
 </PreferenceScreen>

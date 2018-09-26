@@ -1,14 +1,17 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,16 +30,18 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity implements
         LinkPostFragment.OnFragmentInteractionListener,
         PostsAdapter.RecyclerViewOnClickCallback,
-        LoginFragment.OnLoginFragmentButtonListener {
+        LoginFragment.OnLoginFragmentButtonListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String KEY_USER_ACCESS_TOKEN = "userAccessToken";
-    private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
     private static final String TAG_WEBVIEW_LOGIN = "webviewLoginTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
+    private static final String KEY_DARK_MODE = "darkMode";
 
     NoSurfViewModel viewModel;
     ViewPagerFragment viewPagerFragment;
     SharedPreferences preferences;
+
+    boolean darkMode;
 
     MenuItem loginMenuItem;
     MenuItem logoutMenuItem;
@@ -44,9 +49,20 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        darkMode = preferences.getBoolean(KEY_DARK_MODE, false);
+
+        if (darkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         setContentView(R.layout.activity_main);
 
-        preferences = getSharedPreferences(getPackageName() + "oauth", MODE_PRIVATE);
+
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
         if (savedInstanceState == null) {
@@ -222,5 +238,18 @@ public class MainActivity extends AppCompatActivity implements
 
     private String generateRandomAlphaNumericString() {
         return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, false);
+
+        if (darkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            recreate();
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            recreate();
+        }
     }
 }
