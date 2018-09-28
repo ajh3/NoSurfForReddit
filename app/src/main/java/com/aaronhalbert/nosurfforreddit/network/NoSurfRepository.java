@@ -1,13 +1,13 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.network;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostIdDao;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostIdRoomDatabase;
@@ -57,7 +57,10 @@ public class NoSurfRepository {
     private SingleLiveEvent<List<Listing>> commentsLiveData = new SingleLiveEvent<>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
-    private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
+
+    private OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor(new RateLimitInterceptor());
 
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(API_BASE_URL)

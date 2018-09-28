@@ -9,8 +9,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfRepository;
-
 @Database(entities = {ReadPostId.class}, version = 1)
 public abstract class ReadPostIdRoomDatabase extends RoomDatabase {
 

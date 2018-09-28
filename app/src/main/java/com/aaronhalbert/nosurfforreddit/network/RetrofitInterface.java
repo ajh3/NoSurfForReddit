@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.network;
 
 import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
