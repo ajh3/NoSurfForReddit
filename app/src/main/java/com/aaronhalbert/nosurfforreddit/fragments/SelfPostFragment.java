@@ -157,18 +157,29 @@ public class SelfPostFragment extends Fragment {
             public void onChanged(@Nullable List<Listing> commentListing) {
                 progressBar.setVisibility(View.VISIBLE);
 
-                if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
-                    int numComments = commentListing.get(1).getData().getChildren().size();
-                    if (numComments > 3) numComments = 3;
+                if ((id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId()))
+                        && (commentListing.get(0).getData().getChildren().get(0).getData().getNumComments() > 0)) {
+                    int autoModOffset;
 
-                    if ((numComments > 0) && !(selfText == null) && !(selfText.isEmpty())) dividerUnderSelftext.setVisibility(View.VISIBLE);
+                    //skip first comment if it's by AutoMod
+                    if ((commentListing.get(1).getData().getChildren().get(0).getData().getAuthor()).equals("AutoModerator")) {
+                        autoModOffset = 1;
+                    } else {
+                        autoModOffset = 0;
+                    }
 
-                    for (int i = 0; i < numComments; i++) {
+                    int numTopLevelComments = commentListing.get(1).getData().getChildren().size();
+                    numTopLevelComments = numTopLevelComments - autoModOffset; // avoid running past array in cases where numTopLevelComments < 4 and one of them is an AutoMod post
+                    if (numTopLevelComments > 3) numTopLevelComments = 3;
+
+                    if ((numTopLevelComments > 0) && !(selfText == null) && !(selfText.isEmpty())) dividerUnderSelftext.setVisibility(View.VISIBLE);
+
+                    for (int i = 0; i < numTopLevelComments; i++) {
                         if (Build.VERSION.SDK_INT >= 24) {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
                                     .getChildren()
-                                    .get(i)
+                                    .get(autoModOffset + i)
                                     .getData()
                                     .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
                             Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
@@ -176,8 +187,8 @@ public class SelfPostFragment extends Fragment {
                             comments[i].setText(trailingNewLinesStripped);
                             comments[i].setVisibility(View.VISIBLE);
 
-                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
-                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
 
                             String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
 
@@ -187,7 +198,7 @@ public class SelfPostFragment extends Fragment {
                             String unescaped = Html.fromHtml(commentListing.get(1)
                                     .getData()
                                     .getChildren()
-                                    .get(i)
+                                    .get(autoModOffset + i)
                                     .getData()
                                     .getBodyHtml()).toString();
                             Spanned formatted = Html.fromHtml(unescaped);
@@ -195,8 +206,8 @@ public class SelfPostFragment extends Fragment {
                             comments[i].setText(trailingNewLinesStripped);
                             comments[i].setVisibility(View.VISIBLE);
 
-                            String commentAuthor = commentListing.get(1).getData().getChildren().get(i).getData().getAuthor();
-                            int commentScore = commentListing.get(1).getData().getChildren().get(i).getData().getScore();
+                            String commentAuthor = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
+                            int commentScore = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
 
                             String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
 
@@ -205,7 +216,7 @@ public class SelfPostFragment extends Fragment {
                         }
                     }
 
-                    for (int i = 0; i < (numComments - 1); i++) {
+                    for (int i = 0; i < (numTopLevelComments - 1); i++) {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
                 }

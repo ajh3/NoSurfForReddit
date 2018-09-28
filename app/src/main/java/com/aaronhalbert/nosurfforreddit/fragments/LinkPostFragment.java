@@ -179,7 +179,8 @@ public class LinkPostFragment extends Fragment {
             public void onChanged(@Nullable List<Listing> commentListing) {
                 progressBar.setVisibility(View.VISIBLE);
 
-                if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
+                if ((id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId()))
+                        && (commentListing.get(0).getData().getChildren().get(0).getData().getNumComments() > 0)) {
                     int autoModOffset;
 
                     //skip first comment if it's by AutoMod
