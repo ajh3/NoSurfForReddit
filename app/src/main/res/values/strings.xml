@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NoSurfForReddit</string>
+    <string name="app_name">NoSurf for reddit</string>
     <string name="thumbnail">Thumbnail image</string>
     <string name="subreddit_abbreviation">%1$s</string>
     <string name="score">\u0020\u2022 %1$d</string>
