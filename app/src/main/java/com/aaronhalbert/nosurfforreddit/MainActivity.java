@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences.registerOnSharedPreferenceChangeListener(this);
         darkMode = preferences.getBoolean(KEY_DARK_MODE, false);
 
