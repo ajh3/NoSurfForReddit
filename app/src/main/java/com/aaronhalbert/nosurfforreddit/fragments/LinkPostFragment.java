@@ -128,8 +128,6 @@ public class LinkPostFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_link_post, container, false);
 
         final ProgressBar progressBar = v.findViewById(R.id.link_post_fragment_comment_progress_bar);
-        //progressBar.setVisibility(View.VISIBLE);
-        Log.e(getClass().toString(), "Progress bar: " + progressBar.getVisibility());
 
         ImageView iv = v.findViewById(R.id.link_post_fragment_image);
         TextView t = v.findViewById(R.id.link_post_fragment_title);
@@ -179,7 +177,6 @@ public class LinkPostFragment extends Fragment {
         viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
-                Log.e(getClass().toString(), "Onchanged called");
                 progressBar.setVisibility(View.VISIBLE);
 
                 if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
@@ -242,9 +239,7 @@ public class LinkPostFragment extends Fragment {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
                 }
-                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
                 progressBar.setVisibility(View.GONE);
-                Log.e(getClass().toString(), "Progress bar: " + progressBar.getVisibility());
             }
         });
         return v;

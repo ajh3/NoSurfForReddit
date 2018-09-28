@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
@@ -101,6 +102,8 @@ public class SelfPostFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_self_post, container, false);
 
+        final ProgressBar progressBar = v.findViewById(R.id.self_post_fragment_comment_progress_bar);
+
         TextView t = v.findViewById(R.id.self_post_fragment_title);
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
         TextView details = v.findViewById(R.id.self_post_fragment_details);
@@ -152,6 +155,8 @@ public class SelfPostFragment extends Fragment {
         viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
+                progressBar.setVisibility(View.VISIBLE);
+
                 if (id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId())) {
                     int numComments = commentListing.get(1).getData().getChildren().size();
                     if (numComments > 3) numComments = 3;
@@ -204,7 +209,7 @@ public class SelfPostFragment extends Fragment {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
                 }
-                //TODO: And shouldn't this observer go out of scope and stop working after onViewCreated finishes?
+                progressBar.setVisibility(View.GONE);
             }
         });
         return v;

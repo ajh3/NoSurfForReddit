@@ -75,8 +75,8 @@ public class NoSurfViewModel extends AndroidViewModel {
         return homePostsLiveData;
     }
 
-    public LiveData<List<Listing>> getCommentsLiveData() {
-        return commentsLiveData;
+    public SingleLiveEvent<List<Listing>> getCommentsLiveData() {
+        return repository.getCommentsLiveData();
     }
 
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {
@@ -126,5 +126,9 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     public LiveData<List<ReadPostId>> getReadPostIdLiveData() {
         return repository.getReadPostIdLiveData();
+    }
+
+    public void setCommentsLiveDataToNull() {
+        repository.setCommentsLiveDataToNull();
     }
 }

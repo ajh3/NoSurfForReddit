@@ -54,7 +54,7 @@ public class NoSurfRepository {
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
+    private SingleLiveEvent<List<Listing>> commentsLiveData = new SingleLiveEvent<>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
@@ -321,7 +321,9 @@ public class NoSurfRepository {
         userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
     }
 
-
+    public void setCommentsLiveDataToNull()  {
+        commentsLiveData.setValue(null);
+    }
 
 
     public LiveData<Listing> getAllPostsLiveData() {
@@ -332,7 +334,7 @@ public class NoSurfRepository {
         return homePostsLiveData;
     }
 
-    public LiveData<List<Listing>> getCommentsLiveData() {
+    public SingleLiveEvent<List<Listing>> getCommentsLiveData() {
         return commentsLiveData;
     }
 

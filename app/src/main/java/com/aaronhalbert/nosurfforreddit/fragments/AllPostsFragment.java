@@ -98,6 +98,9 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
 
+        //viewModel.setCommentsLiveDataToNull();
+        //Log.e(getClass().toString(), "set comments to null");
+
         PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this);
 
         rv = v.findViewById(R.id.all_posts_fragment_recyclerview);
