@@ -11,6 +11,7 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -108,6 +109,8 @@ public class SelfPostFragment extends Fragment {
         TextView st = v.findViewById(R.id.self_post_fragment_selftext);
         TextView details = v.findViewById(R.id.self_post_fragment_details);
 
+        st.setMovementMethod(LinkMovementMethod.getInstance());
+
         final View dividerUnderSelftext = v.findViewById(R.id.self_post_fragment_divider_under_selftext);
 
         final TextView[] comments = new TextView[3];
@@ -115,6 +118,10 @@ public class SelfPostFragment extends Fragment {
         comments[0] = v.findViewById(R.id.self_post_fragment_first_comment);
         comments[1] = v.findViewById(R.id.self_post_fragment_second_comment);
         comments[2] = v.findViewById(R.id.self_post_fragment_third_comment);
+
+        comments[0].setMovementMethod(LinkMovementMethod.getInstance());
+        comments[1].setMovementMethod(LinkMovementMethod.getInstance());
+        comments[2].setMovementMethod(LinkMovementMethod.getInstance());
 
         final TextView[] commentsDetails = new TextView[3];
 

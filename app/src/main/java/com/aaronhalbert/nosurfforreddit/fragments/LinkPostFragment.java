@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -138,6 +139,10 @@ public class LinkPostFragment extends Fragment {
         comments[0] = v.findViewById(R.id.link_post_fragment_first_comment);
         comments[1] = v.findViewById(R.id.link_post_fragment_second_comment);
         comments[2] = v.findViewById(R.id.link_post_fragment_third_comment);
+
+        comments[0].setMovementMethod(LinkMovementMethod.getInstance());
+        comments[1].setMovementMethod(LinkMovementMethod.getInstance());
+        comments[2].setMovementMethod(LinkMovementMethod.getInstance());
 
         final TextView[] commentsDetails = new TextView[3];
 
