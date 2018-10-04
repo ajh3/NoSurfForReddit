@@ -1,34 +1,29 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
+import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.Arrays;
-import java.util.List;
 
 
-public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> {
+public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     private Listing currentListing = null;
     private RecyclerViewOnClickCallback recyclerViewOnClickCallback;
     private LoadListOfReadPostIds loadListOfReadPostIds;
-    private Context context;
+    private Context context; //TODO: convert to activity
 
 
     public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds) {
@@ -37,68 +32,62 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         this.loadListOfReadPostIds = loadListOfReadPostIds;
     }
 
-    public void setCurrentListing(Listing currentListing) {
+    public void setCurrentListing(Listing currentListing) { //TODO: pull this into the constructor instead
         this.currentListing = currentListing;
     }
 
     @Override
     public int getItemCount() {
         if (currentListing != null) {
-            return currentListing
-                    .getData()
-                    .getDist();
+            return currentListing.getData().getDist();
         } else return 0;
     }
 
     @NonNull
     @Override
-    public PostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.row_single_post, viewGroup, false);
+    public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        RowSinglePostBinding rowSinglePostBinding = RowSinglePostBinding.inflate(((Activity) context).getLayoutInflater(), parent, false);
 
-        return new PostHolder(view);
+        return new RowHolder(rowSinglePostBinding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
-        String details = context.getString(R.string.subreddit_abbreviation, getCurrentRedditListingObjectSubreddit(i))
-                + context.getString(R.string.score, getCurrentRedditListingObjectScore(i))
-                + context.getString(R.string.num_comments, getCurrentRedditListingObjectNumComments(i));
-
-        postHolder.title.setText(getCurrentRedditListingObjectTitle(i));
-        postHolder.details.setText(details);
+    public void onBindViewHolder(@NonNull RowHolder rowHolder, int position) {
+        rowHolder.bindModel(currentListing, position);
 
         GlideApp.with(context)
-                .load(getCurrentRedditListingObjectThumbnail(i))
+                .load(getCurrentRedditListingObjectThumbnail(position))
                 .centerCrop()
-                .into(postHolder.thumbnail);
+                .into(rowHolder.rowSinglePostBinding.thumbnail);
 
         String[] readPostIds = loadListOfReadPostIds.getReadPostIds();
 
-        if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(i))) {
-            postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            //postHolder.title.setTextColor(0xFFBABABA);
+        if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(position))) {
+            rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            postHolder.title.setPaintFlags(postHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            //postHolder.title.setTextColor(-1979711488);
+            rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
         }
     }
 
-    class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title;
-        TextView details;
-        ImageView thumbnail;
+    public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        PostHolder(View itemView) {
-            super(itemView);
+        private final RowSinglePostBinding rowSinglePostBinding;
+        int position;
 
-            title = itemView.findViewById(R.id.title);
-            details = itemView.findViewById(R.id.details);
-            thumbnail = itemView.findViewById(R.id.thumbnail);
-
+        RowHolder(RowSinglePostBinding rowSinglePostBinding) {
+            super(rowSinglePostBinding.getRoot());
+            this.rowSinglePostBinding = rowSinglePostBinding;
             itemView.setOnClickListener(this);
-
         }
+
+        void bindModel(Listing listing, int position) {
+            this.position = position;
+            rowSinglePostBinding.setListing(listing);
+            rowSinglePostBinding.setController(this); // to call onClick
+            rowSinglePostBinding.executePendingBindings();
+        }
+
+
 
         //TODO the isSelf checking is a giant mess, should not be checking here and in MainActivity just to avoid crash on null imageUrl
         @Override
@@ -129,27 +118,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                         getCurrentRedditListingObjectAuthor(i),
                         getCurrentRedditListingObjectScore(i));
             }
-
-            /* TODO: finish this after implementing API access for imgur, gfycat, use enum instead of strings
-            switch (currentPostType) {
-                case "self":
-                    recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
-                            getCurrentRedditListingObjectSelfText(i));
-                        break;
-                case "gifv":
-
-
-                case "gfycat":
-
-                case "vreddit":
-
-                case "otherLink":
-
-                default: break;
-            }
-            */
         }
     }
+
+
+
+
+
+
+
+
+
 
 
     //TODO: pull out methods being re-used here
@@ -245,16 +224,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         }
     }
 
-    private String getCurrentRedditListingObjectSelfText(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getSelfText();
-
-    }
-
     private String getCurrentRedditListingObjectSelfTextHtml(int i) {
         return currentListing
                 .getData()
@@ -273,15 +242,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
                 .getData()
                 .getId();
 
-    }
-
-    private int getCurrentRedditListingObjectNumComments(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getNumComments();
     }
 
     private String getCurrentRedditListingObjectAuthor(int i) {
@@ -309,17 +269,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostHolder> 
         }
     }
 
-    private String getGifvVideoUrl(String url) {
-        return url.replaceAll(".gifv", ".mp4");
-    }
-
-    private String getGfycatVideoUrl(String url) {
-        return "hello";
-    }
-
-    private String getVredditVideoUrl(String url) {
-        return "hello";
-    }
 
     private String decodeUrl(String url) {
         String decodedUrl;
