@@ -1,10 +1,7 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import android.app.Application;
-import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
@@ -19,53 +16,14 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     private NoSurfRepository repository = NoSurfRepository.getInstance(getApplication());
 
-    private final LiveData<Listing> allPostsLiveData =
-            Transformations.switchMap(repository.getAllPostsLiveData(),
-                    new Function<Listing, LiveData<Listing>>() {
-                        @Override
-                        public LiveData<Listing> apply(Listing input) {
-                            final MutableLiveData<Listing> listing = new MutableLiveData<>();
-                            listing.setValue(input);
-                            return listing;
-                        }
-                    });
-
-    private final LiveData<Listing> homePostsLiveData =
-            Transformations.switchMap(repository.getHomePostsLiveData(),
-                    new Function<Listing, LiveData<Listing>>() {
-                        @Override
-                        public LiveData<Listing> apply(Listing input) {
-                            final MutableLiveData<Listing> listing = new MutableLiveData<>();
-                            listing.setValue(input);
-                            return listing;
-                        }
-                    });
-
-    private final LiveData<List<Listing>> commentsLiveData =
-            Transformations.switchMap(repository.getCommentsLiveData(),
-                    new Function<List<Listing>, LiveData<List<Listing>>>() {
-                        @Override
-                        public LiveData<List<Listing>> apply(List<Listing> input) {
-                            final MutableLiveData<List<Listing>> commentListing = new MutableLiveData<>();
-                            commentListing.setValue(input);
-                            return commentListing;
-                        }
-                    });
-
-    private final LiveData<String> userOAuthRefreshTokenLiveData =
-            Transformations.switchMap(repository.getUserOAuthRefreshTokenLiveData(),
-                    new Function<String, LiveData<String>>() {
-                        @Override
-                        public LiveData<String> apply(String input) {
-                            final MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
-                            userOAuthRefreshTokenLiveData.setValue(input);
-                            return userOAuthRefreshTokenLiveData;
-                        }
-                    });
-
     public NoSurfViewModel(@NonNull Application application) {
         super(application);
     }
+
+    private final LiveData<Listing> allPostsLiveData = repository.getAllPostsLiveData();
+    private final LiveData<Listing> homePostsLiveData = repository.getHomePostsLiveData();
+    private final LiveData<String> userOAuthRefreshTokenLiveData = repository.getUserOAuthRefreshTokenLiveData();
+    private final SingleLiveEvent<List<Listing>> commentsSingleLiveEvent = repository.getCommentsSingleLiveEvent();
 
     public LiveData<Listing> getAllPostsLiveData() {
         return allPostsLiveData;
@@ -75,15 +33,15 @@ public class NoSurfViewModel extends AndroidViewModel {
         return homePostsLiveData;
     }
 
-    public SingleLiveEvent<List<Listing>> getCommentsLiveData() {
-        return repository.getCommentsLiveData();
-    }
-
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {
         return userOAuthRefreshTokenLiveData;
     }
 
-    public void initApp() {
+    public SingleLiveEvent<List<Listing>> getCommentsSingleLiveEvent() {
+        return commentsSingleLiveEvent;
+    }
+
+    void initApp() {
         repository.initializeTokensFromSharedPrefs();
 
         if (isUserLoggedIn()) {
@@ -108,11 +66,11 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.requestHomeSubredditsListing(isUserLoggedIn());
     }
 
-    public void requestPostCommentsListing(String id) {
+    void requestPostCommentsListing(String id) {
         repository.requestPostCommentsListing(id, isUserLoggedIn());
     }
 
-    public void requestUserOAuthToken(String code) {
+    void requestUserOAuthToken(String code) {
         repository.requestUserOAuthToken(code);
     }
 
@@ -120,7 +78,7 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.logout();
     }
 
-    public void insertReadPostId(String id) {
+    void insertReadPostId(String id) {
         repository.insertReadPostId(new ReadPostId(id));
     }
 

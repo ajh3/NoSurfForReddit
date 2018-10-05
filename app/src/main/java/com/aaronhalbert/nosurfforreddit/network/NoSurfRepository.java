@@ -54,7 +54,7 @@ public class NoSurfRepository {
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<>();
-    private SingleLiveEvent<List<Listing>> commentsLiveData = new SingleLiveEvent<>();
+    private SingleLiveEvent<List<Listing>> commentsSingleLiveEvent = new SingleLiveEvent<>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
@@ -290,7 +290,7 @@ public class NoSurfRepository {
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
                     requestAppOnlyOAuthToken("requestPostCommentsListing", finalIdToPass);
                 } else {
-                    commentsLiveData.setValue(response.body());
+                    commentsSingleLiveEvent.setValue(response.body());
                 }
             }
 
@@ -325,7 +325,7 @@ public class NoSurfRepository {
     }
 
     public void setCommentsLiveDataToNull()  {
-        commentsLiveData.setValue(null);
+        commentsSingleLiveEvent.setValue(null);
     }
 
 
@@ -337,8 +337,8 @@ public class NoSurfRepository {
         return homePostsLiveData;
     }
 
-    public SingleLiveEvent<List<Listing>> getCommentsLiveData() {
-        return commentsLiveData;
+    public SingleLiveEvent<List<Listing>> getCommentsSingleLiveEvent() {
+        return commentsSingleLiveEvent;
     }
 
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {
