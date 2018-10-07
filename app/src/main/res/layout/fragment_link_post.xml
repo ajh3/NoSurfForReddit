@@ -47,6 +47,7 @@
                 android:id="@+id/link_post_fragment_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:onClick="@{linkPostFragment::onImageClick}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_details"/>
 
             <ProgressBar

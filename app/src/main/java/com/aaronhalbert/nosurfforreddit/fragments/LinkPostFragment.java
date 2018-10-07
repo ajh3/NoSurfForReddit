@@ -111,18 +111,9 @@ public class LinkPostFragment extends Fragment {
                 .centerCrop()
                 .into(fragmentLinkPostBinding.linkPostFragmentImage);
 
-        //TODO: bind
-        fragmentLinkPostBinding.linkPostFragmentImage.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (externalBrowser) {
-                    launchExternalBrowser();
-                } else {
-                    launchWebView();
-                }
-            }
-        });
+
+
 
         //TODO: perform the data manipulation in the ViewModel and bind the results, this should only contain UI logic
         viewModel.getCommentsSingleLiveEvent().observe(this, new Observer<List<Listing>>() {
@@ -228,6 +219,13 @@ public class LinkPostFragment extends Fragment {
     }
 
 
+    public void onImageClick(View view) {
+        if (externalBrowser) {
+            launchExternalBrowser();
+        } else {
+            launchWebView();
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
