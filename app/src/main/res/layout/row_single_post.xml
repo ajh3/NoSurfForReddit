@@ -5,12 +5,12 @@
 
     <data>
         <variable
-            name="listing"
-            type="com.aaronhalbert.nosurfforreddit.reddit.Listing"/>
-
-        <variable
             name="controller"
             type="com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter.RowHolder"/>
+
+        <variable
+            name="viewModel"
+            type="com.aaronhalbert.nosurfforreddit.NoSurfViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
-        android:onClick="@{controller :: onClick}">
+        android:onClick="@{controller::onClick}">
 
         <ImageView
             android:id="@+id/thumbnail"
@@ -38,7 +38,7 @@
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:paddingTop="2dp"
-            android:text="@{listing.data.children.get(controller.position).data.title}"
+            android:text="@{viewModel.allPostsLiveData.data.children.get(controller.position).data.title}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintEnd_toEndOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
@@ -51,7 +51,7 @@
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:paddingBottom="2dp"
-            android:text="@{listing.data.children.get(controller.position).data.subreddit + ` • ` + listing.data.children.get(controller.position).data.score + ` • ` + listing.data.children.get(controller.position).data.numComments + ` comments`}"
+            android:text="@{viewModel.allPostsLiveData.data.children.get(controller.position).data.subreddit + ` • ` + viewModel.allPostsLiveData.data.children.get(controller.position).data.score + ` • ` + viewModel.allPostsLiveData.data.children.get(controller.position).data.numComments + ` comments`}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintEnd_toEndOf="@id/list_item" />

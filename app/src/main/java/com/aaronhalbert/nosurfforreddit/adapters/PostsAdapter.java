@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.databinding.BindingAdapter;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -9,8 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.GlideApp;
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
@@ -24,12 +27,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private RecyclerViewOnClickCallback recyclerViewOnClickCallback;
     private LoadListOfReadPostIds loadListOfReadPostIds;
     private Context context; //TODO: convert to activity
+    NoSurfViewModel viewModel;
 
-
-    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds) {
+    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds, NoSurfViewModel viewModel) {
         this.context = context;
         this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
         this.loadListOfReadPostIds = loadListOfReadPostIds;
+        this.viewModel = viewModel;
     }
 
     public void setCurrentListing(Listing currentListing) { //TODO: pull this into the constructor instead
@@ -53,7 +57,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RowHolder rowHolder, int position) {
-        rowHolder.bindModel(currentListing, position);
+        rowHolder.bindModel(position);
 
         GlideApp.with(context)
                 .load(getCurrentRedditListingObjectThumbnail(position))
@@ -80,12 +84,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             itemView.setOnClickListener(this);
         }
 
-        void bindModel(Listing listing, int position) {
+        void bindModel(int position) {
             this.position = position;
-            rowSinglePostBinding.setListing(listing);
             rowSinglePostBinding.setController(this); // to call onClick
+            rowSinglePostBinding.setViewModel(viewModel);
             rowSinglePostBinding.executePendingBindings();
         }
+
 
 
 
@@ -109,14 +114,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
 
             } else {
-                recyclerViewOnClickCallback.launchLinkPost(getCurrentRedditListingObjectTitle(i),
-                        getCurrentRedditListingObjectImageUrl(i),
-                        getCurrentRedditListingObjectUrl(i),
-                        null,
-                        getCurrentRedditListingObjectId(i),
-                        getCurrentRedditListingObjectSubreddit(i),
-                        getCurrentRedditListingObjectAuthor(i),
-                        getCurrentRedditListingObjectScore(i));
+                recyclerViewOnClickCallback.launchLinkPost(i);
             }
         }
     }
@@ -284,12 +282,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
         void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
-        void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score);
+        void launchLinkPost(int position);
     }
 
     public interface LoadListOfReadPostIds {
         String[] getReadPostIds();
         void setLastClickedRow(int lastClickedRow);
     }
+
 
 }

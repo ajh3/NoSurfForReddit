@@ -181,14 +181,15 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-    public void launchLinkPost(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score) {
-        viewModel.insertReadPostId(id);
+    public void launchLinkPost(int position) {
+        String id = viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getId();
 
+        viewModel.insertReadPostId(id);
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(title, imageUrl, url, gifUrl, id, subreddit, author, score))
+                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(position))
                 .addToBackStack(null)
                 .commit();
     }

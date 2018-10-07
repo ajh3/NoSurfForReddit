@@ -16,18 +16,13 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.databinding.FragmentLinkPostBinding;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
@@ -42,60 +37,31 @@ import static android.text.Html.FROM_HTML_MODE_LEGACY;
  * Use the {@link LinkPostFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LinkPostFragment extends Fragment {
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_IMAGE_URL = "imageUrl";
-    private static final String KEY_URL = "url";
-    private static final String KEY_GIF_URL = "gifUrl";
-    private static final String KEY_ID = "id";
-    private static final String KEY_SUBREDDIT = "subreddit";
-    private static final String KEY_AUTHOR = "author";
-    private static final String KEY_SCORE = "score";
 
+//TODO: build self post functionality into this class and eliminate SelfPostFragment
+public class LinkPostFragment extends Fragment {
+    private static final String KEY_POSITION = "position";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
 
-    private String title;
-    private String imageUrl;
-    private String url;
-    private String gifUrl;
-    private String id;
-    private String subreddit;
-    private String author;
-    private int score;
-
+    public int position;
     boolean externalBrowser;
 
     private OnFragmentInteractionListener mListener;
 
     SharedPreferences preferences;
-
+    FragmentLinkPostBinding fragmentLinkPostBinding = null;
     NoSurfViewModel viewModel = null;
-
-    TextView firstComment = null;
-    TextView secondComment = null;
-    TextView thirdComment = null;
-
-    View secondDivider = null;
-    View thirdDivider = null;
 
     public LinkPostFragment() {
         // Required empty public constructor
     }
 
-
-    public static LinkPostFragment newInstance(String title, String imageUrl, String url, String gifUrl, String id, String subreddit, String author, int score) {
+    public static LinkPostFragment newInstance(int position) {
         LinkPostFragment fragment = new LinkPostFragment();
         Bundle args = new Bundle();
-        args.putString(KEY_TITLE, title);
-        args.putString(KEY_IMAGE_URL, imageUrl);
-        args.putString(KEY_URL, url);
-        args.putString(KEY_GIF_URL, gifUrl);
-        args.putString(KEY_ID, id);
-        args.putString(KEY_SUBREDDIT, subreddit);
-        args.putString(KEY_AUTHOR, author);
-        args.putInt(KEY_SCORE, score);
-
+        args.putInt(KEY_POSITION, position);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -103,70 +69,50 @@ public class LinkPostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            title = getArguments().getString(KEY_TITLE);
-            imageUrl = getArguments().getString(KEY_IMAGE_URL);
-            url = getArguments().getString(KEY_URL);
-            gifUrl = getArguments().getString(KEY_GIF_URL);
-            id = getArguments().getString(KEY_ID);
-            subreddit = getArguments().getString(KEY_SUBREDDIT);
-            author = getArguments().getString(KEY_AUTHOR);
-            score = getArguments().getInt(KEY_SCORE);
-
+            position = getArguments().getInt(KEY_POSITION);
         }
         setHasOptionsMenu(true);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
-
-        View v = inflater.inflate(R.layout.fragment_link_post, container, false);
-
-        final ProgressBar progressBar = v.findViewById(R.id.link_post_fragment_comment_progress_bar);
-
-        ImageView iv = v.findViewById(R.id.link_post_fragment_image);
-        TextView t = v.findViewById(R.id.link_post_fragment_title);
-        TextView details = v.findViewById(R.id.link_post_fragment_details);
+        fragmentLinkPostBinding = FragmentLinkPostBinding.inflate(getActivity().getLayoutInflater(), container, false);
+        fragmentLinkPostBinding.setViewModel(viewModel);
+        fragmentLinkPostBinding.setLinkPostFragment(this);
 
         final TextView[] comments = new TextView[3];
+        final TextView[] commentsDetails = new TextView[3];
+        final View[] dividers = new View[2];
 
-        comments[0] = v.findViewById(R.id.link_post_fragment_first_comment);
-        comments[1] = v.findViewById(R.id.link_post_fragment_second_comment);
-        comments[2] = v.findViewById(R.id.link_post_fragment_third_comment);
+        comments[0] = fragmentLinkPostBinding.linkPostFragmentFirstComment;
+        comments[1] = fragmentLinkPostBinding.linkPostFragmentSecondComment;
+        comments[2] = fragmentLinkPostBinding.linkPostFragmentThirdComment;
 
         comments[0].setMovementMethod(LinkMovementMethod.getInstance());
         comments[1].setMovementMethod(LinkMovementMethod.getInstance());
         comments[2].setMovementMethod(LinkMovementMethod.getInstance());
 
-        final TextView[] commentsDetails = new TextView[3];
+        commentsDetails[0] = fragmentLinkPostBinding.linkPostFragmentFirstCommentDetails;
+        commentsDetails[1] = fragmentLinkPostBinding.linkPostFragmentSecondCommentDetails;
+        commentsDetails[2] = fragmentLinkPostBinding.linkPostFragmentThirdCommentDetails;
 
-        commentsDetails[0] = v.findViewById(R.id.link_post_fragment_first_comment_details);
-        commentsDetails[1] = v.findViewById(R.id.link_post_fragment_second_comment_details);
-        commentsDetails[2] = v.findViewById(R.id.link_post_fragment_third_comment_details);
+        dividers[0] = fragmentLinkPostBinding.linkPostFragmentDividerUnderFirstComment;
+        dividers[1] = fragmentLinkPostBinding.linkPostFragmentDividerUnderSecondComment;
 
-        final View[] dividers = new View[2];
-
-        dividers[0] = v.findViewById(R.id.link_post_fragment_divider_under_first_comment);
-        dividers[1] = v.findViewById(R.id.link_post_fragment_divider_under_second_comment);
-
+        //TODO: bind
         GlideApp.with(this)
-                .load(imageUrl)
+                .load(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getPreview().getImages().get(0).getSource().getUrl())
                 .centerCrop()
-                .into(iv);
+                .into(fragmentLinkPostBinding.linkPostFragmentImage);
 
-        t.setText(title);
-
-        String postDetails = "in r/" + subreddit + " by u/" + author + "\u0020\u2022\u0020" + score;
-        details.setText(postDetails);
-
-        //TODO: launch in external browser?
-        iv.setOnClickListener(new View.OnClickListener() {
+        //TODO: bind
+        fragmentLinkPostBinding.linkPostFragmentImage.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -178,13 +124,13 @@ public class LinkPostFragment extends Fragment {
             }
         });
 
-        //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
+        //TODO: perform the data manipulation in the ViewModel and bind the results, this should only contain UI logic
         viewModel.getCommentsSingleLiveEvent().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
-                progressBar.setVisibility(View.VISIBLE);
+                fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.VISIBLE);
 
-                if ((id.equals(commentListing.get(0).getData().getChildren().get(0).getData().getId()))
+                if ((viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getId().equals(commentListing.get(0).getData().getChildren().get(0).getData().getId()))
                         && (commentListing.get(0).getData().getChildren().get(0).getData().getNumComments() > 0)) {
                     int autoModOffset;
 
@@ -245,10 +191,10 @@ public class LinkPostFragment extends Fragment {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
                 }
-                progressBar.setVisibility(View.GONE);
+                fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.GONE);
             }
         });
-        return v;
+        return fragmentLinkPostBinding.getRoot();
     }
 
     CharSequence trimTrailingWhitespace(CharSequence source) {
@@ -263,19 +209,19 @@ public class LinkPostFragment extends Fragment {
         return source.subSequence(0, i+1);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    //TODO: move this to MainActivity
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(url, null);
+            mListener.launchWebView(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getUrl(), null);
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    //TODO: move this to MainActivity
     public void launchExternalBrowser() {
         if (mListener != null) {
             //mListener.launchWebView(url, null);
-            //TODO: pull this out into separate method, no longer need listener?
-            Uri uri = Uri.parse(url);
+            //TODO: pull this out into separate method
+            Uri uri = Uri.parse(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getUrl());
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
@@ -311,7 +257,6 @@ public class LinkPostFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void launchWebView(String url, String tag);
     }
 }
