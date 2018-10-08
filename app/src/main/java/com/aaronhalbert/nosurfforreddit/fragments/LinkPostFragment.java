@@ -125,7 +125,7 @@ public class LinkPostFragment extends Fragment {
     //TODO: move this to MainActivity
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getUrl(), null);
+            mListener.launchWebView(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).url, null);
         }
     }
 
@@ -134,7 +134,7 @@ public class LinkPostFragment extends Fragment {
         if (mListener != null) {
             //mListener.launchWebView(url, null);
             //TODO: pull this out into separate method
-            Uri uri = Uri.parse(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getUrl());
+            Uri uri = Uri.parse(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }

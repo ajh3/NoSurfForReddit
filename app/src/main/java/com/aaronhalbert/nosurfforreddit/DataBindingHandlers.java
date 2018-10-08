@@ -9,18 +9,14 @@ public class DataBindingHandlers {
     @BindingAdapter("app:imageUrl")
     public static void bindImage(ImageView iv, String url) {
 
-
-
         GlideApp.with(iv.getContext())
                 .load(url)
                 .centerCrop()
                 .into(iv);
     }
 
-    @BindingAdapter("app:imageThumbnailUrl")
-    public static void bindImageThumbnail(ImageView iv, String url) {
-
-
+    @BindingAdapter("app:thumbnailUrl")
+    public static void bindThumbnail(ImageView iv, String url) {
 
         GlideApp.with(iv.getContext())
                 .load(url)

@@ -33,7 +33,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds, NoSurfViewModel viewModel, Fragment hostFragment) {
         this.context = context;
-        this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
+        this.recyclerViewOnClickCallback = recyclerViewOnClickCallback;
         this.loadListOfReadPostIds = loadListOfReadPostIds;
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
@@ -63,18 +63,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     public void onBindViewHolder(@NonNull RowHolder rowHolder, int position) {
         rowHolder.bindModel(position);
 
-        GlideApp.with(context)
-                .load(getCurrentRedditListingObjectThumbnail(position))
-                .centerCrop()
-                .into(rowHolder.rowSinglePostBinding.thumbnail);
-
         String[] readPostIds = loadListOfReadPostIds.getReadPostIds();
 
-        if (Arrays.asList(readPostIds).contains(getCurrentRedditListingObjectId(position))) {
-            rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        } else {
-            rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-        }
+        //TODO: getting null exception - how do I handle this? Can I bind this somehow?
+        //if (Arrays.asList(readPostIds).contains(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id)) {
+        //    rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        //} else {
+        //    rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+        //}
     }
 
     public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -105,18 +101,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             int i = getAdapterPosition();
             loadListOfReadPostIds.setLastClickedRow(i);
 
+            //TODO: can I bind this somehow?
+            boolean isSelfPost = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(i).isSelf;
 
-            String currentPostType = getCurrentPostType(i);
-
-            if (currentPostType.equals("self")) {
-                recyclerViewOnClickCallback.launchSelfPost(getCurrentRedditListingObjectTitle(i),
-                        getCurrentRedditListingObjectSelfTextHtml(i),
-                        getCurrentRedditListingObjectId(i),
-                        getCurrentRedditListingObjectSubreddit(i),
-                        getCurrentRedditListingObjectAuthor(i),
-                        getCurrentRedditListingObjectScore(i));
-
-
+            if (isSelfPost) {
+                recyclerViewOnClickCallback.launchSelfPost(i);
             } else {
                 recyclerViewOnClickCallback.launchLinkPost(i);
             }
@@ -126,168 +115,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
 
 
-
-
-
-
-
-
-
-    //TODO: eliminate all these
-
-    private String getCurrentRedditListingObjectTitle(int i) {
-        String title = currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getTitle();
-
-        //decode post title in case it contains HTML special entities
-        return decodeUrl(title);
-    }
-
-    private String getCurrentRedditListingObjectSubreddit(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getSubreddit();
-    }
-
-    private int getCurrentRedditListingObjectScore(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getScore();
-    }
-
-    private String getCurrentRedditListingObjectThumbnail(int i) {
-
-        String encodedThumbnail = currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getThumbnail();
-
-        if (encodedThumbnail.equals("default")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-        } else if (encodedThumbnail.equals("self")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
-        } else if (encodedThumbnail.equals("nsfw")) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
-        } else {
-            return decodeUrl(encodedThumbnail);
-        }
-    }
-
-    private boolean getCurrentRedditListingObjectIsSelf(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .isIsSelf();
-    }
-
-    private String getCurrentRedditListingObjectUrl(int i) {
-
-        String encodedObjectUrl = currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getUrl();
-
-        return decodeUrl(encodedObjectUrl);
-    }
-
-    //TODO: move this to ViewModel and figure out how to create a single ViewState
-    private String getCurrentRedditListingObjectImageUrl(int i) {
-
-        if (currentListing.getData().getChildren().get(i).getData().getPreview() == null) {
-            return "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-        } else {
-            String encodedImageUrl = currentListing
-                    .getData()
-                    .getChildren()
-                    .get(i)
-                    .getData()
-                    .getPreview()
-                    .getImages()
-                    .get(0)
-                    .getSource()
-                    .getUrl();
-
-            return decodeUrl(encodedImageUrl);
-        }
-    }
-
-    private String getCurrentRedditListingObjectSelfTextHtml(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getSelfTextHtml();
-
-    }
-
-    private String getCurrentRedditListingObjectId(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getId();
-
-    }
-
-    private String getCurrentRedditListingObjectAuthor(int i) {
-        return currentListing
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getAuthor();
-    }
-
-    private String getCurrentPostType(int i) {
-        //TODO: convert to use enum
-
-        if (getCurrentRedditListingObjectIsSelf(i)) {
-            return "self";
-        } else if (getCurrentRedditListingObjectUrl(i).contains(".gifv")) {
-            return "gifv";
-        } else if (getCurrentRedditListingObjectUrl(i).contains("gfycat")) {
-            return "gfycat";
-        } else if (getCurrentRedditListingObjectUrl(i).contains("v.redd.it")) {
-            return "vreddit";
-        } else {
-            return "otherLink";
-        }
-    }
-
-
-    //TODO: move to ViewModel
-    private String decodeUrl(String url) {
-        String decodedUrl;
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            decodedUrl = (Html.fromHtml(url, Html.FROM_HTML_MODE_LEGACY)).toString();
-        } else {
-            decodedUrl = (Html.fromHtml(url).toString());
-        }
-        return decodedUrl;
-    }
-
     //TODO make sure this is implemented where it needs to be
     public interface RecyclerViewOnClickCallback {
-        void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score);
+        void launchSelfPost(int position);
         void launchLinkPost(int position);
     }
 

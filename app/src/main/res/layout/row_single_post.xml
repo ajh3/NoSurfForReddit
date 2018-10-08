@@ -26,6 +26,7 @@
             android:layout_height="90sp"
             android:contentDescription="@string/thumbnail"
             android:padding="2dp"
+            app:thumbnailUrl="@{viewModel.allPostsLiveDataViewState.postData[controller.position].thumbnailUrl}"
             app:layout_constraintStart_toStartOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
 
@@ -38,7 +39,7 @@
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:paddingTop="2dp"
-            android:text="@{viewModel.allPostsLiveData.data.children.get(controller.position).data.title}"
+            android:text="@{viewModel.allPostsLiveDataViewState.postData[controller.position].title}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintEnd_toEndOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
@@ -51,7 +52,7 @@
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:paddingBottom="2dp"
-            android:text="@{viewModel.allPostsLiveData.data.children.get(controller.position).data.subreddit + ` • ` + viewModel.allPostsLiveData.data.children.get(controller.position).data.score + ` • ` + viewModel.allPostsLiveData.data.children.get(controller.position).data.numComments + ` comments`}"
+            android:text="@{viewModel.allPostsLiveDataViewState.postData[controller.position].subreddit + ` • ` + viewModel.allPostsLiveDataViewState.postData[controller.position].score + ` • ` + viewModel.allPostsLiveDataViewState.postData[controller.position].numComments + ` comments`}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintEnd_toEndOf="@id/list_item" />

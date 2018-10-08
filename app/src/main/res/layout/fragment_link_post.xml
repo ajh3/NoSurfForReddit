@@ -30,7 +30,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:paddingTop="5dp"
-                android:text="@{viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.title}"
+                android:text="@{viewModel.allPostsLiveDataViewState.postData[linkPostFragment.position].title}"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
@@ -40,7 +40,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:paddingBottom="5dp"
-                android:text="@{`in r/` + viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.subreddit + ` by u/` + viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.author + ` • ` + viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.score}"
+                android:text="@{`in r/` + viewModel.allPostsLiveDataViewState.postData[linkPostFragment.position].subreddit + ` by u/` + viewModel.allPostsLiveDataViewState.postData[linkPostFragment.position].author + ` • ` + viewModel.allPostsLiveDataViewState.postData[linkPostFragment.position].score}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_title"/>
 
             <ImageView
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:onClick="@{linkPostFragment::onImageClick}"
-                app:imageUrl="@{viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.preview.images.get(0).source.url}"
+                app:imageUrl="@{viewModel.allPostsLiveDataViewState.postData[linkPostFragment.position].imageUrl}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_details"/>
 
             <ProgressBar

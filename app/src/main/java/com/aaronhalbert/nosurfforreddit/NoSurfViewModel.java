@@ -38,6 +38,7 @@ public class NoSurfViewModel extends AndroidViewModel {
             Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
                 @Override
                 public CommentsViewState apply(List<Listing> input) {
+                    Log.e(getClass().toString(), "applying comments map");
                     CommentsViewState commentsViewState = null;
 
                     //check if there are any comments at all
@@ -79,7 +80,130 @@ public class NoSurfViewModel extends AndroidViewModel {
                 }
             });
 
+    private LiveData<PostsViewState> allPostsLiveDataViewState =
+            Transformations.map(getAllPostsLiveData(), new Function<Listing, PostsViewState>() {
+                @Override
+                public PostsViewState apply(Listing input) {
+                    Log.e(getClass().toString(), "applying allposts map");
+                    PostsViewState postsViewState = new PostsViewState();
 
+                    for (int i = 0; i < 25; i++) {
+                        PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+
+                        postDatum.isSelf = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .isIsSelf();
+
+                        postDatum.id = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getId();
+
+                        String title = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getTitle();
+                        postDatum.title = decodeHtml(title); // some titles contain HTML special entities
+
+                        postDatum.author = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getAuthor();
+
+                        postDatum.subreddit = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getSubreddit();
+
+                        postDatum.score = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getScore();
+
+                        postDatum.numComments = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getNumComments();
+
+                        String encodedUrl = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getUrl();
+                        postDatum.url = decodeHtml(encodedUrl);
+
+                        String encodedThumbnailUrl = input
+                                .getData()
+                                .getChildren()
+                                .get(i)
+                                .getData()
+                                .getThumbnail();
+                        if (encodedThumbnailUrl.equals("default")) {
+                            postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                        } else if (encodedThumbnailUrl.equals("self")) {
+                            postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
+                        } else if (encodedThumbnailUrl.equals("nsfw")) {
+                            postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
+                        } else {
+                            postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl);
+                        }
+
+                        if (input.getData().getChildren().get(i).getData().getPreview() == null) {
+                            postDatum.imageUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                        } else {
+                            String encodedImageUrl = input
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getPreview()
+                                    .getImages()
+                                    .get(0)
+                                    .getSource()
+                                    .getUrl();
+                            postDatum.imageUrl = decodeHtml(encodedImageUrl);
+                        }
+
+                        if (postDatum.isSelf) {
+                            postDatum.selfTextHtml = input
+                                    .getData()
+                                    .getChildren()
+                                    .get(i)
+                                    .getData()
+                                    .getSelfTextHtml();
+                        }
+
+                        postsViewState.postData.add(postDatum);
+                        Log.e(getClass().toString(), "adding postdatum");
+                    }
+
+                    return postsViewState;
+                }
+            });
+
+    private LiveData<PostsViewState> homePostsLiveDataViewState =
+            Transformations.map(getHomePostsLiveData(), new Function<Listing, PostsViewState>() {
+                @Override
+                public PostsViewState apply(Listing input) {
+                    return null;
+                }
+            });
 
     public LiveData<Listing> getAllPostsLiveData() {
         return repository.getAllPostsLiveData();
@@ -99,6 +223,10 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     public LiveData<CommentsViewState> getCommentsViewStateLiveData() {
         return commentsViewStateLiveData;
+    }
+
+    public LiveData<PostsViewState> getAllPostsLiveDataViewState() {
+        return allPostsLiveDataViewState;
     }
 
     public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
@@ -194,6 +322,17 @@ public class NoSurfViewModel extends AndroidViewModel {
 
         //tick i up by 1 to return the full non-whitespace sequence
         return source.subSequence(0, i+1);
+    }
+
+    private String decodeHtml(String html) {
+        String decodedHtml;
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            decodedHtml = (Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)).toString();
+        } else {
+            decodedHtml = (Html.fromHtml(html).toString());
+        }
+        return decodedHtml;
     }
 
 }

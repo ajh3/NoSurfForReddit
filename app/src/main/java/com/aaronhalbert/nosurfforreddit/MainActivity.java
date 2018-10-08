@@ -91,8 +91,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onNewIntent(intent);
 
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-
-            //TODO: solve the UI flickering
+            
             FragmentManager fm = getSupportFragmentManager();
             Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN);
 
@@ -169,20 +168,23 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-    public void launchSelfPost(String title, String selfText, String id, String subreddit, String author, int score) {
+    //TODO: redo this entirely
+    public void launchSelfPost(int position) {
+        String id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
+
         viewModel.insertReadPostId(id);
 
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(title, selfText, id, subreddit, author, score))
+                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("title", "selfText", id, "subreddit", "author", 999))
                 .addToBackStack(null)
                 .commit();
     }
 
     public void launchLinkPost(int position) {
-        String id = viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getId();
+        String id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
 
         viewModel.insertReadPostId(id);
         viewModel.requestPostCommentsListing(id);
