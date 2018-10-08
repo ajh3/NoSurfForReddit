@@ -65,7 +65,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
-
+        //TODO: should be able to get rid of the notify call (?)
         viewModel.getAllPostsLiveData().observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
@@ -98,10 +98,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
 
-        //viewModel.setCommentsLiveDataToNull();
-        //Log.e(getClass().toString(), "set comments to null");
-
-        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel);
+        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel, this);
 
         rv = v.findViewById(R.id.all_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));

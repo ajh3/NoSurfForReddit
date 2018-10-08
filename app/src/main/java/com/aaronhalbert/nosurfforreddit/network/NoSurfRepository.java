@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostIdDao;
@@ -15,6 +16,7 @@ import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -54,7 +56,9 @@ public class NoSurfRepository {
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<>();
-    private SingleLiveEvent<List<Listing>> commentsSingleLiveEvent = new SingleLiveEvent<>();
+    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
+
+    private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvent = new SingleLiveEvent<>();
 
     private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
@@ -290,7 +294,10 @@ public class NoSurfRepository {
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
                     requestAppOnlyOAuthToken("requestPostCommentsListing", finalIdToPass);
                 } else {
-                    commentsSingleLiveEvent.setValue(response.body());
+                    commentsLiveData.setValue(response.body());
+                    commentsFinishedLoadingLiveEvent.setValue(true);
+                    commentsFinishedLoadingLiveEvent.setValue(false);
+                    Log.e(getClass().toString(), "comments livedata set");
                 }
             }
 
@@ -324,11 +331,6 @@ public class NoSurfRepository {
         userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
     }
 
-    public void setCommentsLiveDataToNull()  {
-        commentsSingleLiveEvent.setValue(null);
-    }
-
-
     public LiveData<Listing> getAllPostsLiveData() {
         return allPostsLiveData;
     }
@@ -337,8 +339,12 @@ public class NoSurfRepository {
         return homePostsLiveData;
     }
 
-    public SingleLiveEvent<List<Listing>> getCommentsSingleLiveEvent() {
-        return commentsSingleLiveEvent;
+    public LiveData<List<Listing>> getCommentsLiveData() {
+        return commentsLiveData;
+    }
+
+    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
+        return commentsFinishedLoadingLiveEvent;
     }
 
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {

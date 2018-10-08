@@ -98,7 +98,7 @@ public class SubscribedPostsFragment extends Fragment implements SwipeRefreshLay
 
         View v = inflater.inflate(R.layout.fragment_subscribed_posts, container, false);
 
-        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel);
+        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel, this);
 
         rv = v.findViewById(R.id.home_posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));

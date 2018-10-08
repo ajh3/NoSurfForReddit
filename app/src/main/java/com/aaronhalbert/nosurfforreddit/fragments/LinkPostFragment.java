@@ -6,13 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +20,6 @@ import android.widget.TextView;
 import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentLinkPostBinding;
-import com.aaronhalbert.nosurfforreddit.reddit.Listing;
-
-import java.util.List;
-
-import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -85,6 +77,7 @@ public class LinkPostFragment extends Fragment {
         fragmentLinkPostBinding = FragmentLinkPostBinding.inflate(getActivity().getLayoutInflater(), container, false);
         fragmentLinkPostBinding.setViewModel(viewModel);
         fragmentLinkPostBinding.setLinkPostFragment(this);
+        fragmentLinkPostBinding.setLifecycleOwner(this); //comments Transformation in ViewModel won't be called without this!
 
         final TextView[] comments = new TextView[3];
         final TextView[] commentsDetails = new TextView[3];
@@ -105,99 +98,28 @@ public class LinkPostFragment extends Fragment {
         dividers[0] = fragmentLinkPostBinding.linkPostFragmentDividerUnderFirstComment;
         dividers[1] = fragmentLinkPostBinding.linkPostFragmentDividerUnderSecondComment;
 
-        //TODO: bind
-        GlideApp.with(this)
-                .load(viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getPreview().getImages().get(0).getSource().getUrl())
-                .centerCrop()
-                .into(fragmentLinkPostBinding.linkPostFragmentImage);
-
-
-
-
-
-        //TODO: perform the data manipulation in the ViewModel and bind the results, this should only contain UI logic
-        viewModel.getCommentsSingleLiveEvent().observe(this, new Observer<List<Listing>>() {
+        //display the appropriate text fields and dividers depending on how many comments the current post has
+        viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, new Observer<Boolean>() {
             @Override
-            public void onChanged(@Nullable List<Listing> commentListing) {
-                fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.VISIBLE);
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean) {
+                    int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
 
-                if ((viewModel.getAllPostsLiveData().getValue().getData().getChildren().get(position).getData().getId().equals(commentListing.get(0).getData().getChildren().get(0).getData().getId()))
-                        && (commentListing.get(0).getData().getChildren().get(0).getData().getNumComments() > 0)) {
-                    int autoModOffset;
-
-                    //skip first comment if it's by AutoMod
-                    if ((commentListing.get(1).getData().getChildren().get(0).getData().getAuthor()).equals("AutoModerator")) {
-                        autoModOffset = 1;
-                    } else {
-                        autoModOffset = 0;
+                    for (int i = 0; i < numComments; i++) {
+                        comments[i].setVisibility(View.VISIBLE);
+                        commentsDetails[i].setVisibility(View.VISIBLE);
                     }
 
-                    int numTopLevelComments = commentListing.get(1).getData().getChildren().size();
-                    numTopLevelComments = numTopLevelComments - autoModOffset; // avoid running past array in cases where numTopLevelComments < 4 and one of them is an AutoMod post
-                    if (numTopLevelComments > 3) numTopLevelComments = 3;
-
-                    for (int i = 0; i < numTopLevelComments; i++) {
-                        if (Build.VERSION.SDK_INT >= 24) {
-                            String unescaped = Html.fromHtml(commentListing.get(1)
-                                    .getData()
-                                    .getChildren()
-                                    .get(autoModOffset + i)
-                                    .getData()
-                                    .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
-                            Spanned formatted = Html.fromHtml(unescaped, FROM_HTML_MODE_LEGACY);
-                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
-                            comments[i].setText(trailingNewLinesStripped);
-                            comments[i].setVisibility(View.VISIBLE);
-
-                            String commentAuthor = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
-                            int commentScore = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
-
-                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
-
-                            commentsDetails[i].setText(commentDetails);
-                            commentsDetails[i].setVisibility(View.VISIBLE);
-                        } else {
-                            String unescaped = Html.fromHtml(commentListing.get(1)
-                                    .getData()
-                                    .getChildren()
-                                    .get(autoModOffset + i)
-                                    .getData()
-                                    .getBodyHtml()).toString();
-                            Spanned formatted = Html.fromHtml(unescaped);
-                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(formatted);
-                            comments[i].setText(trailingNewLinesStripped);
-                            comments[i].setVisibility(View.VISIBLE);
-
-                            String commentAuthor = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
-                            int commentScore = commentListing.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
-
-                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
-
-                            commentsDetails[i].setText(commentDetails);
-                            commentsDetails[i].setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    for (int i = 0; i < (numTopLevelComments - 1); i++) {
+                    for (int i = 0; i < (numComments - 1); i++) {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
+
+                    fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.GONE);
                 }
-                fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.GONE);
             }
         });
+
         return fragmentLinkPostBinding.getRoot();
-    }
-
-    CharSequence trimTrailingWhitespace(CharSequence source) {
-        if (source == null) return "";
-
-        int i = source.length();
-
-        //decrement i and check if that character is whitespace
-        do { --i; } while (i >= 0 && Character.isWhitespace(source.charAt(i)));
-
-        //tick i up by 1 to return the full non-whitespace sequence
-        return source.subSequence(0, i+1);
     }
 
     //TODO: move this to MainActivity
@@ -217,7 +139,6 @@ public class LinkPostFragment extends Fragment {
             startActivity(intent);
         }
     }
-
 
     public void onImageClick(View view) {
         if (externalBrowser) {

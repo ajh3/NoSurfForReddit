@@ -6,6 +6,7 @@ import android.databinding.BindingAdapter;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
@@ -25,15 +26,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     private Listing currentListing = null;
     private RecyclerViewOnClickCallback recyclerViewOnClickCallback;
-    private LoadListOfReadPostIds loadListOfReadPostIds;
+    private LoadListOfReadPostIds loadListOfReadPostIds; //TODO: rename to hostFragment or something like that
     private Context context; //TODO: convert to activity
+    private Fragment hostFragment;
     NoSurfViewModel viewModel;
 
-    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds, NoSurfViewModel viewModel) {
+    public PostsAdapter(Context context, RecyclerViewOnClickCallback recyclerViewOnClickCallback, LoadListOfReadPostIds loadListOfReadPostIds, NoSurfViewModel viewModel, Fragment hostFragment) {
         this.context = context;
         this.recyclerViewOnClickCallback = (PostsAdapter.RecyclerViewOnClickCallback) recyclerViewOnClickCallback;
         this.loadListOfReadPostIds = loadListOfReadPostIds;
         this.viewModel = viewModel;
+        this.hostFragment = hostFragment;
     }
 
     public void setCurrentListing(Listing currentListing) { //TODO: pull this into the constructor instead
@@ -51,6 +54,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     @Override
     public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RowSinglePostBinding rowSinglePostBinding = RowSinglePostBinding.inflate(((Activity) context).getLayoutInflater(), parent, false);
+        rowSinglePostBinding.setLifecycleOwner(hostFragment); //TODO: needed? seems to be working without
 
         return new RowHolder(rowSinglePostBinding);
     }
@@ -129,7 +133,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
 
 
-    //TODO: pull out methods being re-used here
+    //TODO: eliminate all these
 
     private String getCurrentRedditListingObjectTitle(int i) {
         String title = currentListing
@@ -202,6 +206,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         return decodeUrl(encodedObjectUrl);
     }
 
+    //TODO: move this to ViewModel and figure out how to create a single ViewState
     private String getCurrentRedditListingObjectImageUrl(int i) {
 
         if (currentListing.getData().getChildren().get(i).getData().getPreview() == null) {
@@ -268,6 +273,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     }
 
 
+    //TODO: move to ViewModel
     private String decodeUrl(String url) {
         String decodedUrl;
 

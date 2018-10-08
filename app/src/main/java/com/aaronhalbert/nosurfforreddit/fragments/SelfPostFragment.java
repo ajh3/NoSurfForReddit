@@ -159,7 +159,7 @@ public class SelfPostFragment extends Fragment {
         }
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
-        viewModel.getCommentsSingleLiveEvent().observe(this, new Observer<List<Listing>>() {
+        viewModel.getCommentsLiveData().observe(this, new Observer<List<Listing>>() {
             @Override
             public void onChanged(@Nullable List<Listing> commentListing) {
                 progressBar.setVisibility(View.VISIBLE);

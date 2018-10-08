@@ -48,6 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:onClick="@{linkPostFragment::onImageClick}"
+                app:imageUrl="@{viewModel.allPostsLiveData.data.children.get(linkPostFragment.position).data.preview.images.get(0).source.url}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_details"/>
 
             <ProgressBar
@@ -65,6 +66,7 @@
                 android:padding="5dp"
                 android:textStyle="bold"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[0]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_image"/>
 
             <TextView
@@ -75,6 +77,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="5dp"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[0]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_first_comment_details"/>
 
             <View
@@ -94,6 +97,7 @@
                 android:padding="5dp"
                 android:textStyle="bold"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[1]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_divider_under_first_comment"/>
 
             <TextView
@@ -104,6 +108,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="5dp"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[1]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_second_comment_details"/>
 
             <View
@@ -123,6 +128,7 @@
                 android:padding="5dp"
                 android:textStyle="bold"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[2]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_divider_under_second_comment"/>
 
             <TextView
@@ -133,6 +139,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="5dp"
                 android:visibility="gone"
+                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[2]}"
                 app:layout_constraintTop_toBottomOf="@id/link_post_fragment_third_comment_details"/>
 
         </android.support.constraint.ConstraintLayout>
