@@ -1,12 +1,10 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,17 +16,16 @@ import android.view.MenuItem;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.PostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements
-        LinkPostFragment.OnFragmentInteractionListener,
+        PostFragment.OnFragmentInteractionListener,
         PostsAdapter.RecyclerViewOnClickCallback,
         LoginFragment.OnLoginFragmentButtonListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -168,22 +165,12 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-    //TODO: redo this entirely
-    public void launchSelfPost(int position) {
-        String id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
-
-        viewModel.insertReadPostId(id);
-
-        viewModel.requestPostCommentsListing(id);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance("title", "selfText", id, "subreddit", "author", 999))
-                .addToBackStack(null)
-                .commit();
+    //TODO: FIX THIS
+    public void launchSelfPost(int position, boolean isSelfPost) {
+        launchLinkPost(position, isSelfPost);
     }
 
-    public void launchLinkPost(int position) {
+    public void launchLinkPost(int position, boolean isSelfPost) {
         String id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
 
         viewModel.insertReadPostId(id);
@@ -191,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(position))
+                .replace(R.id.main_activity_frame_layout, PostFragment.newInstance(position, isSelfPost))
                 .addToBackStack(null)
                 .commit();
     }

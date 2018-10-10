@@ -3,8 +3,8 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
-import com.aaronhalbert.nosurfforreddit.fragments.AllPostsFragment;
+
+import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 
 public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -22,7 +22,7 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return AllPostsFragment.newInstance("abc", "def");
+            return PostsFragment.newInstance(false);
         } else {
             return ContainerFragment.newInstance("abc", "def");
         }

@@ -17,41 +17,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aaronhalbert.nosurfforreddit.GlideApp;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.databinding.FragmentLinkPostBinding;
+import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LinkPostFragment.OnFragmentInteractionListener} interface
+ * {@link PostFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LinkPostFragment#newInstance} factory method to
+ * Use the {@link PostFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 
 //TODO: build self post functionality into this class and eliminate SelfPostFragment
-public class LinkPostFragment extends Fragment {
+public class PostFragment extends Fragment {
     private static final String KEY_POSITION = "position";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+    private static final String KEY_IS_SELF_POST = "isSelfPost";
 
     public int position;
     boolean externalBrowser;
+    boolean isSelfPost;
 
     private OnFragmentInteractionListener mListener;
 
     SharedPreferences preferences;
-    FragmentLinkPostBinding fragmentLinkPostBinding = null;
+    FragmentPostBinding fragmentPostBinding = null;
     NoSurfViewModel viewModel = null;
 
-    public LinkPostFragment() {
+    public PostFragment() {
         // Required empty public constructor
     }
 
-    public static LinkPostFragment newInstance(int position) {
-        LinkPostFragment fragment = new LinkPostFragment();
+    public static PostFragment newInstance(int position, boolean isSelfPost) {
+        PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_POSITION, position);
+        args.putBoolean(KEY_IS_SELF_POST, isSelfPost);
         fragment.setArguments(args);
 
         return fragment;
@@ -62,6 +64,7 @@ public class LinkPostFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(KEY_POSITION);
+            isSelfPost = getArguments().getBoolean(KEY_IS_SELF_POST);
         }
         setHasOptionsMenu(true);
 
@@ -74,29 +77,39 @@ public class LinkPostFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        fragmentLinkPostBinding = FragmentLinkPostBinding.inflate(getActivity().getLayoutInflater(), container, false);
-        fragmentLinkPostBinding.setViewModel(viewModel);
-        fragmentLinkPostBinding.setLinkPostFragment(this);
-        fragmentLinkPostBinding.setLifecycleOwner(this); //comments Transformation in ViewModel won't be called without this!
+        fragmentPostBinding = FragmentPostBinding.inflate(getActivity().getLayoutInflater(), container, false);
+        fragmentPostBinding.setViewModel(viewModel);
+        fragmentPostBinding.setPostFragment(this);
+        fragmentPostBinding.setLifecycleOwner(this); //comments Transformation in ViewModel won't be called without this!
 
         final TextView[] comments = new TextView[3];
         final TextView[] commentsDetails = new TextView[3];
         final View[] dividers = new View[2];
 
-        comments[0] = fragmentLinkPostBinding.linkPostFragmentFirstComment;
-        comments[1] = fragmentLinkPostBinding.linkPostFragmentSecondComment;
-        comments[2] = fragmentLinkPostBinding.linkPostFragmentThirdComment;
+        comments[0] = fragmentPostBinding.postFragmentFirstComment;
+        comments[1] = fragmentPostBinding.postFragmentSecondComment;
+        comments[2] = fragmentPostBinding.postFragmentThirdComment;
 
         comments[0].setMovementMethod(LinkMovementMethod.getInstance());
         comments[1].setMovementMethod(LinkMovementMethod.getInstance());
         comments[2].setMovementMethod(LinkMovementMethod.getInstance());
 
-        commentsDetails[0] = fragmentLinkPostBinding.linkPostFragmentFirstCommentDetails;
-        commentsDetails[1] = fragmentLinkPostBinding.linkPostFragmentSecondCommentDetails;
-        commentsDetails[2] = fragmentLinkPostBinding.linkPostFragmentThirdCommentDetails;
+        commentsDetails[0] = fragmentPostBinding.postFragmentFirstCommentDetails;
+        commentsDetails[1] = fragmentPostBinding.postFragmentSecondCommentDetails;
+        commentsDetails[2] = fragmentPostBinding.postFragmentThirdCommentDetails;
 
-        dividers[0] = fragmentLinkPostBinding.linkPostFragmentDividerUnderFirstComment;
-        dividers[1] = fragmentLinkPostBinding.linkPostFragmentDividerUnderSecondComment;
+        dividers[0] = fragmentPostBinding.postFragmentDividerUnderFirstComment;
+        dividers[1] = fragmentPostBinding.postFragmentDividerUnderSecondComment;
+
+        if (isSelfPost) {
+            fragmentPostBinding.postFragmentDividerUnderDetailsForSelfPostsOnly.setVisibility(View.VISIBLE);
+            if (!(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).selfTextHtml).equals("")) {
+                fragmentPostBinding.postFragmentSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
+                fragmentPostBinding.postFragmentDividerUnderSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
+            }
+        } else {
+            fragmentPostBinding.postFragmentImageForLinkPostsOnly.setVisibility(View.VISIBLE);
+        }
 
         //display the appropriate text fields and dividers depending on how many comments the current post has
         viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, new Observer<Boolean>() {
@@ -114,12 +127,12 @@ public class LinkPostFragment extends Fragment {
                         dividers[i].setVisibility(View.VISIBLE);
                     }
 
-                    fragmentLinkPostBinding.linkPostFragmentCommentProgressBar.setVisibility(View.GONE);
+                    fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
                 }
             }
         });
 
-        return fragmentLinkPostBinding.getRoot();
+        return fragmentPostBinding.getRoot();
     }
 
     //TODO: move this to MainActivity

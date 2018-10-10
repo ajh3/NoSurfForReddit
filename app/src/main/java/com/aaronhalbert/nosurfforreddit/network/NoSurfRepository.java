@@ -297,7 +297,6 @@ public class NoSurfRepository {
                     commentsLiveData.setValue(response.body());
                     commentsFinishedLoadingLiveEvent.setValue(true);
                     commentsFinishedLoadingLiveEvent.setValue(false);
-                    Log.e(getClass().toString(), "comments livedata set");
                 }
             }
 

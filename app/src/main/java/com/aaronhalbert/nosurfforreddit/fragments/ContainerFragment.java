@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,13 +99,13 @@ public class ContainerFragment extends Fragment {
                 } else { // if only loginFragment exists
                     fm.beginTransaction()
                             .remove(loginFragment)
-                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance("a", "b"), TAG_SUBSCRIBED_POSTS_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, PostsFragment.newInstance(true), TAG_SUBSCRIBED_POSTS_FRAGMENT)
                             .commit();
                 }
             } else {
                 if (subscribedPostsFragment == null) { // if neither subscribedPostsFragment nor loginFragment exist
                     fm.beginTransaction()
-                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance("a", "b"), TAG_SUBSCRIBED_POSTS_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, PostsFragment.newInstance(true), TAG_SUBSCRIBED_POSTS_FRAGMENT)
                             .commit();
                 } else { // if only subscribedPostsFragment exists
                     //do nothing

@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -22,12 +23,10 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
 
-public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
+    private static final String KEY_IS_SUBSCRIBED_POSTS = "isSubscribedPosts";
 
-    private String mParam1;
-    private String mParam2;
+    private boolean isSubscribedPosts;
 
     private List<ReadPostId> mReadPostIds;
 
@@ -41,15 +40,14 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     NoSurfViewModel viewModel;
 
-    public AllPostsFragment() {
+    public PostsFragment() {
         // Required empty public constructor
     }
 
-    public static AllPostsFragment newInstance(String param1, String param2) {
-        AllPostsFragment fragment = new AllPostsFragment();
+    public static PostsFragment newInstance(boolean isSubscribedPosts) {
+        PostsFragment fragment = new PostsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(KEY_IS_SUBSCRIBED_POSTS, isSubscribedPosts);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,17 +56,26 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            isSubscribedPosts = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POSTS);
         }
 
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
         //TODO: should be able to get rid of the notify call (?)
-        viewModel.getAllPostsLiveData().observe(this, new Observer<Listing>() {
+
+        LiveData<Listing> postsLiveData;
+
+        if (isSubscribedPosts) {
+            postsLiveData = viewModel.getAllPostsLiveData();
+        } else {
+            postsLiveData = viewModel.getHomePostsLiveData();
+        }
+
+        postsLiveData.observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
+                Log.e(getClass().toString(), "onChanged in PostsFragment");
                 latestListing = listing;
                 PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
 
@@ -85,6 +92,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
             @Override
             public void onChanged(@Nullable List<ReadPostId> readPostIds) {
+                Log.e(getClass().toString(), "Database onChanged in PostsFragment");
                 PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
                 mReadPostIds = readPostIds;
                 postsAdapter.notifyItemChanged(lastClickedRow);
@@ -96,11 +104,11 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
+        View v = inflater.inflate(R.layout.fragment_posts, container, false);
 
         PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel, this);
 
-        rv = v.findViewById(R.id.all_posts_fragment_recyclerview);
+        rv = v.findViewById(R.id.posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         rv.setAdapter(postsAdapter);
@@ -108,7 +116,7 @@ public class AllPostsFragment extends Fragment implements SwipeRefreshLayout.OnR
         rv.setHasFixedSize(true);
 
 
-        swipeRefreshLayout = v.findViewById(R.id.all_posts_fragment_swipe_to_refresh);
+        swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         return v;

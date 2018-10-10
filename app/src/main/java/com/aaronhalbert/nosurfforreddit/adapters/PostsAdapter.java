@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     @Override
     public int getItemCount() {
         if (currentListing != null) {
+            Log.e(getClass().toString(), "count is: " + currentListing.getData().getDist());
             return currentListing.getData().getDist();
         } else return 0;
     }
@@ -102,12 +104,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             loadListOfReadPostIds.setLastClickedRow(i);
 
             //TODO: can I bind this somehow?
+            //TODO fix this selfpost logic
             boolean isSelfPost = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(i).isSelf;
 
             if (isSelfPost) {
-                recyclerViewOnClickCallback.launchSelfPost(i);
+                recyclerViewOnClickCallback.launchSelfPost(i, true);
             } else {
-                recyclerViewOnClickCallback.launchLinkPost(i);
+                recyclerViewOnClickCallback.launchLinkPost(i, false);
             }
         }
     }
@@ -116,9 +119,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
 
     //TODO make sure this is implemented where it needs to be
+    //TODO these methods are doubled up with another interface that MainActivity is implementing
     public interface RecyclerViewOnClickCallback {
-        void launchSelfPost(int position);
-        void launchLinkPost(int position);
+        void launchSelfPost(int position, boolean isSelfPost);
+        void launchLinkPost(int position, boolean isSelfPost);
     }
 
     public interface LoadListOfReadPostIds {

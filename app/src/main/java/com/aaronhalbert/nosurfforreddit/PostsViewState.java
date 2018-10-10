@@ -1,5 +1,7 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import android.text.Spanned;
+
 import java.util.ArrayList;
 
 public class PostsViewState {
