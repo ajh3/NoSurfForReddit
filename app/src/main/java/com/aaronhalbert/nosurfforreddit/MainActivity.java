@@ -165,20 +165,22 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-    //TODO: FIX THIS
-    public void launchSelfPost(int position, boolean isSelfPost) {
-        launchLinkPost(position, isSelfPost);
-    }
+    public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
 
-    public void launchLinkPost(int position, boolean isSelfPost) {
-        String id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
+        String id;
+
+        if (isSubscribedPost) {
+            id = viewModel.getHomePostsLiveDataViewState().getValue().postData.get(position).id;
+        } else {
+            id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
+        }
 
         viewModel.insertReadPostId(id);
         viewModel.requestPostCommentsListing(id);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, PostFragment.newInstance(position, isSelfPost))
+                .replace(R.id.main_activity_frame_layout, PostFragment.newInstance(position, isSelfPost, isSubscribedPost))
                 .addToBackStack(null)
                 .commit();
     }

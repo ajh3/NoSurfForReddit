@@ -25,20 +25,16 @@ import java.util.List;
 
 public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PostsAdapter.LoadListOfReadPostIds {
     private static final String KEY_IS_SUBSCRIBED_POSTS = "isSubscribedPosts";
-
     private boolean isSubscribedPosts;
 
-    private List<ReadPostId> mReadPostIds;
-
     private RecyclerView rv;
-
-    private int lastClickedRow;
-
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private Listing latestListing;
+    private List<ReadPostId> mReadPostIds;
+    private int lastClickedRow;
 
     NoSurfViewModel viewModel;
+    LiveData<Listing> postsLiveData;
 
     public PostsFragment() {
         // Required empty public constructor
@@ -64,35 +60,24 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         //TODO: Pull this out into a separate subscribe() method like in ChronoActivity3, and move the observer registration to onCreate, which is the recommended place for it
         //TODO: should be able to get rid of the notify call (?)
 
-        LiveData<Listing> postsLiveData;
-
         if (isSubscribedPosts) {
-            postsLiveData = viewModel.getAllPostsLiveData();
-        } else {
             postsLiveData = viewModel.getHomePostsLiveData();
+        } else {
+            postsLiveData = viewModel.getAllPostsLiveData();
         }
 
         postsLiveData.observe(this, new Observer<Listing>() {
             @Override
             public void onChanged(@Nullable Listing listing) {
-                Log.e(getClass().toString(), "onChanged in PostsFragment");
-                latestListing = listing;
-                PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
-
-                postsAdapter.setCurrentListing(latestListing);
-                postsAdapter.notifyDataSetChanged();
-
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
-
             }
         });
 
         viewModel.getReadPostIdLiveData().observe(this, new Observer<List<ReadPostId>>() {
             @Override
             public void onChanged(@Nullable List<ReadPostId> readPostIds) {
-                Log.e(getClass().toString(), "Database onChanged in PostsFragment");
                 PostsAdapter postsAdapter = (PostsAdapter) rv.getAdapter();
                 mReadPostIds = readPostIds;
                 postsAdapter.notifyItemChanged(lastClickedRow);
@@ -106,15 +91,13 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
         View v = inflater.inflate(R.layout.fragment_posts, container, false);
 
-        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel, this);
+        PostsAdapter postsAdapter = new PostsAdapter(getActivity(), (PostsAdapter.RecyclerViewOnClickCallback) getActivity(), this, viewModel, this, isSubscribedPosts);
 
         rv = v.findViewById(R.id.posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         rv.setAdapter(postsAdapter);
-        postsAdapter.setCurrentListing(latestListing);
         rv.setHasFixedSize(true);
-
 
         swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -125,8 +108,11 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
     @Override
     public void onRefresh() {
-        viewModel.requestAllSubredditsListing();
-
+        if (isSubscribedPosts) {
+            viewModel.requestHomeSubredditsListing();
+        } else {
+            viewModel.requestAllSubredditsListing();
+        }
     }
 
     public String[] getReadPostIds() {

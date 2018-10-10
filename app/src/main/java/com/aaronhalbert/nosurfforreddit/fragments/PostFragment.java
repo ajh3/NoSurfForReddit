@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
 /**
@@ -34,10 +36,14 @@ public class PostFragment extends Fragment {
     private static final String KEY_POSITION = "position";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String KEY_IS_SELF_POST = "isSelfPost";
+    private static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";
 
     public int position;
     boolean externalBrowser;
     boolean isSelfPost;
+    boolean isSubscribedPost;
+
+    private LiveData<PostsViewState> postsViewStateLiveData;
 
     private OnFragmentInteractionListener mListener;
 
@@ -49,11 +55,12 @@ public class PostFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PostFragment newInstance(int position, boolean isSelfPost) {
+    public static PostFragment newInstance(int position, boolean isSelfPost, boolean isSubscribedPost) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_POSITION, position);
         args.putBoolean(KEY_IS_SELF_POST, isSelfPost);
+        args.putBoolean(KEY_IS_SUBSCRIBED_POST, isSubscribedPost);
         fragment.setArguments(args);
 
         return fragment;
@@ -65,12 +72,19 @@ public class PostFragment extends Fragment {
         if (getArguments() != null) {
             position = getArguments().getInt(KEY_POSITION);
             isSelfPost = getArguments().getBoolean(KEY_IS_SELF_POST);
+            isSubscribedPost = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POST);
         }
         setHasOptionsMenu(true);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+
+        if (isSubscribedPost) {
+            postsViewStateLiveData = viewModel.getHomePostsLiveDataViewState();
+        } else {
+            postsViewStateLiveData = viewModel.getAllPostsLiveDataViewState();
+        }
     }
 
     @Override
@@ -103,7 +117,7 @@ public class PostFragment extends Fragment {
 
         if (isSelfPost) {
             fragmentPostBinding.postFragmentDividerUnderDetailsForSelfPostsOnly.setVisibility(View.VISIBLE);
-            if (!(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).selfTextHtml).equals("")) {
+            if (!(postsViewStateLiveData.getValue().postData.get(position).selfTextHtml).equals("")) {
                 fragmentPostBinding.postFragmentSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
                 fragmentPostBinding.postFragmentDividerUnderSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
             }
@@ -138,7 +152,7 @@ public class PostFragment extends Fragment {
     //TODO: move this to MainActivity
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).url, null);
+            mListener.launchWebView(postsViewStateLiveData.getValue().postData.get(position).url, null);
         }
     }
 
@@ -147,7 +161,7 @@ public class PostFragment extends Fragment {
         if (mListener != null) {
             //mListener.launchWebView(url, null);
             //TODO: pull this out into separate method
-            Uri uri = Uri.parse(viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).url);
+            Uri uri = Uri.parse(postsViewStateLiveData.getValue().postData.get(position).url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
@@ -159,6 +173,10 @@ public class PostFragment extends Fragment {
         } else {
             launchWebView();
         }
+    }
+
+    public LiveData<PostsViewState> getPostsViewStateLiveData() {
+        return postsViewStateLiveData;
     }
 
     @Override

@@ -30,7 +30,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:paddingTop="5dp"
-                android:text="@{viewModel.allPostsLiveDataViewState.postData[postFragment.position].title}"
+                android:text="@{postFragment.postsViewStateLiveData.postData[postFragment.position].title}"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
@@ -40,7 +40,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:paddingBottom="5dp"
-                android:text="@{`in r/` + viewModel.allPostsLiveDataViewState.postData[postFragment.position].subreddit + ` by u/` + viewModel.allPostsLiveDataViewState.postData[postFragment.position].author + ` • ` + viewModel.allPostsLiveDataViewState.postData[postFragment.position].score}"
+                android:text="@{`in r/` + postFragment.postsViewStateLiveData.postData[postFragment.position].subreddit + ` by u/` + postFragment.postsViewStateLiveData.postData[postFragment.position].author + ` • ` + postFragment.postsViewStateLiveData.postData[postFragment.position].score}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_title"/>
 
             <ImageView
@@ -49,7 +49,7 @@
                 android:layout_height="200dp"
                 android:visibility="gone"
                 android:onClick="@{postFragment::onImageClick}"
-                app:imageUrl="@{viewModel.allPostsLiveDataViewState.postData[postFragment.position].imageUrl}"
+                app:imageUrl="@{postFragment.postsViewStateLiveData.postData[postFragment.position].imageUrl}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_details"/>
 
             <View
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:visibility="gone"
-                android:text="@{viewModel.allPostsLiveDataViewState.postData[postFragment.position].selfTextHtml}"
+                android:text="@{postFragment.postsViewStateLiveData.postData[postFragment.position].selfTextHtml}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_details_for_self_posts_only"/>
 
             <View
