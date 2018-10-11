@@ -351,6 +351,7 @@ public class NoSurfRepository {
     }
 
     public LiveData<List<ReadPostId>> getReadPostIdLiveData() {
+        Log.e(getClass().toString(), "getReadPostIdLiveData called in repo");
         return readPostIdLiveData;
     }
 

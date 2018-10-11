@@ -287,8 +287,19 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.insertReadPostId(new ReadPostId(id));
     }
 
-    public LiveData<List<ReadPostId>> getReadPostIdLiveData() {
-        return repository.getReadPostIdLiveData();
+    public LiveData<String[]> getReadPostIdsLiveData() {
+        return Transformations.map(repository.getReadPostIdLiveData(), new Function<List<ReadPostId>, String[]>() {
+            @Override
+            public String[] apply(List<ReadPostId> input) {
+                int size = input.size();
+                String[] readPostIds = new String[size];
+
+                for (int i = 0; i < size; i++) {
+                    readPostIds[i] = input.get(i).getReadPostId();
+                }
+                return readPostIds;
+            }
+        });
     }
 
     private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {

@@ -26,7 +26,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements
         PostFragment.OnFragmentInteractionListener,
-        PostsAdapter.RecyclerViewOnClickCallback,
+        PostsAdapter.launchPostCallback,
         LoginFragment.OnLoginFragmentButtonListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_main);
 
-
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
         if (savedInstanceState == null) {
@@ -73,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements
                     .add(R.id.main_activity_frame_layout, viewPagerFragment, TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
-
-
 
         /* Disable StrictMode due to Untagged socket detected errors
         if (BuildConfig.DEBUG) {
@@ -175,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements
             id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
         }
 
+        Log.e(getClass().toString(), "writing id to database");
         viewModel.insertReadPostId(id);
         viewModel.requestPostCommentsListing(id);
 
