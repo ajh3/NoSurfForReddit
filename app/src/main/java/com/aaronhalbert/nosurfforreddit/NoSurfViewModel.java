@@ -170,6 +170,8 @@ public class NoSurfViewModel extends AndroidViewModel {
                         postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
                     } else if (encodedThumbnailUrl.equals("nsfw")) {
                         postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
+                    } else if (encodedThumbnailUrl.equals("image")) {
+                        postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
                     } else {
                         postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
                     }
