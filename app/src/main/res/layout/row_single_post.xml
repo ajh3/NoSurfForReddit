@@ -4,6 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
+        <import type="android.text.TextUtils"/>
+
         <variable
             name="controller"
             type="com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter.RowHolder"/>
@@ -40,6 +43,7 @@
             android:paddingEnd="2dp"
             android:paddingTop="2dp"
             android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
+            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintEnd_toEndOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
@@ -53,6 +57,7 @@
             android:paddingEnd="2dp"
             android:paddingBottom="2dp"
             android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
+            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintEnd_toEndOf="@id/list_item" />
