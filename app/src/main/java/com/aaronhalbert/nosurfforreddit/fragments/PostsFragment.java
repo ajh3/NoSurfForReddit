@@ -45,7 +45,10 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         }
 
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
-        postsAdapter = new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(), viewModel, this, isSubscribedPostsFragment);
+        postsAdapter = new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(),
+                viewModel,
+                this,
+                isSubscribedPostsFragment);
 
         LiveData<Listing> postsLiveData;
 
@@ -62,7 +65,8 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 //TODO: what is a more efficient way to do this?
-                postsAdapter.notifyDataSetChanged(); //ensures that strikethroughs are performed when postsLiveData is loaded w/ data
+                //ensure that strikethroughs are performed when postsLiveData is loaded w/ data
+                postsAdapter.notifyDataSetChanged();
             }
         });
 
@@ -70,7 +74,8 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             @Override
             public void onChanged(@Nullable String[] readPostIds) {
                 postsAdapter.setReadPostIds(readPostIds);
-                postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow()); //ensure last clicked post is struck through when going BACK to PostsFragment from a PostFragment
+                //ensure last clicked post is struck through when going BACK to PostsFragment
+                postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow());
             }
         });
     }

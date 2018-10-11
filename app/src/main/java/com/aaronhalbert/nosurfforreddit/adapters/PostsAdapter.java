@@ -17,13 +17,17 @@ import java.util.Arrays;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private boolean isSubscribedPostsAdapter;
     private int lastClickedRow;
-    private String[] readPostIds = new String[0]; //initialize to empty array in case it is read from before written to by Observer
+    //initialize to empty array in case it is read from before written to by Observer
+    private String[] readPostIds = new String[0];
     private Fragment hostFragment;
     private LiveData<PostsViewState> postsViewStateLiveData;
     private NoSurfViewModel viewModel;
     private launchPostCallback launchPostCallback;
 
-    public PostsAdapter(launchPostCallback launchPostCallback, NoSurfViewModel viewModel, Fragment hostFragment, boolean isSubscribedPostsAdapter) {
+    public PostsAdapter(launchPostCallback launchPostCallback,
+                        NoSurfViewModel viewModel,
+                        Fragment hostFragment,
+                        boolean isSubscribedPostsAdapter) {
         this.launchPostCallback = launchPostCallback;
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
@@ -44,8 +48,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     @NonNull
     @Override
     public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        RowSinglePostBinding rowSinglePostBinding = RowSinglePostBinding.inflate(hostFragment.getLayoutInflater(), parent, false);
-        rowSinglePostBinding.setLifecycleOwner(hostFragment); //TODO: needed? seems to work without
+        RowSinglePostBinding rowSinglePostBinding =
+                RowSinglePostBinding.inflate(hostFragment.getLayoutInflater(), parent, false);
+        rowSinglePostBinding.setLifecycleOwner(hostFragment);
 
         return new RowHolder(rowSinglePostBinding);
     }
@@ -57,7 +62,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     }
 
     private void strikethroughReadPosts(RowHolder rowHolder, int position) {
-        //TODO: Instead of using getValue, can I bind this somehow, or should I use an observer?
         if (postsViewStateLiveData.getValue() != null) {
             if (Arrays.asList(readPostIds).contains(postsViewStateLiveData.getValue().postData.get(position).id)) {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
