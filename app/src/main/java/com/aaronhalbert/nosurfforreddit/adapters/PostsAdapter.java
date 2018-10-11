@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.PostsViewState;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 
 import java.util.Arrays;

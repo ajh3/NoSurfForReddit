@@ -12,14 +12,13 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.PostsViewState;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
 public class PostFragment extends Fragment {

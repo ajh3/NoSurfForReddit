@@ -7,7 +7,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -15,6 +14,8 @@ import android.util.Log;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.List;
 

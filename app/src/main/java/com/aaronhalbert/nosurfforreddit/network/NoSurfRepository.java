@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.db.ReadPostIdDao;
@@ -16,7 +15,6 @@ import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;

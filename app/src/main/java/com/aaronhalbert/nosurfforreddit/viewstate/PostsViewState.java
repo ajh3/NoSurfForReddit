@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.viewstate;
 
 import android.text.Spanned;
 
