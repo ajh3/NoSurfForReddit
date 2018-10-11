@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             viewModel.initApp();
 
-            viewPagerFragment = ViewPagerFragment.newInstance("abc", "def");
+            viewPagerFragment = ViewPagerFragment.newInstance();
 
             getSupportFragmentManager()
                     .beginTransaction()
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements
     public void launchPreferences() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance("a", "b"))
+                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements
     public void launchAboutScreen() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance("a", "b"))
+                .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }

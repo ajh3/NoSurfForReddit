@@ -14,45 +14,22 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ViewPagerFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ViewPagerFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ViewPagerFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     ViewPager pager;
 
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
 
-    public ViewPagerFragment() {
-        // Required empty public constructor
-    }
+    public ViewPagerFragment() { }
 
-    public static ViewPagerFragment newInstance(String param1, String param2) {
+    public static ViewPagerFragment newInstance() {
         ViewPagerFragment fragment = new ViewPagerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -72,9 +49,5 @@ public class ViewPagerFragment extends Fragment {
         pager.setAdapter(new NoSurfFragmentPagerAdapter(getChildFragmentManager()));
         tabs.setupWithViewPager(pager);
         tabs.setTabMode(TabLayout.MODE_FIXED);
-    }
-
-    public NoSurfFragmentPagerAdapter getNoSurfFragmentPagerAdapter() {
-        return (NoSurfFragmentPagerAdapter) pager.getAdapter();
     }
 }

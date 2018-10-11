@@ -24,7 +24,7 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return PostsFragment.newInstance(false);
         } else {
-            return ContainerFragment.newInstance("abc", "def");
+            return ContainerFragment.newInstance();
         }
     }
 

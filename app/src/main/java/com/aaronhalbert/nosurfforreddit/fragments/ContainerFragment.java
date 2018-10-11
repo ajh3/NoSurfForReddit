@@ -14,20 +14,7 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ContainerFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ContainerFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
@@ -35,34 +22,16 @@ public class ContainerFragment extends Fragment {
     private NoSurfViewModel viewModel;
 
     public ContainerFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ContainerFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ContainerFragment newInstance(String param1, String param2) {
+    public static ContainerFragment newInstance() {
         ContainerFragment fragment = new ContainerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
@@ -123,12 +92,12 @@ public class ContainerFragment extends Fragment {
             } else {
                 if (subscribedPostsFragment == null) { // if neither subscribedPostsFragment nor loginFragment exist
                     fm.beginTransaction()
-                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance("a", "b"), TAG_LOGIN_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance(), TAG_LOGIN_FRAGMENT)
                             .commit();
                 } else { // if only subscribedPostsFragment exists
                     fm.beginTransaction()
                             .remove(subscribedPostsFragment)
-                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance("a", "b"), TAG_LOGIN_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance(), TAG_LOGIN_FRAGMENT)
                             .commit();
                 }
             }

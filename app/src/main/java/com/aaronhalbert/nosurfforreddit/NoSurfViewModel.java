@@ -4,9 +4,6 @@ import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -14,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
-import android.view.View;
 
 import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
@@ -22,7 +18,6 @@ import com.aaronhalbert.nosurfforreddit.reddit.Listing;
 
 import java.util.List;
 
-import static android.arch.lifecycle.Transformations.map;
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 public class NoSurfViewModel extends AndroidViewModel {
@@ -32,8 +27,6 @@ public class NoSurfViewModel extends AndroidViewModel {
         super(application);
     }
 
-    //TODO: need to turn this into a SingleLiveEvent somehow...
-    //TODO: maybe turn this into a PostViewState to separate out processing logic from binding, can include all the dirty code for image edge cases
     private LiveData<CommentsViewState> commentsViewStateLiveData =
             Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
                 @Override

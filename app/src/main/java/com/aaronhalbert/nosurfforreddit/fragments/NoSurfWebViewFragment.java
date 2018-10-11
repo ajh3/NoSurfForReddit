@@ -19,14 +19,6 @@ import android.webkit.WebViewClient;
 
 import com.aaronhalbert.nosurfforreddit.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link NoSurfWebViewFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link NoSurfWebViewFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NoSurfWebViewFragment extends Fragment {
     private static final String KEY_URL = "url";
 
