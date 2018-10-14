@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit;
 
-import android.databinding.BindingAdapter;
-import android.util.Log;
+import androidx.databinding.BindingAdapter;
 import android.widget.ImageView;
 
 public class DataBindingHandlers {

@@ -1,7 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceFragmentCompat;
 
 import com.aaronhalbert.nosurfforreddit.R;
 

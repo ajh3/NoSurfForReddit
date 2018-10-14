@@ -1,10 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -94,6 +94,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             rowSinglePostBinding.executePendingBindings();
         }
 
+        //placed in RowHolder class so data binding class can access it
+        public LiveData<PostsViewState> getPostsViewStateLiveData() {
+            return postsViewStateLiveData;
+        }
+
         @Override
         public void onClick(View v) {
             int i = getAdapterPosition();
@@ -101,11 +106,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             boolean isSelfPost = getPostsViewStateLiveData().getValue().postData.get(i).isSelf;
 
             launchPostCallback.launchPost(i, isSelfPost, isSubscribedPostsAdapter);
-        }
-
-        //placed in RowHolder class so data binding class can access it
-        public LiveData<PostsViewState> getPostsViewStateLiveData() {
-            return postsViewStateLiveData;
         }
     }
 

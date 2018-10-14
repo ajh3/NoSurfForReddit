@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.aaronhalbert.nosurfforreddit"
@@ -37,29 +37,23 @@ android {
     }
 }
 
-def supportVer = "27.1.1"
-def archVer = "1.1.1"
-
 dependencies {
-    implementation "com.android.support:support-v4:$supportVer"
-    implementation "com.android.support:support-compat:$supportVer"
-    implementation "com.android.support:appcompat-v7:$supportVer"
-    implementation "com.android.support:preference-v7:$supportVer"
-    implementation "com.android.support:design:$supportVer"
-    implementation "com.android.support:recyclerview-v7:$supportVer"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation "android.arch.lifecycle:extensions:$archVer"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.core:core:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.preference:preference:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01'
+    implementation 'androidx.room:room-runtime:2.0.0-rc01'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.google.android.exoplayer:exoplayer:2.8.4'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation "android.arch.persistence.room:runtime:1.1.1"
-    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+
+    annotationProcessor 'androidx.room:room-compiler:2.0.0-rc01'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
-
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
 }

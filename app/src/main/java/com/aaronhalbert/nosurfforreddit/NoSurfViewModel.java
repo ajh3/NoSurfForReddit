@@ -1,12 +1,12 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import android.app.Application;
-import android.arch.core.util.Function;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
+import androidx.arch.core.util.Function;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;

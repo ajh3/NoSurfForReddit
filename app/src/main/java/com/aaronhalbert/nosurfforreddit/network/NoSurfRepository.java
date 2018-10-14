@@ -1,8 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;

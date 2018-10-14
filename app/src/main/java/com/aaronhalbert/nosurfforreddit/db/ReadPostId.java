@@ -1,10 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.db;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
-
-import java.util.Objects;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 /**
  * A basic class representing an entity that is a row in a one-column database table.

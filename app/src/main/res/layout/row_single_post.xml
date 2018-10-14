@@ -16,7 +16,7 @@
             type="com.aaronhalbert.nosurfforreddit.NoSurfViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,5 +62,5 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintEnd_toEndOf="@id/list_item" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
