@@ -28,6 +28,7 @@ public class NoSurfViewModel extends AndroidViewModel {
         super(application);
     }
 
+    //TODO: why doesn't a lambda work here?
     private LiveData<CommentsViewState> commentsViewStateLiveData =
             Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
                 @Override
@@ -86,127 +87,124 @@ public class NoSurfViewModel extends AndroidViewModel {
             postsLiveData = getAllPostsLiveData();
         }
 
-        return Transformations.map(postsLiveData, new Function<Listing, PostsViewState>() {
-            @Override
-            public PostsViewState apply(Listing input) {
-                PostsViewState postsViewState = new PostsViewState();
+        return Transformations.map(postsLiveData, input -> {
+            PostsViewState postsViewState = new PostsViewState();
 
-                for (int i = 0; i < 25; i++) {
-                    PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+            for (int i = 0; i < 25; i++) {
+                PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
 
-                    postDatum.isSelf = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .isIsSelf();
+                postDatum.isSelf = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .isIsSelf();
 
-                    postDatum.id = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getId();
+                postDatum.id = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getId();
 
-                    String title = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getTitle();
-                    postDatum.title = decodeHtml(title).toString(); // some titles contain HTML special entities
+                String title = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getTitle();
+                postDatum.title = decodeHtml(title).toString(); // some titles contain HTML special entities
 
-                    postDatum.author = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getAuthor();
+                postDatum.author = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getAuthor();
 
-                    postDatum.subreddit = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getSubreddit();
+                postDatum.subreddit = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getSubreddit();
 
-                    postDatum.score = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getScore();
+                postDatum.score = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getScore();
 
-                    postDatum.numComments = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getNumComments();
+                postDatum.numComments = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getNumComments();
 
-                    String encodedUrl = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getUrl();
-                    postDatum.url = decodeHtml(encodedUrl).toString();
+                String encodedUrl = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getUrl();
+                postDatum.url = decodeHtml(encodedUrl).toString();
 
-                    String encodedThumbnailUrl = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getThumbnail();
-                    if (encodedThumbnailUrl.equals("default")) {
-                        postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-                    } else if (encodedThumbnailUrl.equals("self")) {
-                        postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
-                    } else if (encodedThumbnailUrl.equals("nsfw")) {
-                        postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
-                    } else if (encodedThumbnailUrl.equals("image")) {
-                        postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-                    } else {
-                        postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
-                    }
-
-                    if (input.getData().getChildren().get(i).getData().getPreview() == null) {
-                        postDatum.imageUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-                    } else {
-                        String encodedImageUrl = input
-                                .getData()
-                                .getChildren()
-                                .get(i)
-                                .getData()
-                                .getPreview()
-                                .getImages()
-                                .get(0)
-                                .getSource()
-                                .getUrl();
-                        postDatum.imageUrl = decodeHtml(encodedImageUrl).toString();
-                    }
-
-                    if (postDatum.isSelf) {
-                        String twiceEncodedSelfTextHtml = input
-                                .getData()
-                                .getChildren()
-                                .get(i)
-                                .getData()
-                                .getSelfTextHtml();
-                        if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
-                            String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
-                            String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
-                            postDatum.selfTextHtml = (String) trimTrailingWhitespace(decodedSelfTextHtml);
-                        } else {
-                            postDatum.selfTextHtml = "";
-                        }
-                    }
-
-                    postsViewState.postData.add(postDatum);
+                String encodedThumbnailUrl = input
+                        .getData()
+                        .getChildren()
+                        .get(i)
+                        .getData()
+                        .getThumbnail();
+                if (encodedThumbnailUrl.equals("default")) {
+                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                } else if (encodedThumbnailUrl.equals("self")) {
+                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
+                } else if (encodedThumbnailUrl.equals("nsfw")) {
+                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
+                } else if (encodedThumbnailUrl.equals("image")) {
+                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                } else {
+                    postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
                 }
 
-                return postsViewState;
+                if (input.getData().getChildren().get(i).getData().getPreview() == null) {
+                    postDatum.imageUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                } else {
+                    String encodedImageUrl = input
+                            .getData()
+                            .getChildren()
+                            .get(i)
+                            .getData()
+                            .getPreview()
+                            .getImages()
+                            .get(0)
+                            .getSource()
+                            .getUrl();
+                    postDatum.imageUrl = decodeHtml(encodedImageUrl).toString();
+                }
+
+                if (postDatum.isSelf) {
+                    String twiceEncodedSelfTextHtml = input
+                            .getData()
+                            .getChildren()
+                            .get(i)
+                            .getData()
+                            .getSelfTextHtml();
+                    if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
+                        String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
+                        String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
+                        postDatum.selfTextHtml = (String) trimTrailingWhitespace(decodedSelfTextHtml);
+                    } else {
+                        postDatum.selfTextHtml = "";
+                    }
+                }
+
+                postsViewState.postData.add(postDatum);
             }
+
+            return postsViewState;
         });
     }
 
@@ -284,17 +282,14 @@ public class NoSurfViewModel extends AndroidViewModel {
     }
 
     public LiveData<String[]> getReadPostIdsLiveData() {
-        return Transformations.map(repository.getReadPostIdLiveData(), new Function<List<ReadPostId>, String[]>() {
-            @Override
-            public String[] apply(List<ReadPostId> input) {
-                int size = input.size();
-                String[] readPostIds = new String[size];
+        return Transformations.map(repository.getReadPostIdLiveData(), input -> {
+            int size = input.size();
+            String[] readPostIds = new String[size];
 
-                for (int i = 0; i < size; i++) {
-                    readPostIds[i] = input.get(i).getReadPostId();
-                }
-                return readPostIds;
+            for (int i = 0; i < size; i++) {
+                readPostIds[i] = input.get(i).getReadPostId();
             }
+            return readPostIds;
         });
     }
 

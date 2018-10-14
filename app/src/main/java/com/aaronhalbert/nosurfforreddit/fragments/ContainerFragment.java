@@ -35,12 +35,9 @@ public class ContainerFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
 
-        viewModel.getUserOAuthRefreshTokenLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                boolean isUserLoggedIn = (s != null) && !(s.equals(""));
-                setContainerChildFragment(isUserLoggedIn);
-            }
+        viewModel.getUserOAuthRefreshTokenLiveData().observe(this, s -> {
+            boolean isUserLoggedIn = (s != null) && !(s.equals(""));
+            setContainerChildFragment(isUserLoggedIn);
         });
 
         boolean isUserLoggedIn = viewModel.isUserLoggedIn();

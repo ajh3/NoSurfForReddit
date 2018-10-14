@@ -113,23 +113,20 @@ public class PostFragment extends Fragment {
         }
 
         //display the appropriate text fields and dividers depending on how many comments the current post has
-        viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                if (aBoolean) {
-                    int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
+        viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
+            if (aBoolean) {
+                int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
 
-                    for (int i = 0; i < numComments; i++) {
-                        comments[i].setVisibility(View.VISIBLE);
-                        commentsDetails[i].setVisibility(View.VISIBLE);
-                    }
-
-                    for (int i = 0; i < (numComments - 1); i++) {
-                        dividers[i].setVisibility(View.VISIBLE);
-                    }
-
-                    fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
+                for (int i = 0; i < numComments; i++) {
+                    comments[i].setVisibility(View.VISIBLE);
+                    commentsDetails[i].setVisibility(View.VISIBLE);
                 }
+
+                for (int i = 0; i < (numComments - 1); i++) {
+                    dividers[i].setVisibility(View.VISIBLE);
+                }
+
+                fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
             }
         });
 

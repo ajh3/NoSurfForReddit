@@ -58,25 +58,19 @@ public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             postsLiveData = viewModel.getAllPostsLiveData();
         }
 
-        postsLiveData.observe(this, new Observer<Listing>() {
-            @Override
-            public void onChanged(@Nullable Listing listing) {
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-                //TODO: what is a more efficient way to do this?
-                //ensure that strikethroughs are performed when postsLiveData is loaded w/ data
-                postsAdapter.notifyDataSetChanged();
+        postsLiveData.observe(this, listing -> {
+            if (swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(false);
             }
+            //TODO: what is a more efficient way to do this?
+            //ensure that strikethroughs are performed when postsLiveData is loaded w/ data
+            postsAdapter.notifyDataSetChanged();
         });
 
-        viewModel.getReadPostIdsLiveData().observe(this, new Observer<String[]>() {
-            @Override
-            public void onChanged(@Nullable String[] readPostIds) {
-                postsAdapter.setReadPostIds(readPostIds);
-                //ensure last clicked post is struck through when going BACK to PostsFragment
-                postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow());
-            }
+        viewModel.getReadPostIdsLiveData().observe(this, readPostIds -> {
+            postsAdapter.setReadPostIds(readPostIds);
+            //ensure last clicked post is struck through when going BACK to PostsFragment
+            postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow());
         });
     }
 
