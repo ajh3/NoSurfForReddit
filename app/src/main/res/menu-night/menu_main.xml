@@ -4,12 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/refresh"
-        android:icon="@drawable/ic_refresh_white_24dp"
-        android:title="@string/refresh"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/login"
         android:title="@string/login"
         app:showAsAction="never"/>

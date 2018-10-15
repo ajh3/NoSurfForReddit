@@ -122,11 +122,6 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.logout:
                 logout();
                 return true;
-            case R.id.refresh:
-                viewModel.requestAllSubredditsListing();
-                viewModel.requestHomeSubredditsListing();
-                viewModel.requestPostCommentsListing("previous");
-                return true;
             case R.id.settings:
                 launchPreferences();
                 return true;
