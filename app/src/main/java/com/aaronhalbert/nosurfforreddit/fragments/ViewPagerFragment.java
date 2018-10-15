@@ -22,7 +22,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
 public class ViewPagerFragment extends Fragment {
-    ViewPager pager;
+    private ViewPager pager;
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
 
@@ -58,22 +58,6 @@ public class ViewPagerFragment extends Fragment {
         pager.setAdapter(noSurfFragmentPagerAdapter);
         tabs.setupWithViewPager(pager);
         tabs.setTabMode(TabLayout.MODE_FIXED);
-        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                Log.e(getClass().toString(), "page selected");
-                invalidateFragmentMenus(position);
-                super.onPageSelected(position);
-            }
-
-            private void invalidateFragmentMenus(int position) {
-                for (int i = 0; i < noSurfFragmentPagerAdapter.getCount(); i++) {
-                    noSurfFragmentPagerAdapter.getItem(i).setHasOptionsMenu(i == position);
-                    Log.e(getClass().toString(), "lol" + (i == position));
-                }
-                getActivity().invalidateOptionsMenu();
-            }
-        });
     }
 
     @Override

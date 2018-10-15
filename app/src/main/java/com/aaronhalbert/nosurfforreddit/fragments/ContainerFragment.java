@@ -63,13 +63,13 @@ public class ContainerFragment extends Fragment {
                 } else { // if only loginFragment exists
                     fm.beginTransaction()
                             .remove(loginFragment)
-                            .add(R.id.container_fragment_base_view, PostsFragment.newInstance(true), TAG_SUBSCRIBED_POSTS_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance(), TAG_SUBSCRIBED_POSTS_FRAGMENT)
                             .commit();
                 }
             } else {
                 if (subscribedPostsFragment == null) { // if neither subscribedPostsFragment nor loginFragment exist
                     fm.beginTransaction()
-                            .add(R.id.container_fragment_base_view, PostsFragment.newInstance(true), TAG_SUBSCRIBED_POSTS_FRAGMENT)
+                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance(), TAG_SUBSCRIBED_POSTS_FRAGMENT)
                             .commit();
                 } else { // if only subscribedPostsFragment exists
                     //do nothing
