@@ -72,8 +72,6 @@ public class NoSurfRepository {
 
     private RetrofitInterface ri = retrofit.create(RetrofitInterface.class);
 
-    private NoSurfRepository() { }
-
     public static NoSurfRepository getInstance(Application application) {
         if (repositoryInstance == null) {
             repositoryInstance = new NoSurfRepository();

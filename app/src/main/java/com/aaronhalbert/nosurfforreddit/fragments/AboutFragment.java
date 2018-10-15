@@ -10,9 +10,6 @@ import com.aaronhalbert.nosurfforreddit.R;
 
 public class AboutFragment extends Fragment {
 
-    public AboutFragment() {
-    }
-
     public static AboutFragment newInstance() {
         AboutFragment fragment = new AboutFragment();
         return fragment;

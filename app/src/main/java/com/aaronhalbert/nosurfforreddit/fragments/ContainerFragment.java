@@ -19,9 +19,6 @@ public class ContainerFragment extends Fragment {
 
     private NoSurfViewModel viewModel;
 
-    public ContainerFragment() {
-    }
-
     public static ContainerFragment newInstance() {
         ContainerFragment fragment = new ContainerFragment();
         return fragment;

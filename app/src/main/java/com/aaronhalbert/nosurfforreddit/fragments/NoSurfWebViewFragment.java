@@ -25,10 +25,6 @@ public class NoSurfWebViewFragment extends Fragment {
 
     private WebView browser;
 
-    public NoSurfWebViewFragment() {
-        // Required empty public constructor
-    }
-
     public static NoSurfWebViewFragment newInstance(String url) {
         NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
         Bundle args = new Bundle();

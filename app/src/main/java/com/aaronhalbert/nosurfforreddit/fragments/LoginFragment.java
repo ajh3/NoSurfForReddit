@@ -14,8 +14,6 @@ public class LoginFragment extends Fragment {
 
     private OnLoginFragmentButtonListener onLoginFragmentButtonListener;
 
-    public LoginFragment() { }
-
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         return fragment;

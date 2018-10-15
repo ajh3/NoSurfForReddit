@@ -39,8 +39,6 @@ public class PostFragment extends Fragment {
     FragmentPostBinding fragmentPostBinding = null;
     NoSurfViewModel viewModel = null;
 
-    public PostFragment() { }
-
     public static PostFragment newInstance(int position, boolean isSelfPost, boolean isSubscribedPost) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();

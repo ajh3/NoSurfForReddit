@@ -26,8 +26,6 @@ public class ViewPagerFragment extends Fragment {
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
 
-    public ViewPagerFragment() { }
-
     public static ViewPagerFragment newInstance() {
         ViewPagerFragment fragment = new ViewPagerFragment();
         return fragment;
