@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupStrictMode();
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -248,5 +251,19 @@ public class MainActivity extends AppCompatActivity implements
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             recreate();
         }
+    }
+
+    //detects all violations on main thread, logs to Logcat, and flash red border if DEBUG build
+    private void setupStrictMode() {
+        StrictMode.ThreadPolicy.Builder builder=
+                new StrictMode.ThreadPolicy.Builder()
+                        .detectAll() //detect all suspected violations
+                        .penaltyLog(); //log detected violations to Logcat at d level
+
+        if (BuildConfig.DEBUG) {
+            builder.penaltyFlashScreen();
+        }
+
+        StrictMode.setThreadPolicy(builder.build());
     }
 }
