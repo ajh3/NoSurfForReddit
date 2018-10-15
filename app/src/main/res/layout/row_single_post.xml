@@ -17,50 +17,26 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/RecyclerViewRow"
         android:id="@+id/list_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
         android:onClick="@{controller::onClick}">
 
         <ImageView
+            style="@style/RecyclerViewRowThumbnail"
             android:id="@+id/thumbnail"
-            android:layout_width="90sp"
-            android:layout_height="90sp"
-            android:contentDescription="@string/thumbnail"
-            android:padding="2dp"
-            app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
-            app:layout_constraintStart_toStartOf="@id/list_item"
-            app:layout_constraintTop_toTopOf="@id/list_item"/>
+            app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}" />
 
         <TextView
+            style="@style/RecyclerViewRowTitle"
             android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingStart="2dp"
-            android:paddingEnd="2dp"
-            android:paddingTop="2dp"
             android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}"
-            app:layout_constraintStart_toEndOf="@id/thumbnail"
-            app:layout_constraintEnd_toEndOf="@id/list_item"
-            app:layout_constraintTop_toTopOf="@id/list_item"/>
+            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}" />
 
         <TextView
+            style="@style/RecyclerViewRowDetails"
             android:id="@+id/details"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:paddingStart="2dp"
-            android:paddingEnd="2dp"
-            android:paddingBottom="2dp"
             android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}"
-            app:layout_constraintStart_toEndOf="@id/thumbnail"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintEnd_toEndOf="@id/list_item" />
+            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
