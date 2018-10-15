@@ -29,7 +29,7 @@
             android:layout_height="90sp"
             android:contentDescription="@string/thumbnail"
             android:padding="2dp"
-            app:thumbnailUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
+            app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
             app:layout_constraintStart_toStartOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
 
