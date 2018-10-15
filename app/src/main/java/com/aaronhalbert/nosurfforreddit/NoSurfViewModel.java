@@ -76,13 +76,13 @@ public class NoSurfViewModel extends AndroidViewModel {
 
     private LiveData<PostsViewState> allPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(false);
 
-    private LiveData<PostsViewState> homePostsLiveDataViewState = transformPostsLiveDataToPostsViewState(true);
+    private LiveData<PostsViewState> subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(true);
 
     private LiveData<PostsViewState> transformPostsLiveDataToPostsViewState(boolean isSubscribed) {
         LiveData<Listing> postsLiveData;
 
         if (isSubscribed) {
-            postsLiveData = getHomePostsLiveData();
+            postsLiveData = getSubscribedPostsLiveData();
         } else {
             postsLiveData = getAllPostsLiveData();
         }
@@ -212,8 +212,8 @@ public class NoSurfViewModel extends AndroidViewModel {
         return repository.getAllPostsLiveData();
     }
 
-    public LiveData<Listing> getHomePostsLiveData() {
-        return repository.getHomePostsLiveData();
+    public LiveData<Listing> getSubscribedPostsLiveData() {
+        return repository.getSubscribedPostsLiveData();
     }
 
     public LiveData<List<Listing>> getCommentsLiveData() {
@@ -232,8 +232,8 @@ public class NoSurfViewModel extends AndroidViewModel {
         return allPostsLiveDataViewState;
     }
 
-    public LiveData<PostsViewState> getHomePostsLiveDataViewState() {
-        return homePostsLiveDataViewState;
+    public LiveData<PostsViewState> getSubscribedPostsLiveDataViewState() {
+        return subscribedPostsLiveDataViewState;
     }
 
     public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
@@ -244,10 +244,10 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.initializeTokensFromSharedPrefs();
 
         if (isUserLoggedIn()) {
-            requestAllSubredditsListing();
-            requestHomeSubredditsListing();
+            refreshAllPosts();
+            refreshSubscribedPosts();
         } else {
-            repository.requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
+            repository.requestAppOnlyOAuthToken("refreshAllPosts", null);
         }
     }
 
@@ -257,16 +257,16 @@ public class NoSurfViewModel extends AndroidViewModel {
         return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
     }
 
-    public void requestAllSubredditsListing() {
-        repository.requestAllSubredditsListing(isUserLoggedIn());
+    public void refreshAllPosts() {
+        repository.refreshAllPosts(isUserLoggedIn());
     }
 
-    public void requestHomeSubredditsListing() {
-        repository.requestHomeSubredditsListing(isUserLoggedIn());
+    public void refreshSubscribedPosts() {
+        repository.refreshSubscribedPosts(isUserLoggedIn());
     }
 
-    void requestPostCommentsListing(String id) {
-        repository.requestPostCommentsListing(id, isUserLoggedIn());
+    void refreshPostComments(String id) {
+        repository.refreshPostComments(id, isUserLoggedIn());
     }
 
     void requestUserOAuthToken(String code) {

@@ -162,14 +162,14 @@ public class MainActivity extends AppCompatActivity implements
         String id;
 
         if (isSubscribedPost) {
-            id = viewModel.getHomePostsLiveDataViewState().getValue().postData.get(position).id;
+            id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
         } else {
             id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
         }
 
         Log.e(getClass().toString(), "writing id to database");
         viewModel.insertReadPostId(id);
-        viewModel.requestPostCommentsListing(id);
+        viewModel.refreshPostComments(id);
 
         getSupportFragmentManager()
                 .beginTransaction()

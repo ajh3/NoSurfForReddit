@@ -25,6 +25,6 @@ public class AllPostsFragment extends PostsFragment {
 
     @Override
     public void onRefresh() {
-        viewModel.requestAllSubredditsListing();
+        viewModel.refreshAllPosts();
     }
 }

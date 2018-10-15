@@ -53,7 +53,7 @@ public class NoSurfRepository {
     private MutableLiveData<String> appOnlyOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
 
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
-    private MutableLiveData<Listing> homePostsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
 
     private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvent = new SingleLiveEvent<>();
@@ -105,11 +105,11 @@ public class NoSurfRepository {
                         .apply();
 
                 switch (callback) {
-                    case "requestAllSubredditsListing":
-                        requestAllSubredditsListing(false);
+                    case "refreshAllPosts":
+                        refreshAllPosts(false);
                         break;
-                    case "requestPostCommentsListing":
-                        requestPostCommentsListing(id, false);
+                    case "refreshPostComments":
+                        refreshPostComments(id, false);
                         break;
                     case "":
                         break;
@@ -142,8 +142,8 @@ public class NoSurfRepository {
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
                         .apply();
 
-                requestAllSubredditsListing(true);
-                requestHomeSubredditsListing(true);
+                refreshAllPosts(true);
+                refreshSubscribedPosts(true);
             }
 
             @Override
@@ -173,14 +173,14 @@ public class NoSurfRepository {
                         .apply();
 
                 switch (callback) {
-                    case "requestAllSubredditsListing":
-                        requestAllSubredditsListing(true);
+                    case "refreshAllPosts":
+                        refreshAllPosts(true);
                         break;
-                    case "requestHomeSubredditsListing":
-                        requestHomeSubredditsListing(true);
+                    case "refreshSubscribedPosts":
+                        refreshSubscribedPosts(true);
                         break;
-                    case "requestPostCommentsListing":
-                        requestPostCommentsListing(id, true);
+                    case "refreshPostComments":
+                        refreshPostComments(id, true);
                         break;
                 }
             }
@@ -194,7 +194,7 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void requestAllSubredditsListing(final boolean isUserLoggedIn) {
+    public void refreshAllPosts(final boolean isUserLoggedIn) {
         final String accessToken;
         String bearerAuth;
 
@@ -207,15 +207,15 @@ public class NoSurfRepository {
             bearerAuth = "Bearer " + accessToken;
         }
 
-        ri.requestAllSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
+        ri.refreshAllPosts(bearerAuth).enqueue(new Callback<Listing>() {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
                     Log.e(getClass().toString(), "--> response code 401 while requesting all, refreshing expired token...");
-                    refreshExpiredUserOAuthToken("requestAllSubredditsListing", null);
+                    refreshExpiredUserOAuthToken("refreshAllPosts", null);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
                     Log.e(getClass().toString(), "--> response code 401 while requesting app-only all, requesting new app-only token...");
-                    requestAppOnlyOAuthToken("requestAllSubredditsListing", null);
+                    requestAppOnlyOAuthToken("refreshAllPosts", null);
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -223,32 +223,32 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.e(getClass().toString(), "--> requestAllSubredditsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "--> refreshAllPosts call failed: " + t.toString());
             }
         });
     }
 
     /* Should only run when user is logged in */
 
-    public void requestHomeSubredditsListing(final boolean isUserLoggedIn) {
+    public void refreshSubscribedPosts(final boolean isUserLoggedIn) {
         String bearerAuth = "Bearer " + userOAuthTokenLiveData.getValue();
 
         if (isUserLoggedIn) {
-            Log.e(getClass().toString(), "--> user logged in, requesting home...");
-            ri.requestHomeSubredditsListing(bearerAuth).enqueue(new Callback<Listing>() {
+            Log.e(getClass().toString(), "--> user logged in, requesting subscribed posts...");
+            ri.refreshSubscribedPosts(bearerAuth).enqueue(new Callback<Listing>() {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == 401) {
-                        Log.e(getClass().toString(), "--> response code 401 while requesting home, refreshing expired token...");
-                        refreshExpiredUserOAuthToken("requestHomeSubredditsListing", null);
+                        Log.e(getClass().toString(), "--> response code 401 while requesting subscribed posts, refreshing expired token...");
+                        refreshExpiredUserOAuthToken("refreshSubscribedPosts", null);
                     } else {
-                        homePostsLiveData.setValue(response.body());
+                        subscribedPostsLiveData.setValue(response.body());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Listing> call, Throwable t) {
-                    Log.e(getClass().toString(), "--> requestHomeSubredditsListing call failed: " + t.toString());
+                    Log.e(getClass().toString(), "--> refreshSubscribedPosts call failed: " + t.toString());
                 }
             });
         } else {
@@ -258,7 +258,7 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void requestPostCommentsListing(String id, final boolean isUserLoggedIn) {
+    public void refreshPostComments(String id, final boolean isUserLoggedIn) {
         String accessToken;
         String bearerAuth;
         String idToPass;
@@ -282,13 +282,13 @@ public class NoSurfRepository {
             bearerAuth = "Bearer " + accessToken;
         }
 
-        ri.requestPostCommentsListing(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
+        ri.refreshPostComments(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
-                    refreshExpiredUserOAuthToken("requestPostCommentsListing", finalIdToPass);
+                    refreshExpiredUserOAuthToken("refreshPostComments", finalIdToPass);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
-                    requestAppOnlyOAuthToken("requestPostCommentsListing", finalIdToPass);
+                    requestAppOnlyOAuthToken("refreshPostComments", finalIdToPass);
                 } else {
                     commentsLiveData.setValue(response.body());
                     commentsFinishedLoadingLiveEvent.setValue(true);
@@ -298,7 +298,7 @@ public class NoSurfRepository {
 
             @Override
             public void onFailure(Call<List<Listing>> call, Throwable t) {
-                Log.e(getClass().toString(), "--> requestPostCommentsListing call failed: " + t.toString());
+                Log.e(getClass().toString(), "--> refreshPostComments call failed: " + t.toString());
             }
         });
     }
@@ -330,8 +330,8 @@ public class NoSurfRepository {
         return allPostsLiveData;
     }
 
-    public LiveData<Listing> getHomePostsLiveData() {
-        return homePostsLiveData;
+    public LiveData<Listing> getSubscribedPostsLiveData() {
+        return subscribedPostsLiveData;
     }
 
     public LiveData<List<Listing>> getCommentsLiveData() {

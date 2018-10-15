@@ -10,7 +10,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.google.android.material.tabs.TabLayout;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,9 +68,9 @@ public class ViewPagerFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.refresh) {
             if (pager.getCurrentItem() == 0) {
-                viewModel.requestAllSubredditsListing();
+                viewModel.refreshAllPosts();
             } else {
-                viewModel.requestHomeSubredditsListing();
+                viewModel.refreshSubscribedPosts();
             }
             return true;
         }

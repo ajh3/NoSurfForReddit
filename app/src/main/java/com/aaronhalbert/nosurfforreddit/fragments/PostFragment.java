@@ -65,7 +65,7 @@ public class PostFragment extends Fragment {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         if (isSubscribedPost) {
-            postsViewStateLiveData = viewModel.getHomePostsLiveDataViewState();
+            postsViewStateLiveData = viewModel.getSubscribedPostsLiveDataViewState();
         } else {
             postsViewStateLiveData = viewModel.getAllPostsLiveDataViewState();
         }

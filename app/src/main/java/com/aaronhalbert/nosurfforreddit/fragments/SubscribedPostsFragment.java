@@ -20,11 +20,11 @@ public class SubscribedPostsFragment extends PostsFragment {
 
     @Override
     void setPostsLiveData() {
-        postsLiveData = viewModel.getHomePostsLiveData();
+        postsLiveData = viewModel.getSubscribedPostsLiveData();
     }
 
     @Override
     public void onRefresh() {
-        viewModel.requestHomeSubredditsListing();
+        viewModel.refreshSubscribedPosts();
     }
 }

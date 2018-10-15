@@ -34,7 +34,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
         if (isSubscribedPostsAdapter) {
-            postsViewStateLiveData = viewModel.getHomePostsLiveDataViewState();
+            postsViewStateLiveData = viewModel.getSubscribedPostsLiveDataViewState();
         } else {
             postsViewStateLiveData = viewModel.getAllPostsLiveDataViewState();
         }

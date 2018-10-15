@@ -49,17 +49,17 @@ public interface RetrofitInterface {
 
     @Headers({USER_AGENT})
     @GET("r/all/hot")
-    Call<Listing> requestAllSubredditsListing(
+    Call<Listing> refreshAllPosts(
             @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("hot")
-    Call<Listing> requestHomeSubredditsListing(
+    Call<Listing> refreshSubscribedPosts(
             @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("comments/{article}")
-    Call<List<Listing>> requestPostCommentsListing(
+    Call<List<Listing>> refreshPostComments(
             @Header("Authorization") String authorization,
             @Path("article") String article);
 }
