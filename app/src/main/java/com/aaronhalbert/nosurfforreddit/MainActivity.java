@@ -16,10 +16,12 @@ import android.view.MenuItem;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.PostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 import java.util.UUID;
@@ -171,11 +173,19 @@ public class MainActivity extends AppCompatActivity implements
         viewModel.insertReadPostId(id);
         viewModel.refreshPostComments(id);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_activity_frame_layout, PostFragment.newInstance(position, isSelfPost, isSubscribedPost))
-                .addToBackStack(null)
-                .commit();
+        if (isSelfPost) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(position, isSubscribedPost))
+                    .addToBackStack(null)
+                    .commit();
+        } else if (!isSelfPost) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(position, isSubscribedPost))
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     public void login() {
