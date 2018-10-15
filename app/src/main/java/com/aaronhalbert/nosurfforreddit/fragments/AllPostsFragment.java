@@ -4,8 +4,8 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 
 public class AllPostsFragment extends PostsFragment {
 
-    public static PostsFragment newInstance() {
-        PostsFragment fragment = new AllPostsFragment();
+    public static AllPostsFragment newInstance() {
+        AllPostsFragment fragment = new AllPostsFragment();
         return fragment;
     }
 
@@ -25,6 +25,6 @@ public class AllPostsFragment extends PostsFragment {
 
     @Override
     public void onRefresh() {
-        viewModel.getAllPostsLiveData();
+        viewModel.requestAllSubredditsListing();
     }
 }

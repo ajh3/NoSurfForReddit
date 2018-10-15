@@ -4,8 +4,8 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 
 public class SubscribedPostsFragment extends PostsFragment {
 
-    public static PostsFragment newInstance() {
-        PostsFragment fragment = new SubscribedPostsFragment();
+    public static SubscribedPostsFragment newInstance() {
+        SubscribedPostsFragment fragment = new SubscribedPostsFragment();
         return fragment;
     }
 
@@ -25,6 +25,6 @@ public class SubscribedPostsFragment extends PostsFragment {
 
     @Override
     public void onRefresh() {
-        viewModel.getHomePostsLiveData();
+        viewModel.requestHomeSubredditsListing();
     }
 }
