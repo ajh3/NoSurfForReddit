@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
             String state = uri.getQueryParameter("state");
 
             if (error != null && error.equals("access_denied")) {
-                Log.e(getClass().toString(), "access denied");
+                Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.requestUserOAuthToken(code);
             }
