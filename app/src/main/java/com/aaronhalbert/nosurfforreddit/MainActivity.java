@@ -78,12 +78,6 @@ public class MainActivity extends AppCompatActivity implements
                     .add(R.id.main_activity_frame_layout, viewPagerFragment, TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
-
-        /* Disable StrictMode due to Untagged socket detected errors
-        if (BuildConfig.DEBUG) {
-            StrictMode.enableDefaults();
-        }
-        */
     }
 
     @Override
