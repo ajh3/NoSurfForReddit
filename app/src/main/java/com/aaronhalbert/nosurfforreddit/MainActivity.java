@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
         darkMode = preferences.getBoolean(KEY_DARK_MODE, false);
 
         if (darkMode) {
+            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -239,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements
         darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, false);
 
         if (darkMode) {
+            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             recreate();
         } else {
