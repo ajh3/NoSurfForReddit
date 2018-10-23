@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -19,13 +21,15 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
-public class NoSurfViewModel extends AndroidViewModel {
-    private NoSurfRepository repository = NoSurfRepository.getInstance(getApplication());
+public class NoSurfViewModel extends ViewModel {
+    @Inject NoSurfRepository repository;
 
-    public NoSurfViewModel(@NonNull Application application) {
-        super(application);
+    public NoSurfViewModel(NoSurfRepository repository) {
+        this.repository = repository;
     }
 
     //TODO: why doesn't a lambda work here?

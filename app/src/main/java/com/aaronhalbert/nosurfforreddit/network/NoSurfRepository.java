@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfApplication;
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.room.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.room.ReadPostIdDao;
@@ -16,6 +17,8 @@ import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.redditschema.UserOAuthToken;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -31,7 +34,6 @@ public class NoSurfRepository {
     private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
     private static final String OAUTH_BASE_URL = "https://www.reddit.com/api/v1/access_token";
-    private static final String API_BASE_URL = "https://oauth.reddit.com/";
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
     private static final String KEY_APP_ONLY_TOKEN = "appOnlyAccessToken";
@@ -41,12 +43,10 @@ public class NoSurfRepository {
 
     String previousCommentId;
 
-    private static NoSurfRepository repositoryInstance;
-    private static Application application;
-
-    private static ReadPostIdDao readPostIdDao;
-    private static LiveData<List<ReadPostId>> readPostIdLiveData;
-    private static ReadPostIdRoomDatabase db;
+    private Application application;
+    private ReadPostIdDao readPostIdDao;
+    private LiveData<List<ReadPostId>> readPostIdLiveData;
+    private ReadPostIdRoomDatabase db;
 
     private MutableLiveData<String> userOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
     private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
@@ -58,30 +58,16 @@ public class NoSurfRepository {
 
     private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvent = new SingleLiveEvent<>();
 
-    private HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    private RetrofitInterface ri;
 
-    private OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor(new RateLimitInterceptor());
+    public NoSurfRepository(Application application, Retrofit retrofit) {
+        this.application = application;
 
-    private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient.build())
-            .build();
+        ri = retrofit.create(RetrofitInterface.class);
 
-    private RetrofitInterface ri = retrofit.create(RetrofitInterface.class);
-
-    public static NoSurfRepository getInstance(Application application) {
-        if (repositoryInstance == null) {
-            repositoryInstance = new NoSurfRepository();
-
-            NoSurfRepository.application = application;
-            NoSurfRepository.db = ReadPostIdRoomDatabase.getDatabase(application);
-            NoSurfRepository.readPostIdDao = db.readPostIdDao();
-            readPostIdLiveData = readPostIdDao.getAllReadPostIds(); //assigning this seems weird?
-        }
-        return repositoryInstance;
+        db = ReadPostIdRoomDatabase.getDatabase(application);
+        readPostIdDao = db.readPostIdDao();
+        readPostIdLiveData = readPostIdDao.getAllReadPostIds(); //assigning this seems weird?
     }
 
     /* Called if the user has never logged in before, so user can browse /r/all */

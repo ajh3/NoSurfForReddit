@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
@@ -28,8 +29,11 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
@@ -40,6 +44,8 @@ public class MainActivity extends BaseActivity implements
     private static final String TAG_WEBVIEW_LOGIN = "webviewLoginTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_DARK_MODE = "darkMode";
+
+    @Inject ViewModelFactory viewModelFactory;
 
     NoSurfViewModel viewModel;
     ViewPagerFragment viewPagerFragment;
@@ -52,6 +58,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
         setupStrictMode();
@@ -70,7 +77,7 @@ public class MainActivity extends BaseActivity implements
 
         setContentView(R.layout.activity_main);
 
-        viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
         if (savedInstanceState == null) {
             viewModel.initApp();

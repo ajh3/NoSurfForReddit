@@ -4,6 +4,7 @@ import com.aaronhalbert.nosurfforreddit.NoSurfApplication;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationComponent;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.PresentationComponent;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.PresentationModule;
+import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.ViewModelModule;
 
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +19,7 @@ public class BaseActivity extends AppCompatActivity {
         }
         isInjectorUsed = true;
         return getApplicationComponent()
-                .newPresentationComponent(new PresentationModule(this));
+                .newPresentationComponent(new PresentationModule(this), new ViewModelModule());
 
     }
 

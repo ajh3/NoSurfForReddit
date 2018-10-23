@@ -2,7 +2,18 @@ package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import android.app.Application;
 
+import com.aaronhalbert.nosurfforreddit.Constants;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
+import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
+import dagger.Provides;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ApplicationModule {
@@ -13,5 +24,11 @@ public class ApplicationModule {
      }
 
     // @Provides methods go here
+    @Singleton
+    @Provides
+    NoSurfRepository getNoSurfRepository() {
+        return new NoSurfRepository(application, getRetrofit());
+    }
+
 
 }
