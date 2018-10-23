@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.db;
+package com.aaronhalbert.nosurfforreddit.room;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

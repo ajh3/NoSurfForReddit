@@ -11,9 +11,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
+import com.aaronhalbert.nosurfforreddit.room.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
-import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -240,7 +240,7 @@ public class NoSurfViewModel extends AndroidViewModel {
         return repository.getCommentsFinishedLoadingLiveEvent();
     }
 
-    void initApp() {
+    public void initApp() {
         repository.initializeTokensFromSharedPrefs();
 
         if (isUserLoggedIn()) {
@@ -265,11 +265,11 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.refreshSubscribedPosts(isUserLoggedIn());
     }
 
-    void refreshPostComments(String id) {
+    public void refreshPostComments(String id) {
         repository.refreshPostComments(id, isUserLoggedIn());
     }
 
-    void requestUserOAuthToken(String code) {
+    public void requestUserOAuthToken(String code) {
         repository.requestUserOAuthToken(code);
     }
 
@@ -277,7 +277,7 @@ public class NoSurfViewModel extends AndroidViewModel {
         repository.logout();
     }
 
-    void insertReadPostId(String id) {
+    public void insertReadPostId(String id) {
         repository.insertReadPostId(new ReadPostId(id));
     }
 

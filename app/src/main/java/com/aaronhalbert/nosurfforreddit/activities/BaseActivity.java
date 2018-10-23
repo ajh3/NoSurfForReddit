@@ -1,13 +1,14 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.activities;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfApplication;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationComponent;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.PresentationComponent;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.PresentationModule;
 
 import androidx.annotation.UiThread;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class BaseFragment extends Fragment {
+public class BaseActivity extends AppCompatActivity {
     private boolean isInjectorUsed;
 
     @UiThread
@@ -17,11 +18,11 @@ public abstract class BaseFragment extends Fragment {
         }
         isInjectorUsed = true;
         return getApplicationComponent()
-                .newPresentationComponent(new PresentationModule(getActivity()));
+                .newPresentationComponent(new PresentationModule(this));
 
     }
 
     private ApplicationComponent getApplicationComponent() {
-        return ((NoSurfApplication) getActivity().getApplication()).getApplicationComponent();
+        return ((NoSurfApplication) getApplication()).getApplicationComponent();
     }
 }

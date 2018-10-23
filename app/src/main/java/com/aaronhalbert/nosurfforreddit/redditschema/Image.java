@@ -1,7 +1,6 @@
 
-package com.aaronhalbert.nosurfforreddit.reddit;
+package com.aaronhalbert.nosurfforreddit.redditschema;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

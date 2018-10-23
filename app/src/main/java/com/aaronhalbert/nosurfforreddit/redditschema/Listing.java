@@ -1,5 +1,5 @@
 
-package com.aaronhalbert.nosurfforreddit.reddit;
+package com.aaronhalbert.nosurfforreddit.redditschema;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

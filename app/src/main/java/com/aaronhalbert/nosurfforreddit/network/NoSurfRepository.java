@@ -8,12 +8,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
-import com.aaronhalbert.nosurfforreddit.db.ReadPostId;
-import com.aaronhalbert.nosurfforreddit.db.ReadPostIdDao;
-import com.aaronhalbert.nosurfforreddit.db.ReadPostIdRoomDatabase;
-import com.aaronhalbert.nosurfforreddit.reddit.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.reddit.Listing;
-import com.aaronhalbert.nosurfforreddit.reddit.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.room.ReadPostId;
+import com.aaronhalbert.nosurfforreddit.room.ReadPostIdDao;
+import com.aaronhalbert.nosurfforreddit.room.ReadPostIdRoomDatabase;
+import com.aaronhalbert.nosurfforreddit.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.redditschema.UserOAuthToken;
 
 import java.util.List;
 

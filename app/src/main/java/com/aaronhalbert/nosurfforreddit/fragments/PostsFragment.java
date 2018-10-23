@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.reddit.Listing;
+import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 
 abstract public class PostsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     SwipeRefreshLayout swipeRefreshLayout;

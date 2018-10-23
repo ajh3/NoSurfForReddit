@@ -1,7 +1,9 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.databinding;
 
 import androidx.databinding.BindingAdapter;
 import android.widget.ImageView;
+
+import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
 
 public class DataBindingHandlers {
     //binding framework calls this any time it finds an ImageView with an imageUrl synthetic property

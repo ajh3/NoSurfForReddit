@@ -1,6 +1,5 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -17,6 +16,9 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
