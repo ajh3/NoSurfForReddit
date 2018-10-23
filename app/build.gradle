@@ -50,9 +50,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'com.google.dagger:dagger:2.18'
 
     annotationProcessor 'androidx.room:room-compiler:2.0.0-rc01'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.18'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'

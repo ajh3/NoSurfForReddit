@@ -29,7 +29,7 @@ import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
         PostsAdapter.launchPostCallback,
         LoginFragment.OnLoginFragmentButtonListener,
