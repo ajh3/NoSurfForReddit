@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
 import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
@@ -19,5 +20,8 @@ public class PresentationModule {
 
     // @Provides methods go here
 
-
+    @Provides
+    NoSurfWebViewClient provideNoSurfWebViewClient() {
+        return new NoSurfWebViewClient(fragmentActivity);
+    }
 }

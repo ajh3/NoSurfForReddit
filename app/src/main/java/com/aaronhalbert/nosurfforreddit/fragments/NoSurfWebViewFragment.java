@@ -16,7 +16,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
 import com.aaronhalbert.nosurfforreddit.R;
+
+import javax.inject.Inject;
 
 public class NoSurfWebViewFragment extends BaseFragment {
     private static final String KEY_URL = "url";
@@ -24,6 +27,8 @@ public class NoSurfWebViewFragment extends BaseFragment {
     private String url;
 
     private WebView browser;
+
+    @Inject NoSurfWebViewClient noSurfWebViewClient;
 
     public static NoSurfWebViewFragment newInstance(String url) {
         NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
@@ -35,6 +40,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             url = getArguments().getString(KEY_URL);
