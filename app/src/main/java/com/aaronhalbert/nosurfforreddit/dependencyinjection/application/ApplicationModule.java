@@ -27,19 +27,19 @@ public class ApplicationModule {
     // @Provides methods go here
     @Singleton
     @Provides
-    NoSurfRepository getNoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
+    NoSurfRepository provideNoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
         return new NoSurfRepository(application, retrofit, preferences);
     }
 
     @Singleton
     @Provides
-    Application getApplication() {
+    Application provideApplication() {
         return application;
     }
 
     @Singleton
     @Provides
-    SharedPreferences getSharedPreferences() {
+    SharedPreferences provideSharedPreferences() {
         return application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
     }
 }
