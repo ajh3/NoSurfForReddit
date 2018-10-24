@@ -11,6 +11,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ReadPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
@@ -98,71 +99,22 @@ public class NoSurfViewModel extends ViewModel {
 
             for (int i = 0; i < 25; i++) {
                 PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+                
+                Data_ data = input.getData().getChildren().get(i).getData();
 
-                postDatum.isSelf = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .isIsSelf();
+                String title = data.getTitle();
+                String encodedUrl = data.getUrl();
+                String encodedThumbnailUrl = data.getThumbnail();
 
-                postDatum.id = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getId();
-
-                String title = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getTitle();
+                postDatum.isSelf = data.isIsSelf();
+                postDatum.id = data.getId();
                 postDatum.title = decodeHtml(title).toString(); // some titles contain HTML special entities
-
-                postDatum.author = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getAuthor();
-
-                postDatum.subreddit = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getSubreddit();
-
-                postDatum.score = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getScore();
-
-                postDatum.numComments = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getNumComments();
-
-                String encodedUrl = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getUrl();
+                postDatum.author = data.getAuthor();
+                postDatum.subreddit = data.getSubreddit();
+                postDatum.score = data.getScore();
+                postDatum.numComments = data.getNumComments();
                 postDatum.url = decodeHtml(encodedUrl).toString();
 
-                String encodedThumbnailUrl = input
-                        .getData()
-                        .getChildren()
-                        .get(i)
-                        .getData()
-                        .getThumbnail();
                 if (encodedThumbnailUrl.equals("default")) {
                     postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
                 } else if (encodedThumbnailUrl.equals("self")) {
@@ -175,29 +127,15 @@ public class NoSurfViewModel extends ViewModel {
                     postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
                 }
 
-                if (input.getData().getChildren().get(i).getData().getPreview() == null) {
+                if (data.getPreview() == null) {
                     postDatum.imageUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
                 } else {
-                    String encodedImageUrl = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getPreview()
-                            .getImages()
-                            .get(0)
-                            .getSource()
-                            .getUrl();
+                    String encodedImageUrl = data.getPreview().getImages().get(0).getSource().getUrl();
                     postDatum.imageUrl = decodeHtml(encodedImageUrl).toString();
                 }
 
                 if (postDatum.isSelf) {
-                    String twiceEncodedSelfTextHtml = input
-                            .getData()
-                            .getChildren()
-                            .get(i)
-                            .getData()
-                            .getSelfTextHtml();
+                    String twiceEncodedSelfTextHtml = data.getSelfTextHtml();
                     if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
                         String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
                         String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
