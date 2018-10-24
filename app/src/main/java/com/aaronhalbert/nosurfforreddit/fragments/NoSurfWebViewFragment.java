@@ -61,22 +61,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
         browserSettings.setDisplayZoomControls(false);
         browserSettings.setLoadWithOverviewMode(true);
         browserSettings.setUseWideViewPort(true);
-        browser.setWebViewClient(new WebViewClient() { // needed to load all user clicks inside the WebView
-
-            @Override
-            @TargetApi(21) //TODO: support down to 19
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-
-                if (URLUtil.isNetworkUrl(url)) {
-                    return false;
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
-                    return true;
-                }
-            }
-        });
+        browser.setWebViewClient(noSurfWebViewClient);
         browser.loadUrl(url);
         
         return result;
