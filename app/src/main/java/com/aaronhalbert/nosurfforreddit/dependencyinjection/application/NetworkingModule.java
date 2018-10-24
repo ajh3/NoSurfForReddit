@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
-import com.aaronhalbert.nosurfforreddit.Constants;
 import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
 
 import javax.inject.Singleton;
@@ -14,13 +13,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class NetworkingModule {
+    //TODO: is this mixing functional and construction sets?
+    private static final String API_BASE_URL = "https://oauth.reddit.com/";
+
     // @Provides methods go here
 
     @Singleton
     @Provides
     Retrofit provideRetrofit(OkHttpClient.Builder okHttpClientBuilder) {
         return new Retrofit.Builder()
-                .baseUrl(Constants.API_BASE_URL)
+                .baseUrl(API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClientBuilder.build())
                 .build();

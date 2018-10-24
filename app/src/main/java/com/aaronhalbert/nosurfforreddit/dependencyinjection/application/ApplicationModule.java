@@ -3,7 +3,6 @@ package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import com.aaronhalbert.nosurfforreddit.Constants;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
 import com.aaronhalbert.nosurfforreddit.room.ReadPostIdRoomDatabase;
