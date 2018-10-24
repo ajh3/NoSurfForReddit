@@ -44,11 +44,15 @@ public class MainActivity extends BaseActivity implements
     private static final String TAG_WEBVIEW_LOGIN = "webviewLoginTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_DARK_MODE = "darkMode";
+    private static final String CLIENT_ID = "jPF59UF5MbMkWg";
+    private static final String RESPONSE_TYPE = "code";
+    private static final String REDIRECT_URI = "nosurfforreddit://oauth";
+    private static final String DURATION = "permanent";
+    private static final String SCOPE = "identity mysubreddits read";
 
     @Inject ViewModelFactory viewModelFactory;
 
     NoSurfViewModel viewModel;
-    ViewPagerFragment viewPagerFragment;
     SharedPreferences preferences;
 
     boolean darkMode;
@@ -63,6 +67,7 @@ public class MainActivity extends BaseActivity implements
 
         setupStrictMode();
 
+        //TODO: figure out how to inject this SharedPreferences given that I'm already injecting a non-default SharedPreferences
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -82,11 +87,9 @@ public class MainActivity extends BaseActivity implements
         if (savedInstanceState == null) {
             viewModel.initApp();
 
-            viewPagerFragment = ViewPagerFragment.newInstance();
-
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.main_activity_frame_layout, viewPagerFragment, TAG_VIEW_PAGER_FRAGMENT)
+                    .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance(), TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
     }
@@ -121,7 +124,7 @@ public class MainActivity extends BaseActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        return super.onCreateOptionsMenu(menu); //what does this do?
+        return super.onCreateOptionsMenu(menu); //TODO what does this do?
     }
 
     @Override
@@ -140,7 +143,7 @@ public class MainActivity extends BaseActivity implements
                 launchAboutScreen();
                 return true;
         }
-        return (super.onOptionsItemSelected(item)); //what does this do?
+        return (super.onOptionsItemSelected(item)); //TODO what does this do?
     }
 
 
@@ -157,7 +160,7 @@ public class MainActivity extends BaseActivity implements
             logoutMenuItem.setVisible(false);
         }
 
-        return super.onPrepareOptionsMenu(menu); //what does this do?
+        return super.onPrepareOptionsMenu(menu); //TODO what does this do?
     }
 
     public void launchWebView(String url, String tag) {
@@ -198,19 +201,13 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void login() {
-        final String CLIENT_ID = "jPF59UF5MbMkWg";
-        final String RESPONSE_TYPE = "code";
-        final String STATE = generateRandomAlphaNumericString();
-        final String REDIRECT_URI = "nosurfforreddit://oauth";
-        final String DURATION = "permanent";
-        final String SCOPE = "identity mysubreddits read";
 
         final String loginUrl = "https://www.reddit.com/api/v1/authorize.compact?client_id="
                 + CLIENT_ID
                 + "&response_type="
                 + RESPONSE_TYPE
                 + "&state="
-                + STATE
+                + generateRandomAlphaNumericString()
                 + "&redirect_uri="
                 + REDIRECT_URI
                 + "&duration="
