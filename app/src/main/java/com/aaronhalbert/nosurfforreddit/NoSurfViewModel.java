@@ -1,12 +1,10 @@
 package com.aaronhalbert.nosurfforreddit;
 
-import android.app.Application;
 import androidx.arch.core.util.Function;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import android.os.Build;
-import androidx.annotation.NonNull;
+
 import androidx.lifecycle.ViewModel;
 
 import android.text.Html;
@@ -21,26 +19,24 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 public class NoSurfViewModel extends ViewModel {
     NoSurfRepository repository;
 
-    private LiveData<CommentsViewState> commentsViewStateLiveData;
+    private LiveData<CommentsViewState> commentsLiveDataViewState;
     private LiveData<PostsViewState> allPostsLiveDataViewState;
     private LiveData<PostsViewState> subscribedPostsLiveDataViewState;
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
-        commentsViewStateLiveData = transformCommentsLiveDataToCommentsViewStateLiveData();
-        allPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(false);
-        subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(true);
+        commentsLiveDataViewState = transformCommentsLiveDataToCommentsLiveDataViewState();
+        allPostsLiveDataViewState = transformPostsLiveDataToPostsLiveDataViewState(false);
+        subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsLiveDataViewState(true);
     }
 
     //TODO: why doesn't a lambda work here?
-    private LiveData<CommentsViewState> transformCommentsLiveDataToCommentsViewStateLiveData() {
+    private LiveData<CommentsViewState> transformCommentsLiveDataToCommentsLiveDataViewState() {
         return Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
             @Override
             public CommentsViewState apply(List<Listing> input) {
@@ -88,7 +84,7 @@ public class NoSurfViewModel extends ViewModel {
 
 
 
-    private LiveData<PostsViewState> transformPostsLiveDataToPostsViewState(boolean isSubscribed) {
+    private LiveData<PostsViewState> transformPostsLiveDataToPostsLiveDataViewState(boolean isSubscribed) {
         LiveData<Listing> postsLiveData;
 
         if (isSubscribed) {
@@ -234,8 +230,8 @@ public class NoSurfViewModel extends ViewModel {
         return repository.getUserOAuthRefreshTokenLiveData();
     }
 
-    public LiveData<CommentsViewState> getCommentsViewStateLiveData() {
-        return commentsViewStateLiveData;
+    public LiveData<CommentsViewState> getCommentsLiveDataViewState() {
+        return commentsLiveDataViewState;
     }
 
     public LiveData<PostsViewState> getAllPostsLiveDataViewState() {

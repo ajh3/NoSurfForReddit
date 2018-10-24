@@ -20,7 +20,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     //initialize to empty array in case it is read from before written to by Observer
     private String[] readPostIds = new String[0];
     private Fragment hostFragment;
-    private LiveData<PostsViewState> postsViewStateLiveData;
+    private LiveData<PostsViewState> postsLiveDataViewState;
     private NoSurfViewModel viewModel;
     private launchPostCallback launchPostCallback;
 
@@ -34,9 +34,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
         if (isSubscribedPostsAdapter) {
-            postsViewStateLiveData = viewModel.getSubscribedPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getSubscribedPostsLiveDataViewState();
         } else {
-            postsViewStateLiveData = viewModel.getAllPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getAllPostsLiveDataViewState();
         }
     }
 
@@ -62,8 +62,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     }
 
     private void strikethroughReadPosts(RowHolder rowHolder, int position) {
-        if (postsViewStateLiveData.getValue() != null) {
-            if (Arrays.asList(readPostIds).contains(postsViewStateLiveData.getValue().postData.get(position).id)) {
+        if (postsLiveDataViewState.getValue() != null) {
+            if (Arrays.asList(readPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
@@ -95,15 +95,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         //placed in RowHolder class so data binding class can access it
-        public LiveData<PostsViewState> getPostsViewStateLiveData() {
-            return postsViewStateLiveData;
+        public LiveData<PostsViewState> getPostsLiveDataViewState() {
+            return postsLiveDataViewState;
         }
 
         @Override
         public void onClick(View v) {
             int i = getAdapterPosition();
             lastClickedRow = i;
-            boolean isSelfPost = getPostsViewStateLiveData().getValue().postData.get(i).isSelf;
+            boolean isSelfPost = getPostsLiveDataViewState().getValue().postData.get(i).isSelf;
 
             launchPostCallback.launchPost(i, isSelfPost, isSubscribedPostsAdapter);
         }

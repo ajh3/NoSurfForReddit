@@ -24,19 +24,19 @@
         <ImageView
             style="@style/RecyclerViewRowThumbnail"
             android:id="@+id/thumbnail"
-            app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}" />
+            app:imageUrl="@{controller.postsLiveDataViewState.postData[controller.position].thumbnailUrl}" />
 
         <TextView
             style="@style/RecyclerViewRowTitle"
             android:id="@+id/title"
-            android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}" />
+            android:text="@{controller.postsLiveDataViewState.postData[controller.position].title}"
+            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].title) ? View.GONE : View.VISIBLE}" />
 
         <TextView
             style="@style/RecyclerViewRowDetails"
             android:id="@+id/details"
-            android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}" />
+            android:text="@{controller.postsLiveDataViewState.postData[controller.position].subreddit + ` • ` + controller.postsLiveDataViewState.postData[controller.position].score + ` • ` + controller.postsLiveDataViewState.postData[controller.position].numComments + ` comments`}"
+            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

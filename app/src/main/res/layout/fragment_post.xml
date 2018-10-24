@@ -24,18 +24,18 @@
             <TextView
                 style="@style/PostFragmentTitle"
                 android:id="@+id/post_fragment_title"
-                android:text="@{postFragment.postsViewStateLiveData.postData[postFragment.position].title}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.position].title}" />
 
             <TextView
                 style="@style/PostFragmentDetails"
                 android:id="@+id/post_fragment_details"
-                android:text="@{`in r/` + postFragment.postsViewStateLiveData.postData[postFragment.position].subreddit + ` by u/` + postFragment.postsViewStateLiveData.postData[postFragment.position].author + ` • ` + postFragment.postsViewStateLiveData.postData[postFragment.position].score}"/>
+                android:text="@{`in r/` + postFragment.postsLiveDataViewState.postData[postFragment.position].subreddit + ` by u/` + postFragment.postsLiveDataViewState.postData[postFragment.position].author + ` • ` + postFragment.postsLiveDataViewState.postData[postFragment.position].score}"/>
 
             <ImageView
                 style="@style/PostFragmentImageForLinkPostsOnly"
                 android:id="@+id/post_fragment_image_for_link_posts_only"
                 android:onClick="@{postFragment::onImageClick}"
-                app:imageUrl="@{postFragment.postsViewStateLiveData.postData[postFragment.position].imageUrl}" />
+                app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.position].imageUrl}" />
 
             <View
                 style="@style/PostFragmentDividerUnderDetailsForSelfPostsOnly"
@@ -44,7 +44,7 @@
             <TextView
                 style="@style/PostFragmentSelftextForSelfPostsOnly"
                 android:id="@+id/post_fragment_selftext_for_self_posts_only"
-                android:text="@{postFragment.postsViewStateLiveData.postData[postFragment.position].selfTextHtml}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.position].selfTextHtml}" />
 
             <View
                 style="@style/PostFragmentDividerUnderSelftextForSelfPostsOnly"
@@ -57,12 +57,12 @@
             <TextView
                 style="@style/PostFragmentFirstCommentDetails"
                 android:id="@+id/post_fragment_first_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[0]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[0]}" />
 
             <TextView
                 style="@style/PostFragmentFirstComment"
                 android:id="@+id/post_fragment_first_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[0]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[0]}" />
 
             <View
                 style="@style/PostFragmentDividerUnderFirstComment"
@@ -71,12 +71,12 @@
             <TextView
                 style="@style/PostFragmentSecondCommentDetails"
                 android:id="@+id/post_fragment_second_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[1]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[1]}" />
 
             <TextView
                 style="@style/PostFragmentSecondComment"
                 android:id="@+id/post_fragment_second_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[1]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[1]}" />
 
             <View
                 style="@style/PostFragmentDividerUnderSecondComment"
@@ -85,12 +85,12 @@
             <TextView
                 style="@style/PostFragmentThirdCommentDetails"
                 android:id="@+id/post_fragment_third_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[2]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[2]}" />
 
             <TextView
                 style="@style/PostFragmentThirdComment"
                 android:id="@+id/post_fragment_third_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[2]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[2]}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -33,7 +33,7 @@ abstract public class PostFragment extends Fragment {
     boolean externalBrowser;
     boolean isSubscribedPost;
 
-    LiveData<PostsViewState> postsViewStateLiveData;
+    LiveData<PostsViewState> postsLiveDataViewState;
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,9 +55,9 @@ abstract public class PostFragment extends Fragment {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         if (isSubscribedPost) {
-            postsViewStateLiveData = viewModel.getSubscribedPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getSubscribedPostsLiveDataViewState();
         } else {
-            postsViewStateLiveData = viewModel.getAllPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getAllPostsLiveDataViewState();
         }
     }
 
@@ -76,7 +76,7 @@ abstract public class PostFragment extends Fragment {
     //TODO: move this to MainActivity
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(postsViewStateLiveData.getValue().postData.get(position).url, null);
+            mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null);
         }
     }
 
@@ -85,7 +85,7 @@ abstract public class PostFragment extends Fragment {
         if (mListener != null) {
             //mListener.launchWebView(url, null);
             //TODO: pull this out into separate method
-            Uri uri = Uri.parse(postsViewStateLiveData.getValue().postData.get(position).url);
+            Uri uri = Uri.parse(postsLiveDataViewState.getValue().postData.get(position).url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
@@ -99,8 +99,8 @@ abstract public class PostFragment extends Fragment {
         }
     }
 
-    public LiveData<PostsViewState> getPostsViewStateLiveData() {
-        return postsViewStateLiveData;
+    public LiveData<PostsViewState> getPostsLiveDataViewState() {
+        return postsLiveDataViewState;
     }
 
     @Override
@@ -152,7 +152,7 @@ abstract public class PostFragment extends Fragment {
         //display the appropriate text fields and dividers depending on how many comments the current post has
         viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
             if (aBoolean) {
-                int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
+                int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
 
                 for (int i = 0; i < numComments; i++) {
                     comments[i].setVisibility(View.VISIBLE);
