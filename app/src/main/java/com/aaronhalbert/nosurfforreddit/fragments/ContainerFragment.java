@@ -11,13 +11,18 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
 
-public class ContainerFragment extends Fragment {
+import javax.inject.Inject;
+
+public class ContainerFragment extends BaseFragment {
 
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
 
     private NoSurfViewModel viewModel;
+
+    @Inject ViewModelFactory viewModelFactory;
 
     public static ContainerFragment newInstance() {
         ContainerFragment fragment = new ContainerFragment();
@@ -26,9 +31,10 @@ public class ContainerFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         viewModel.getUserOAuthRefreshTokenLiveData().observe(this, s -> {
             boolean isUserLoggedIn = (s != null) && !(s.equals(""));

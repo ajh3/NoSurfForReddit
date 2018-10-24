@@ -26,9 +26,13 @@ public class ApplicationModule {
     // @Provides methods go here
     @Singleton
     @Provides
-    NoSurfRepository getNoSurfRepository() {
-        return new NoSurfRepository(application, getRetrofit());
+    NoSurfRepository getNoSurfRepository(Application application, Retrofit retrofit) {
+        return new NoSurfRepository(application, retrofit);
     }
 
-
+    @Singleton
+    @Provides
+    Application getApplication() {
+        return application;
+    }
 }

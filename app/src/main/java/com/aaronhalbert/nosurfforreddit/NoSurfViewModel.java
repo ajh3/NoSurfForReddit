@@ -26,61 +26,67 @@ import javax.inject.Inject;
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 public class NoSurfViewModel extends ViewModel {
-    @Inject NoSurfRepository repository;
+    NoSurfRepository repository;
+
+    private LiveData<CommentsViewState> commentsViewStateLiveData;
+    private LiveData<PostsViewState> allPostsLiveDataViewState;
+    private LiveData<PostsViewState> subscribedPostsLiveDataViewState;
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
+        commentsViewStateLiveData = transformCommentsLiveDataToCommentsViewStateLiveData();
+        allPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(false);
+        subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(true);
     }
 
     //TODO: why doesn't a lambda work here?
-    private LiveData<CommentsViewState> commentsViewStateLiveData =
-            Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
-                @Override
-                public CommentsViewState apply(List<Listing> input) {
-                    CommentsViewState commentsViewState = null;
+    private LiveData<CommentsViewState> transformCommentsLiveDataToCommentsViewStateLiveData() {
+        return Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
+            @Override
+            public CommentsViewState apply(List<Listing> input) {
+                CommentsViewState commentsViewState = null;
 
-                    //check if there are any comments at all
-                    if (input.get(0).getData().getChildren().get(0).getData().getNumComments() > 0) {
-                        int autoModOffset;
+                //check if there are any comments at all
+                if (input.get(0).getData().getChildren().get(0).getData().getNumComments() > 0) {
+                    int autoModOffset;
 
-                        //skip first comment if it's by AutoMod
-                        if ((input.get(1).getData().getChildren().get(0).getData().getAuthor()).equals("AutoModerator")) {
-                            autoModOffset = 1;
-                        } else {
-                            autoModOffset = 0;
-                        }
-
-                        //calculate the number of valid comments left after excluding AutoMod
-                        int numTopLevelComments = input.get(1).getData().getChildren().size();
-                        numTopLevelComments = numTopLevelComments - autoModOffset; // avoid running past array in cases where numTopLevelComments < 4 and one of them is an AutoMod post
-                        if (numTopLevelComments > 3) numTopLevelComments = 3;
-
-                        commentsViewState = new CommentsViewState(numTopLevelComments);
-
-                        //for each valid comment, get its body and double unescape it and strip trailing new lines, then get its author and score
-                        for (int i = 0; i < numTopLevelComments; i++) {
-                            String unescaped = getCommentBodyHtml(input, autoModOffset, i);
-                            Spanned escaped = decodeHtml(unescaped);
-                            Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(escaped);
-
-                            String commentAuthor = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
-                            int commentScore = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
-                            String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
-
-                            commentsViewState.commentBodies[i] = trailingNewLinesStripped;
-                            commentsViewState.commentDetails[i] = commentDetails;
-                        }
-                    } else { //if zero comments
-                        commentsViewState = new CommentsViewState(0);
-                        Log.e(getClass().toString(), "zero comments");
+                    //skip first comment if it's by AutoMod
+                    if ((input.get(1).getData().getChildren().get(0).getData().getAuthor()).equals("AutoModerator")) {
+                        autoModOffset = 1;
+                    } else {
+                        autoModOffset = 0;
                     }
-                    return commentsViewState;
+
+                    //calculate the number of valid comments left after excluding AutoMod
+                    int numTopLevelComments = input.get(1).getData().getChildren().size();
+                    numTopLevelComments = numTopLevelComments - autoModOffset; // avoid running past array in cases where numTopLevelComments < 4 and one of them is an AutoMod post
+                    if (numTopLevelComments > 3) numTopLevelComments = 3;
+
+                    commentsViewState = new CommentsViewState(numTopLevelComments);
+
+                    //for each valid comment, get its body and double unescape it and strip trailing new lines, then get its author and score
+                    for (int i = 0; i < numTopLevelComments; i++) {
+                        String unescaped = getCommentBodyHtml(input, autoModOffset, i);
+                        Spanned escaped = decodeHtml(unescaped);
+                        Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(escaped);
+
+                        String commentAuthor = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
+                        int commentScore = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
+                        String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+
+                        commentsViewState.commentBodies[i] = trailingNewLinesStripped;
+                        commentsViewState.commentDetails[i] = commentDetails;
+                    }
+                } else { //if zero comments
+                    commentsViewState = new CommentsViewState(0);
+                    Log.e(getClass().toString(), "zero comments");
                 }
-            });
+                return commentsViewState;
+            }
+        });
+    }
 
-    private LiveData<PostsViewState> allPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(false);
 
-    private LiveData<PostsViewState> subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsViewState(true);
 
     private LiveData<PostsViewState> transformPostsLiveDataToPostsViewState(boolean isSubscribed) {
         LiveData<Listing> postsLiveData;

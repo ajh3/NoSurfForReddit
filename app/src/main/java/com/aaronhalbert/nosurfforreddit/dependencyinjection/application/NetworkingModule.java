@@ -18,25 +18,30 @@ public class NetworkingModule {
 
     @Singleton
     @Provides
-    Retrofit getRetrofit() {
+    Retrofit getRetrofit(OkHttpClient.Builder okHttpClientBuilder) {
         return new Retrofit.Builder()
                 .baseUrl(Constants.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(getOkHttpClientBuilder().build())
+                .client(okHttpClientBuilder.build())
                 .build();
     }
 
     @Singleton
     @Provides
-    OkHttpClient.Builder getOkHttpClientBuilder() {
+    OkHttpClient.Builder getOkHttpClientBuilder(HttpLoggingInterceptor httpLoggingInterceptor, RateLimitInterceptor rateLimitInterceptor) {
         return new OkHttpClient.Builder()
-                .addInterceptor(getHttpLoggingInterceptor())
-                .addInterceptor(new RateLimitInterceptor());
+                .addInterceptor(httpLoggingInterceptor)
+                .addInterceptor(rateLimitInterceptor);
     }
 
     @Provides
     HttpLoggingInterceptor getHttpLoggingInterceptor() {
         return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    }
+
+    @Provides
+    RateLimitInterceptor getRateLimitInterceptor() {
+        return new RateLimitInterceptor();
     }
 
 

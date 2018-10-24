@@ -10,6 +10,6 @@ import dagger.Provides;
 public class ViewModelModule {
     @Provides
     ViewModelFactory getViewModelFactory(NoSurfRepository noSurfRepository) {
-        return new ViewModelFactory(getNoSurfRepository());
+        return new ViewModelFactory(noSurfRepository);
     }
 }

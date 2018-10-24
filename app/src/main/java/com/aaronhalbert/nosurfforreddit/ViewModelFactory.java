@@ -1,5 +1,7 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import android.util.Log;
+
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
 import androidx.annotation.NonNull;
