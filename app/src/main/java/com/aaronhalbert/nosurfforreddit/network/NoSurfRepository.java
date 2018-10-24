@@ -60,8 +60,12 @@ public class NoSurfRepository {
 
     private RetrofitInterface ri;
 
-    public NoSurfRepository(Application application, Retrofit retrofit) {
+    private SharedPreferences preferences;
+
+    public NoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
         this.application = application;
+
+        this.preferences = preferences;
 
         ri = retrofit.create(RetrofitInterface.class);
 
@@ -80,7 +84,6 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
                 String appOnlyAccessToken = response.body().getAccessToken();
-                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" token in a LiveData
                 appOnlyOAuthTokenLiveData.setValue(appOnlyAccessToken);
@@ -116,7 +119,6 @@ public class NoSurfRepository {
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
                 String userAccessRefreshToken = response.body().getRefreshToken();
-                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" tokens in a LiveData
                 userOAuthTokenLiveData.setValue(userAccessToken);
@@ -147,8 +149,6 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                 String userAccessToken = response.body().getAccessToken();
-
-                SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
                 //"cache" token in a LiveData
                 userOAuthTokenLiveData.setValue(userAccessToken);
@@ -290,7 +290,6 @@ public class NoSurfRepository {
     }
 
     public void logout() {
-        SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
         userOAuthTokenLiveData.setValue("");
         userOAuthRefreshTokenLiveData.setValue("");
@@ -303,7 +302,6 @@ public class NoSurfRepository {
     }
 
     public void initializeTokensFromSharedPrefs() {
-        SharedPreferences preferences = application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
 
         String userOAuthToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String userOAuthRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);

@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import com.aaronhalbert.nosurfforreddit.Constants;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
@@ -26,13 +27,19 @@ public class ApplicationModule {
     // @Provides methods go here
     @Singleton
     @Provides
-    NoSurfRepository getNoSurfRepository(Application application, Retrofit retrofit) {
-        return new NoSurfRepository(application, retrofit);
+    NoSurfRepository getNoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
+        return new NoSurfRepository(application, retrofit, preferences);
     }
 
     @Singleton
     @Provides
     Application getApplication() {
         return application;
+    }
+
+    @Singleton
+    @Provides
+    SharedPreferences getSharedPreferences() {
+        return application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
     }
 }
