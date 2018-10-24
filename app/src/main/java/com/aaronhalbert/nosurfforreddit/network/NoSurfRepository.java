@@ -19,6 +19,7 @@ import com.aaronhalbert.nosurfforreddit.redditschema.UserOAuthToken;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

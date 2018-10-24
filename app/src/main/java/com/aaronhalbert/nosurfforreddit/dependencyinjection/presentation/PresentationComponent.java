@@ -5,6 +5,7 @@ import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.Applicat
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.NetworkingModule;
 import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.PostFragment;
 
 import dagger.Subcomponent;
 
@@ -15,4 +16,5 @@ public interface PresentationComponent {
     //TODO: can I substitute a single inject BaseFragment for these subclasses?
     void inject(ContainerFragment containerFragment);
     void inject(NoSurfWebViewFragment noSurfWebViewFragment);
+    void inject(PostFragment postFragment);
 }

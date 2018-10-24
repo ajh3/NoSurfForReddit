@@ -20,6 +20,9 @@ import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 abstract public class PostFragment extends BaseFragment {
     static final String KEY_POSITION = "position";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
@@ -37,20 +40,20 @@ abstract public class PostFragment extends BaseFragment {
 
     private OnFragmentInteractionListener mListener;
 
-    SharedPreferences preferences;
+    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     FragmentPostBinding fragmentPostBinding = null;
     NoSurfViewModel viewModel = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(KEY_POSITION);
             isSubscribedPost = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POST);
         }
         setHasOptionsMenu(true);
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        
         externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 

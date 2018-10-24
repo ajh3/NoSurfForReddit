@@ -34,6 +34,7 @@ import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
@@ -50,10 +51,10 @@ public class MainActivity extends BaseActivity implements
     private static final String DURATION = "permanent";
     private static final String SCOPE = "identity mysubreddits read";
 
+    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     @Inject ViewModelFactory viewModelFactory;
 
     NoSurfViewModel viewModel;
-    SharedPreferences preferences;
 
     boolean darkMode;
 
@@ -67,9 +68,7 @@ public class MainActivity extends BaseActivity implements
 
         setupStrictMode();
 
-        //TODO: figure out how to inject this SharedPreferences given that I'm already injecting a non-default SharedPreferences
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
         preferences.registerOnSharedPreferenceChangeListener(this);
         darkMode = preferences.getBoolean(KEY_DARK_MODE, false);
 

@@ -2,11 +2,13 @@ package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
 import com.aaronhalbert.nosurfforreddit.room.ReadPostIdRoomDatabase;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -27,7 +29,7 @@ public class ApplicationModule {
     // @Provides methods go here
     @Singleton
     @Provides
-    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, SharedPreferences preferences, ReadPostIdRoomDatabase db) {
+    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, @Named("oAuthSharedPrefs") SharedPreferences preferences, ReadPostIdRoomDatabase db) {
         return new NoSurfRepository(retrofit, preferences, db);
     }
 
@@ -39,8 +41,16 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    SharedPreferences provideSharedPreferences() {
+    @Named("oAuthSharedPrefs")
+        SharedPreferences provideOAuthSharedPrefs() {
         return application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
+    }
+
+    @Singleton
+    @Provides
+    @Named("defaultSharedPrefs")
+    SharedPreferences provideDefaultSharedPrefs() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
     @Singleton
