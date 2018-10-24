@@ -11,14 +11,15 @@ import java.util.List;
 @Dao
 public interface ReadPostIdDao {
 
+    //specifying the return type is all that's needed, Room does the rest
     @Query("SELECT * from read_post_id_table")
-    LiveData<List<ReadPostId>> getAllReadPostIds(); //specifying the return type is all that's needed, Room does the rest
+    LiveData<List<ReadPostId>> getAllReadPostIds();
 
-    // We do not need a conflict strategy, because the post id is our primary key, and you cannot
-    // add two items with the same primary key to the database.
-    @Insert(onConflict = OnConflictStrategy.REPLACE) //convenience annotation, not necessary to write any SQL
+    // this is a convenience annotation, not necessary to write any SQL for a basic insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertReadPostId(ReadPostId readPostId);
 
+    // DELETE FROM with no WHERE clause deletes all records in the table
     @Query("DELETE FROM read_post_id_table")
     void deleteAllReadPostIds();
 }
