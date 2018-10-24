@@ -15,7 +15,7 @@ public class BaseActivity extends AppCompatActivity {
     @UiThread
     protected PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
-            throw new RuntimeException("Injector already used");
+            throw new RuntimeException("Injection already performed on this activity");
         }
         isInjectorUsed = true;
         return getApplicationComponent()

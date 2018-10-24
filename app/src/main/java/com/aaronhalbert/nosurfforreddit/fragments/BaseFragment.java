@@ -15,7 +15,7 @@ public abstract class BaseFragment extends Fragment {
     @UiThread
     protected PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
-            throw new RuntimeException("Injector already used");
+            throw new RuntimeException("Injection already performed on this fragment");
         }
         isInjectorUsed = true;
         return getApplicationComponent()
