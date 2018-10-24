@@ -18,7 +18,7 @@ import android.webkit.WebViewClient;
 
 import com.aaronhalbert.nosurfforreddit.R;
 
-public class NoSurfWebViewFragment extends Fragment {
+public class NoSurfWebViewFragment extends BaseFragment {
     private static final String KEY_URL = "url";
 
     private String url;

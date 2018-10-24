@@ -10,7 +10,7 @@ import android.widget.Button;
 
 import com.aaronhalbert.nosurfforreddit.R;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends BaseFragment {
 
     private OnLoginFragmentButtonListener onLoginFragmentButtonListener;
 

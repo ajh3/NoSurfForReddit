@@ -20,7 +20,7 @@ import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
-abstract public class PostFragment extends Fragment {
+abstract public class PostFragment extends BaseFragment {
     static final String KEY_POSITION = "position";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";

@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
-public class ViewPagerFragment extends Fragment {
+public class ViewPagerFragment extends BaseFragment {
     private ViewPager pager;
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
