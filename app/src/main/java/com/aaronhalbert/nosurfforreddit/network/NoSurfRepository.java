@@ -43,10 +43,8 @@ public class NoSurfRepository {
 
     String previousCommentId;
 
-    private Application application;
     private ReadPostIdDao readPostIdDao;
     private LiveData<List<ReadPostId>> readPostIdLiveData;
-    private ReadPostIdRoomDatabase db;
 
     private MutableLiveData<String> userOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
     private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
@@ -62,16 +60,15 @@ public class NoSurfRepository {
 
     private SharedPreferences preferences;
 
-    public NoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
-        this.application = application;
+    public NoSurfRepository(Retrofit retrofit, SharedPreferences preferences, ReadPostIdRoomDatabase db) {
 
         this.preferences = preferences;
 
         ri = retrofit.create(RetrofitInterface.class);
 
-        db = ReadPostIdRoomDatabase.getDatabase(application);
         readPostIdDao = db.readPostIdDao();
-        readPostIdLiveData = readPostIdDao.getAllReadPostIds(); //assigning this seems weird?
+
+        readPostIdLiveData = readPostIdDao.getAllReadPostIds(); //TODO: assigning this seems weird?
     }
 
     /* Called if the user has never logged in before, so user can browse /r/all */
@@ -352,6 +349,4 @@ public class NoSurfRepository {
             return null;
         }
     }
-
-
 }

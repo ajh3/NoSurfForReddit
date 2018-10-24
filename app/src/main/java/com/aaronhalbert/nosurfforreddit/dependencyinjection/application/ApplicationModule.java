@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.aaronhalbert.nosurfforreddit.Constants;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.room.ReadPostIdRoomDatabase;
 
 import javax.inject.Singleton;
 
@@ -27,8 +28,8 @@ public class ApplicationModule {
     // @Provides methods go here
     @Singleton
     @Provides
-    NoSurfRepository provideNoSurfRepository(Application application, Retrofit retrofit, SharedPreferences preferences) {
-        return new NoSurfRepository(application, retrofit, preferences);
+    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, SharedPreferences preferences, ReadPostIdRoomDatabase db) {
+        return new NoSurfRepository(retrofit, preferences, db);
     }
 
     @Singleton
@@ -41,5 +42,11 @@ public class ApplicationModule {
     @Provides
     SharedPreferences provideSharedPreferences() {
         return application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
+    }
+
+    @Singleton
+    @Provides
+    ReadPostIdRoomDatabase provideReadPostIdRoomDatabase() {
+        return ReadPostIdRoomDatabase.getDatabase(application);
     }
 }
