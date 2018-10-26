@@ -44,7 +44,9 @@ public class MainActivity extends BaseActivity implements
         LoginFragment.OnLoginFragmentButtonListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG_WEBVIEW_LOGIN = "webviewLoginTag";
+    private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
+    private static final String TAG_ABOUT_FRAGMENT = "aboutFragmentTag";
+    private static final String TAG_SETTINGS_FRAGMENT = "settingsFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_DARK_MODE = "darkMode";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
@@ -102,7 +104,7 @@ public class MainActivity extends BaseActivity implements
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
             
             FragmentManager fm = getSupportFragmentManager();
-            Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN);
+            Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN_FRAGMENT);
 
             if (loginFragment != null) {
                 fm.beginTransaction().remove(loginFragment).commit();
@@ -228,7 +230,7 @@ public class MainActivity extends BaseActivity implements
                 + "&scope="
                 + SCOPE;
 
-        launchLoginWebView(loginUrl, TAG_WEBVIEW_LOGIN);
+        launchLoginWebView(loginUrl, TAG_WEBVIEW_LOGIN_FRAGMENT);
     }
 
     public void logout() {
