@@ -62,8 +62,7 @@ public class MainActivity extends BaseActivity implements
 
     boolean darkMode;
 
-    MenuItem loginMenuItem;
-    MenuItem logoutMenuItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,48 +122,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        return super.onCreateOptionsMenu(menu); //TODO what does this do?
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.login:
-                login();
-                return true;
-            case R.id.logout:
-                logout();
-                return true;
-            case R.id.settings:
-                launchPreferences();
-                return true;
-            case R.id.about:
-                launchAboutScreen();
-                return true;
-        }
-        return (super.onOptionsItemSelected(item)); //TODO what does this do?
-    }
-
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        loginMenuItem = menu.findItem(R.id.login);
-        logoutMenuItem = menu.findItem(R.id.logout);
-
-        if (viewModel.isUserLoggedIn()) {
-            loginMenuItem.setVisible(false);
-            logoutMenuItem.setVisible(true);
-        } else {
-            loginMenuItem.setVisible(true);
-            logoutMenuItem.setVisible(false);
-        }
-
-        return super.onPrepareOptionsMenu(menu); //TODO what does this do?
-    }
 
     public void launchWebView(String url, String tag) {
         getSupportFragmentManager()

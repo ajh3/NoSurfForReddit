@@ -3,11 +3,13 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.google.android.material.tabs.TabLayout;
 
 import android.view.LayoutInflater;
@@ -24,6 +26,9 @@ public class ViewPagerFragment extends BaseFragment {
     private ViewPager pager;
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
+
+    MenuItem loginMenuItem;
+    MenuItem logoutMenuItem;
 
     public static ViewPagerFragment newInstance() {
         ViewPagerFragment fragment = new ViewPagerFragment();
@@ -66,15 +71,44 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.refresh) {
-            if (pager.getCurrentItem() == 0) {
-                viewModel.refreshAllPosts();
-            } else {
-                viewModel.refreshSubscribedPosts();
-            }
-            return true;
+
+        //TODO: define an interface instead of calling getActivity()
+        switch(item.getItemId()) {
+            case R.id.refresh:
+                if (pager.getCurrentItem() == 0) {
+                    viewModel.refreshAllPosts();
+                } else {
+                    viewModel.refreshSubscribedPosts();
+                }
+                return true;
+            case R.id.login:
+                ((MainActivity) getActivity()).login();
+                return true;
+            case R.id.logout:
+                ((MainActivity) getActivity()).logout();
+                return true;
+            case R.id.settings:
+                ((MainActivity) getActivity()).launchPreferences();
+                return true;
+            case R.id.about:
+                ((MainActivity) getActivity()).launchAboutScreen();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        loginMenuItem = menu.findItem(R.id.login);
+        logoutMenuItem = menu.findItem(R.id.logout);
+
+        if (viewModel.isUserLoggedIn()) {
+            loginMenuItem.setVisible(false);
+            logoutMenuItem.setVisible(true);
+        } else {
+            loginMenuItem.setVisible(true);
+            logoutMenuItem.setVisible(false);
+        }
     }
 }
