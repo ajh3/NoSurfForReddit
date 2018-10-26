@@ -2,6 +2,8 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -45,6 +47,15 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         return v;
     }
 
+    void cancelRefreshingAnimation() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    // region helper methods -----------------------------------------------------------------------
+
+    // TODO: eliminate all this coordination between PostsFragment and PostsAdapter and multiple observers by zip()ing disparate data sources in repository
     void observePostsLiveData() {
         postsLiveData.observe(this, listing -> {
             cancelRefreshingAnimation();
@@ -62,9 +73,11 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     }
 
     void setupRecyclerView(View v) {
+        Context context = getContext();
+
         RecyclerView rv = v.findViewById(R.id.posts_fragment_recyclerview);
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        rv.setLayoutManager(new LinearLayoutManager(context));
+        rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         rv.setAdapter(postsAdapter);
         rv.setHasFixedSize(true);
     }
@@ -74,12 +87,13 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    void cancelRefreshingAnimation() {
-        if (swipeRefreshLayout.isRefreshing()) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    }
+    // endregion helper methods --------------------------------------------------------------------
+
+
+    // region abstract methods ---------------------------------------------------------------------
 
     abstract PostsAdapter newPostsAdapter();
     abstract void setPostsLiveData();
+
+    // endregion abstract methods ------------------------------------------------------------------
 }

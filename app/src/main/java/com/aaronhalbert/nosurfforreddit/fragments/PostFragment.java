@@ -89,7 +89,7 @@ abstract public class PostFragment extends BaseFragment {
             }
         }
     }
-    
+
     public LiveData<PostsViewState> getPostsLiveDataViewState() {
         return postsLiveDataViewState;
     }
