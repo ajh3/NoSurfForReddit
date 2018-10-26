@@ -18,8 +18,6 @@ public class PresentationModule {
         this.fragmentActivity = fragmentActivity;
     }
 
-    // @Provides methods go here
-
     @Provides
     NoSurfWebViewClient provideNoSurfWebViewClient() {
         return new NoSurfWebViewClient(fragmentActivity);

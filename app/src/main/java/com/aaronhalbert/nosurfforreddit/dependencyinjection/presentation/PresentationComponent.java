@@ -11,9 +11,7 @@ import dagger.Subcomponent;
 
 @Subcomponent(modules = {PresentationModule.class, ViewModelModule.class})
 public interface PresentationComponent {
-    // void methods go here
     void inject(MainActivity mainActivity);
-    //TODO: can I substitute a single inject BaseFragment for these subclasses?
     void inject(ContainerFragment containerFragment);
     void inject(NoSurfWebViewFragment noSurfWebViewFragment);
     void inject(PostFragment postFragment);

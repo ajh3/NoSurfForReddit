@@ -14,7 +14,6 @@ import dagger.Component;
 @Component(modules = {ApplicationModule.class, NetworkingModule.class})
 public interface ApplicationComponent {
     // factory method returning subcomponent, to establish parent/child relationship
-    public PresentationComponent newPresentationComponent(PresentationModule presentationModule, ViewModelModule viewModelModule);
-
-    //void inject(MainActivity mainActivity);
+    public PresentationComponent newPresentationComponent(PresentationModule presentationModule,
+                                                          ViewModelModule viewModelModule);
 }

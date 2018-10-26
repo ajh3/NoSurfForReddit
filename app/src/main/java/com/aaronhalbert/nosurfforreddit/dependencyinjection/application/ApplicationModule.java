@@ -26,7 +26,6 @@ public class ApplicationModule {
          this.application = application;
      }
 
-    // @Provides methods go here
     @Singleton
     @Provides
     NoSurfRepository provideNoSurfRepository(Retrofit retrofit, @Named("oAuthSharedPrefs") SharedPreferences preferences, ReadPostIdRoomDatabase db) {

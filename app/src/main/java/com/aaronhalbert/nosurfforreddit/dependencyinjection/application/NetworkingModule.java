@@ -13,10 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class NetworkingModule {
-    //TODO: is this mixing functional and construction sets?
     private static final String API_BASE_URL = "https://oauth.reddit.com/";
-
-    // @Provides methods go here
 
     @Singleton
     @Provides
@@ -45,6 +42,4 @@ public class NetworkingModule {
     RateLimitInterceptor provideRateLimitInterceptor() {
         return new RateLimitInterceptor();
     }
-
-
 }
