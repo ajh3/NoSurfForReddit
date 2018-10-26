@@ -16,13 +16,12 @@ import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
 import javax.inject.Inject;
 
 public class ContainerFragment extends BaseFragment {
-
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
 
-    private NoSurfViewModel viewModel;
-
     @Inject ViewModelFactory viewModelFactory;
+    private NoSurfViewModel viewModel;
+    private FragmentManager fm;
 
     public static ContainerFragment newInstance() {
         ContainerFragment fragment = new ContainerFragment();
@@ -34,10 +33,12 @@ public class ContainerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
+        fm = getChildFragmentManager();
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         viewModel.getUserOAuthRefreshTokenLiveData().observe(this, s -> {
-            boolean isUserLoggedIn = (s != null) && !(s.equals(""));
+            //TODO: handle below logic inside the vm itself
+            boolean isUserLoggedIn = !(s == null) && !(s.equals(""));
             setContainerChildFragment(isUserLoggedIn);
         });
 
@@ -52,8 +53,8 @@ public class ContainerFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_container, container, false);
     }
 
+    //TODO: how do I simplify this total mess?
     public void setContainerChildFragment(boolean isUserLoggedIn) {
-        FragmentManager fm = getChildFragmentManager();
         Fragment loginFragment = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
         Fragment subscribedPostsFragment = fm.findFragmentByTag(TAG_SUBSCRIBED_POSTS_FRAGMENT);
 
