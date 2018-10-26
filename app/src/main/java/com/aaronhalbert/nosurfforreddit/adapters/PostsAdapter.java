@@ -98,12 +98,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         void bindModel() {
-            rowSinglePostBinding.setController(this); // to call onClick
+            rowSinglePostBinding.setController(this);
             rowSinglePostBinding.setViewModel(viewModel);
             rowSinglePostBinding.executePendingBindings();
         }
 
-        //placed in RowHolder class so data binding class can access it
+        //placed here so data binding class can access it
         public LiveData<PostsViewState> getPostsLiveDataViewState() {
             return postsLiveDataViewState;
         }
@@ -111,9 +111,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         @Override
         public void onClick(View v) {
             int i = getAdapterPosition();
-            lastClickedRow = i;
             boolean isSelfPost = getPostsLiveDataViewState().getValue().postData.get(i).isSelf;
 
+            lastClickedRow = i;
             launchPostCallback.launchPost(i, isSelfPost, isSubscribedPostsAdapter);
         }
     }
