@@ -36,6 +36,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static android.R.anim.*;
+
 public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
         PostsAdapter.launchPostCallback,
@@ -165,6 +167,16 @@ public class MainActivity extends BaseActivity implements
     public void launchWebView(String url, String tag) {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void launchLoginWebView(String url, String tag) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
                 .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
                 .addToBackStack(null)
                 .commit();
@@ -187,12 +199,14 @@ public class MainActivity extends BaseActivity implements
         if (isSelfPost) {
             getSupportFragmentManager()
                     .beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                     .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(position, isSubscribedPost))
                     .addToBackStack(null)
                     .commit();
         } else if (!isSelfPost) {
             getSupportFragmentManager()
                     .beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                     .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(position, isSubscribedPost))
                     .addToBackStack(null)
                     .commit();
@@ -214,7 +228,7 @@ public class MainActivity extends BaseActivity implements
                 + "&scope="
                 + SCOPE;
 
-        launchWebView(loginUrl, TAG_WEBVIEW_LOGIN);
+        launchLoginWebView(loginUrl, TAG_WEBVIEW_LOGIN);
     }
 
     public void logout() {
@@ -224,6 +238,7 @@ public class MainActivity extends BaseActivity implements
     public void launchPreferences() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
                 .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
@@ -232,6 +247,7 @@ public class MainActivity extends BaseActivity implements
     public void launchAboutScreen() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
                 .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
