@@ -25,8 +25,8 @@ public class ViewPagerFragment extends BaseFragment {
     private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
 
-    MenuItem loginMenuItem;
-    MenuItem logoutMenuItem;
+    private MenuItem loginMenuItem;
+    private MenuItem logoutMenuItem;
 
     public static ViewPagerFragment newInstance() {
         ViewPagerFragment fragment = new ViewPagerFragment();
@@ -36,8 +36,8 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
     }
 
     @Override
@@ -69,8 +69,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        //TODO: define an interface instead of calling getActivity()
+        
         switch(item.getItemId()) {
             case R.id.refresh:
                 if (pager.getCurrentItem() == 0) {
