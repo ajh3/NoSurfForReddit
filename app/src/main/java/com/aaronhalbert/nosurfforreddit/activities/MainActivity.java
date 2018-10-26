@@ -126,7 +126,8 @@ public class MainActivity extends BaseActivity implements
     public void launchWebView(String url, String tag) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                // disabled due to lag on real device
+                //.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                 .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
                 .addToBackStack(null)
                 .commit();
