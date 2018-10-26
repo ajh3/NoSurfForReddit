@@ -10,6 +10,8 @@ import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 
 public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final int NUM_ITEMS = 2;
+    private static final String R_ALL = "/r/All";
+    private static final String YOUR_SUBREDDITS = "Your Subreddits";
 
     public NoSurfFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -32,9 +34,9 @@ public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (position == 0) {
-            return "/r/All";
+            return R_ALL;
         } else {
-            return "Your Subreddits";
+            return YOUR_SUBREDDITS;
         }
     }
 }
