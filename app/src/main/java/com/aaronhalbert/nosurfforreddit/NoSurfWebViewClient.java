@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -13,6 +14,8 @@ import com.aaronhalbert.nosurfforreddit.fragments.BaseFragment;
 import androidx.fragment.app.FragmentActivity;
 
 public class NoSurfWebViewClient extends WebViewClient {
+
+    private static final String NOSURF_REDIRECT_URI = "nosurfforreddit://oauth";
 
     private FragmentActivity hostFragmentActivity;
 
@@ -25,13 +28,15 @@ public class NoSurfWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
 
-        //TODO: document the purpose of this
-        if (URLUtil.isNetworkUrl(url)) {
-            return false;
-        } else {
+        //checks if URL is a custom NoSurf redirect URI
+
+        if (url.contains(NOSURF_REDIRECT_URI)) {
+            Log.e(getClass().toString(), "URL is NoSurf redirect URI" + url);
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             hostFragmentActivity.startActivity(intent);
             return true;
+        } else {
+            return false;
         }
     }
 }
