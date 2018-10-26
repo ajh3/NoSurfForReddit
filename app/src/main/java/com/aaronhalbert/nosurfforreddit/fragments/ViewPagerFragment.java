@@ -69,7 +69,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        
+
         switch(item.getItemId()) {
             case R.id.refresh:
                 if (pager.getCurrentItem() == 0) {

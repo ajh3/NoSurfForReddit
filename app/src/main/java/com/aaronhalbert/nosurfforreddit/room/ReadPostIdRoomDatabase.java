@@ -40,7 +40,7 @@ public abstract class ReadPostIdRoomDatabase extends RoomDatabase {
         @Override
         public void onCreate (@NonNull SupportSQLiteDatabase db){
             super.onCreate(db);
-            new InitDbAsyncTask(INSTANCE).execute();
+            //new InitDbAsyncTask(INSTANCE).execute();
         }
     };
 
