@@ -79,7 +79,7 @@ abstract public class PostFragment extends BaseFragment {
     //TODO: move this to MainActivity
     public void launchWebView() {
         if (mListener != null) {
-            mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null);
+            mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null, false);
         }
     }
 
@@ -124,7 +124,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void launchWebView(String url, String tag);
+        void launchWebView(String url, String tag, boolean doAnimation);
     }
 
     private void setupBinding(LayoutInflater inflater, ViewGroup container) {

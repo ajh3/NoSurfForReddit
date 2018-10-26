@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import javax.inject.Named;
 
 import static android.R.anim.*;
 
+//TODO: check these interfaces
 public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
         PostsAdapter.launchPostCallback,
@@ -54,55 +56,177 @@ public class MainActivity extends BaseActivity implements
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String DURATION = "permanent";
     private static final String SCOPE = "identity mysubreddits read";
+    private static final String AUTH_URL_BASE = "https://www.reddit.com/api/v1/authorize.compact?client_id=";
+    private static final String AUTH_URL_RESPONSE_TYPE = "&response_type=";
+    private static final String AUTH_URL_STATE = "&state=";
+    private static final String AUTH_URL_REDIRECT_URI = "&redirect_uri=";
+    private static final String AUTH_URL_DURATION = "&duration=";
+    private static final String AUTH_URL_SCOPE = "&scope=";
 
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     @Inject ViewModelFactory viewModelFactory;
-
-    NoSurfViewModel viewModel;
-
-    boolean darkMode;
-
-
-
+    
+    private NoSurfViewModel viewModel;
+    private boolean darkMode;
+    private FragmentManager fm;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
-
         setupStrictMode();
-
-        PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
-        preferences.registerOnSharedPreferenceChangeListener(this);
-        darkMode = preferences.getBoolean(KEY_DARK_MODE, false);
-
-        if (darkMode) {
-            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-
+        initPrefs();
+        initNightMode();
         setContentView(R.layout.activity_main);
 
+        fm = getSupportFragmentManager();
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
         if (savedInstanceState == null) {
             viewModel.initApp();
 
-            getSupportFragmentManager()
-                    .beginTransaction()
+            fm.beginTransaction()
                     .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance(), TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
     }
 
+    public void login() {
+        final String authUrl = AUTH_URL_BASE
+                + CLIENT_ID
+                + AUTH_URL_RESPONSE_TYPE
+                + RESPONSE_TYPE
+                + AUTH_URL_STATE
+                + generateRandomAlphaNumericString()
+                + AUTH_URL_REDIRECT_URI
+                + REDIRECT_URI
+                + AUTH_URL_DURATION
+                + DURATION
+                + AUTH_URL_SCOPE
+                + SCOPE;
+
+        launchWebView(authUrl, TAG_WEBVIEW_LOGIN_FRAGMENT, true);
+    }
+
+    public void logout() {
+        viewModel.logout();
+    }
+
+    public void launchWebView(String url, String tag, boolean doAnimation) {
+        FragmentTransaction ft = fm.beginTransaction();
+
+        if (doAnimation) {
+            ft.setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out);
+        }
+
+        ft.add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
+        String id;
+        Fragment f;
+
+        if (isSubscribedPost) {
+            id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
+        } else {
+            id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
+        }
+
+        viewModel.insertReadPostId(id);
+        viewModel.refreshPostComments(id);
+
+        if (isSelfPost) {
+            f = SelfPostFragment.newInstance(position, isSubscribedPost);
+        } else {
+            f = LinkPostFragment.newInstance(position, isSubscribedPost);
+        }
+
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_activity_frame_layout, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void launchPreferencesScreen() {
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
+                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void launchAboutScreen() {
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
+                .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private String generateRandomAlphaNumericString() {
+        return UUID.randomUUID().toString();
+    }
+
+    //detects all violations on main thread, logs to Logcat, and flashes red border if DEBUG build
+    private void setupStrictMode() {
+        StrictMode.ThreadPolicy.Builder builder=
+                new StrictMode.ThreadPolicy.Builder()
+                        .detectAll() //detect all suspected violations
+                        .penaltyLog(); //log detected violations to Logcat at d level
+
+        if (BuildConfig.DEBUG) {
+            builder.penaltyFlashScreen();
+        }
+
+        StrictMode.setThreadPolicy(builder.build());
+    }
+
+    private void initPrefs() {
+        PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        darkMode = preferences.getBoolean(KEY_DARK_MODE, true);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, true);
+
+        if (darkMode) {
+            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
+            nightModeOn();
+            recreate();
+        } else {
+            nightModeOff();
+            recreate();
+        }
+    }
+
+    private void initNightMode() {
+        if (darkMode) {
+            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
+            nightModeOn();
+        } else {
+            nightModeOff();
+        }
+    }
+
+    private void nightModeOn() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
+    private void nightModeOff() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    // captures result from Reddit login page
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-            
-            FragmentManager fm = getSupportFragmentManager();
             Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN_FRAGMENT);
 
             if (loginFragment != null) {
@@ -120,128 +244,5 @@ public class MainActivity extends BaseActivity implements
                 viewModel.requestUserOAuthToken(code);
             }
         }
-    }
-
-
-    public void launchWebView(String url, String tag) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                // disabled due to lag on real device
-                //.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public void launchLoginWebView(String url, String tag) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
-                .add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
-
-        String id;
-
-        if (isSubscribedPost) {
-            id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
-        } else {
-            id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
-        }
-
-        Log.e(getClass().toString(), "writing id to database");
-        viewModel.insertReadPostId(id);
-        viewModel.refreshPostComments(id);
-
-        if (isSelfPost) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.main_activity_frame_layout, SelfPostFragment.newInstance(position, isSubscribedPost))
-                    .addToBackStack(null)
-                    .commit();
-        } else if (!isSelfPost) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.main_activity_frame_layout, LinkPostFragment.newInstance(position, isSubscribedPost))
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    public void login() {
-
-        final String loginUrl = "https://www.reddit.com/api/v1/authorize.compact?client_id="
-                + CLIENT_ID
-                + "&response_type="
-                + RESPONSE_TYPE
-                + "&state="
-                + generateRandomAlphaNumericString()
-                + "&redirect_uri="
-                + REDIRECT_URI
-                + "&duration="
-                + DURATION
-                + "&scope="
-                + SCOPE;
-
-        launchLoginWebView(loginUrl, TAG_WEBVIEW_LOGIN_FRAGMENT);
-    }
-
-    public void logout() {
-        viewModel.logout();
-    }
-
-    public void launchPreferences() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
-                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public void launchAboutScreen() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
-                .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private String generateRandomAlphaNumericString() {
-        return UUID.randomUUID().toString();
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, false);
-
-        if (darkMode) {
-            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            recreate();
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            recreate();
-        }
-    }
-
-    //detects all violations on main thread, logs to Logcat, and flash red border if DEBUG build
-    private void setupStrictMode() {
-        StrictMode.ThreadPolicy.Builder builder=
-                new StrictMode.ThreadPolicy.Builder()
-                        .detectAll() //detect all suspected violations
-                        .penaltyLog(); //log detected violations to Logcat at d level
-
-        if (BuildConfig.DEBUG) {
-            builder.penaltyFlashScreen();
-        }
-
-        StrictMode.setThreadPolicy(builder.build());
     }
 }

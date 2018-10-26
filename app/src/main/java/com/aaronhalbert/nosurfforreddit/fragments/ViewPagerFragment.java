@@ -3,8 +3,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -88,7 +86,7 @@ public class ViewPagerFragment extends BaseFragment {
                 ((MainActivity) getActivity()).logout();
                 return true;
             case R.id.settings:
-                ((MainActivity) getActivity()).launchPreferences();
+                ((MainActivity) getActivity()).launchPreferencesScreen();
                 return true;
             case R.id.about:
                 ((MainActivity) getActivity()).launchAboutScreen();
