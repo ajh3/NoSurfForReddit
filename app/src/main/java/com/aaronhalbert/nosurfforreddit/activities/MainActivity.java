@@ -124,6 +124,11 @@ public class MainActivity extends BaseActivity implements
                 .commit();
     }
 
+    public void launchExternalBrowser(Uri uri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
     public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
         String id;
         Fragment f;

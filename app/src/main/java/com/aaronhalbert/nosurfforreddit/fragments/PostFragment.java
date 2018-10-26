@@ -25,7 +25,7 @@ import javax.inject.Named;
 
 abstract public class PostFragment extends BaseFragment {
     static final String KEY_POSITION = "position";
-    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+    static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";
 
     final TextView[] comments = new TextView[3];
@@ -37,25 +37,26 @@ abstract public class PostFragment extends BaseFragment {
     boolean isSubscribedPost;
 
     LiveData<PostsViewState> postsLiveDataViewState;
-
-    private OnFragmentInteractionListener mListener;
+    OnFragmentInteractionListener mListener;
+    FragmentPostBinding fragmentPostBinding;
+    NoSurfViewModel viewModel;
 
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
-    FragmentPostBinding fragmentPostBinding = null;
-    NoSurfViewModel viewModel = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
+        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+
+        // TODO: checking if savedInstanceState is null instead of using getArguments() crashes the app...why?
         if (getArguments() != null) {
             position = getArguments().getInt(KEY_POSITION);
             isSubscribedPost = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POST);
         }
-        setHasOptionsMenu(true);
-        
-        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         if (isSubscribedPost) {
             postsLiveDataViewState = viewModel.getSubscribedPostsLiveDataViewState();
@@ -76,62 +77,32 @@ abstract public class PostFragment extends BaseFragment {
         return fragmentPostBinding.getRoot();
     }
 
-    //TODO: move this to MainActivity
-    public void launchWebView() {
-        if (mListener != null) {
-            mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null, false);
-        }
-    }
-
-    //TODO: move this to MainActivity
-    public void launchExternalBrowser() {
-        if (mListener != null) {
-            //mListener.launchWebView(url, null);
-            //TODO: pull this out into separate method
-            Uri uri = Uri.parse(postsLiveDataViewState.getValue().postData.get(position).url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        }
-    }
-
     public void onImageClick(View view) {
         if (externalBrowser) {
-            launchExternalBrowser();
+            if (mListener != null) {
+                Uri uri = Uri.parse(postsLiveDataViewState.getValue().postData.get(position).url);
+                mListener.launchExternalBrowser(uri);
+            }
         } else {
-            launchWebView();
+            if (mListener != null) {
+                mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null, false);
+            }
         }
     }
-
+    
     public LiveData<PostsViewState> getPostsLiveDataViewState() {
         return postsLiveDataViewState;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void launchWebView(String url, String tag, boolean doAnimation);
-    }
+    // region helper methods -----------------------------------------------------------------------
 
     private void setupBinding(LayoutInflater inflater, ViewGroup container) {
-        fragmentPostBinding = FragmentPostBinding.inflate(getActivity().getLayoutInflater(), container, false);
+        fragmentPostBinding = FragmentPostBinding.inflate(getActivity().getLayoutInflater(),
+                container,
+                false);
         fragmentPostBinding.setViewModel(viewModel);
         fragmentPostBinding.setPostFragment(this);
-        fragmentPostBinding.setLifecycleOwner(this); //comments Transformation in ViewModel won't be called without this!
+        fragmentPostBinding.setLifecycleOwner(this);
     }
 
     private void findPostViews() {
@@ -171,5 +142,37 @@ abstract public class PostFragment extends BaseFragment {
         });
     }
 
+    // endregion helper methods --------------------------------------------------------------------
+
+    // region abstract methods ---------------------------------------------------------------------
+
     abstract void setupPostViews();
+
+    // endregion abstract methods ------------------------------------------------------------------
+
+    // region interfaces ---------------------------------------------------------------------------
+
+    public interface OnFragmentInteractionListener {
+        void launchWebView(String url, String tag, boolean doAnimation);
+        void launchExternalBrowser(Uri uri);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    // endregion interfaces ------------------------------------------------------------------------
 }
