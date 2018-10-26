@@ -15,19 +15,22 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 import java.util.Arrays;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
+    private static final int ITEM_COUNT = 25;
+
+    private launchPostCallback launchPostCallback;
+    private NoSurfViewModel viewModel;
+    private Fragment hostFragment;
     private boolean isSubscribedPostsAdapter;
+    private LiveData<PostsViewState> postsLiveDataViewState;
     private int lastClickedRow;
     //initialize to empty array in case it is read from before written to by Observer
-    private String[] readPostIds = new String[0];
-    private Fragment hostFragment;
-    private LiveData<PostsViewState> postsLiveDataViewState;
-    private NoSurfViewModel viewModel;
-    private launchPostCallback launchPostCallback;
+    private String[] readPostIds = new String[0];     //TODO: eliminate?
 
     public PostsAdapter(launchPostCallback launchPostCallback,
                         NoSurfViewModel viewModel,
                         Fragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
+
         this.launchPostCallback = launchPostCallback;
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
@@ -42,12 +45,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     @Override
     public int getItemCount() {
-        return 25;
+        return ITEM_COUNT;
     }
 
-    @NonNull
     @Override
-    public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RowSinglePostBinding rowSinglePostBinding =
                 RowSinglePostBinding.inflate(hostFragment.getLayoutInflater(), parent, false);
         rowSinglePostBinding.setLifecycleOwner(hostFragment);
@@ -56,12 +58,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RowHolder rowHolder, int position) {
+    public void onBindViewHolder(RowHolder rowHolder, int position) {
         rowHolder.bindModel();
         strikethroughReadPosts(rowHolder, position);
     }
 
-    private void strikethroughReadPosts(RowHolder rowHolder, int position) {
+    // region helper methods -----------------------------------------------------------------------
+
+    public int getLastClickedRow() {
+        return lastClickedRow;
+    }
+
+    public void setReadPostIds(String[] readPostIds) {
+        this.readPostIds = readPostIds;
+    }
+
+    //TODO: change font color as well
+    public void strikethroughReadPosts(RowHolder rowHolder, int position) {
         if (postsLiveDataViewState.getValue() != null) {
             if (Arrays.asList(readPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -71,13 +84,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
     }
 
-    public int getLastClickedRow() {
-        return lastClickedRow;
-    }
+    // endregion helper methods---------------------------------------------------------------------
 
-    public void setReadPostIds(String[] readPostIds) {
-        this.readPostIds = readPostIds;
-    }
+    // region helper classes -----------------------------------------------------------------------
 
     public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final RowSinglePostBinding rowSinglePostBinding;
@@ -109,7 +118,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
     }
 
+    // endregion helper classes---------------------------------------------------------------------
+
+    // region interfaces ---------------------------------------------------------------------------
+
     public interface launchPostCallback {
         void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost);
     }
+
+    // endregion interfaces ------------------------------------------------------------------------
 }
