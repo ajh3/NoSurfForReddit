@@ -24,11 +24,10 @@ import javax.inject.Inject;
 public class NoSurfWebViewFragment extends BaseFragment {
     private static final String KEY_URL = "url";
 
-    private String url;
-
-    private WebView browser;
-
     @Inject NoSurfWebViewClient noSurfWebViewClient;
+
+    private String url;
+    private WebView browser;
 
     public static NoSurfWebViewFragment newInstance(String url) {
         NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
