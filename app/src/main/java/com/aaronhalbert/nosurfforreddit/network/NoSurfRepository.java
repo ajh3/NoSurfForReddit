@@ -40,6 +40,7 @@ public class NoSurfRepository {
     private static final String REFRESH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsSync call failed: ";
     private static final String REFRESH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsSync call failed: ";
     private static final String BEARER = "Bearer ";
+    private static final int RESPONSE_CODE_401 = 401;
 
     private String userOAuthAccessToken;
     private String appOnlyOAuthToken;
@@ -187,9 +188,9 @@ public class NoSurfRepository {
 
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-                if ((response.code() == 401) && (isUserLoggedIn)) {
+                if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedIn)) {
                     refreshExpiredUserOAuthTokenSync("fetchAllPostsSync", null);
-                } else if ((response.code() == 401) && (!isUserLoggedIn)) {
+                } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedIn)) {
                     fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
                 } else {
                     allPostsLiveData.setValue(response.body());
@@ -211,7 +212,7 @@ public class NoSurfRepository {
 
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
-                    if (response.code() == 401) {
+                    if (response.code() == RESPONSE_CODE_401) {
                         refreshExpiredUserOAuthTokenSync("fetchSubscribedPostsSync", null);
                     } else {
                         subscribedPostsLiveData.setValue(response.body());
@@ -244,9 +245,9 @@ public class NoSurfRepository {
 
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                if ((response.code() == 401) && (isUserLoggedIn)) {
+                if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedIn)) {
                     refreshExpiredUserOAuthTokenSync("fetchPostCommentsSync", id);
-                } else if ((response.code() == 401) && (!isUserLoggedIn)) {
+                } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedIn)) {
                     fetchAppOnlyOAuthTokenSync("fetchPostCommentsSync", id);
                 } else {
                     commentsLiveData.setValue(response.body());
