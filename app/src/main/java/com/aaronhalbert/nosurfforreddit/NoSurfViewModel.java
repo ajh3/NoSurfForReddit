@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel;
 
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
@@ -23,6 +22,17 @@ import java.util.List;
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 public class NoSurfViewModel extends ViewModel {
+    private static final String USER_ABBREVIATION = "u/";
+    private static final String BULLET_POINT = " \u2022 ";
+    private static final String AUTO_MODERATOR = "AutoModerator";
+    private static final String LINK_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+    private static final String SELF_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
+    private static final String LINK_POST_NSFW_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
+    private static final String DEFAULT = "default";
+    private static final String SELF = "self";
+    private static final String NSFW = "nsfw";
+    private static final String IMAGE = "image";
+
     NoSurfRepository repository;
 
     private LiveData<CommentsViewState> commentsLiveDataViewState;
@@ -48,7 +58,7 @@ public class NoSurfViewModel extends ViewModel {
                     int autoModOffset;
 
                     //skip first comment if it's by AutoMod
-                    if ((input.get(1).getData().getChildren().get(0).getData().getAuthor()).equals("AutoModerator")) {
+                    if ((input.get(1).getData().getChildren().get(0).getData().getAuthor()).equals(AUTO_MODERATOR)) {
                         autoModOffset = 1;
                     } else {
                         autoModOffset = 0;
@@ -69,14 +79,13 @@ public class NoSurfViewModel extends ViewModel {
 
                         String commentAuthor = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
                         int commentScore = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
-                        String commentDetails = "u/" + commentAuthor + " \u2022 " + Integer.toString(commentScore);
+                        String commentDetails = USER_ABBREVIATION + commentAuthor + BULLET_POINT + Integer.toString(commentScore);
 
                         commentsViewState.commentBodies[i] = trailingNewLinesStripped;
                         commentsViewState.commentDetails[i] = commentDetails;
                     }
                 } else { //if zero comments
                     commentsViewState = new CommentsViewState(0);
-                    Log.e(getClass().toString(), "zero comments");
                 }
                 return commentsViewState;
             }
@@ -115,20 +124,20 @@ public class NoSurfViewModel extends ViewModel {
                 postDatum.numComments = data.getNumComments();
                 postDatum.url = decodeHtml(encodedUrl).toString();
 
-                if (encodedThumbnailUrl.equals("default")) {
-                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-                } else if (encodedThumbnailUrl.equals("self")) {
-                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
-                } else if (encodedThumbnailUrl.equals("nsfw")) {
-                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
-                } else if (encodedThumbnailUrl.equals("image")) {
-                    postDatum.thumbnailUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                if (encodedThumbnailUrl.equals(DEFAULT)) {
+                    postDatum.thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                } else if (encodedThumbnailUrl.equals(SELF)) {
+                    postDatum.thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
+                } else if (encodedThumbnailUrl.equals(NSFW)) {
+                    postDatum.thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                } else if (encodedThumbnailUrl.equals(IMAGE)) {
+                    postDatum.thumbnailUrl = NoSurfViewModel.LINK_POST_DEFAULT_THUMBNAIL;
                 } else {
                     postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
                 }
 
                 if (data.getPreview() == null) {
-                    postDatum.imageUrl = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+                    postDatum.imageUrl = LINK_POST_DEFAULT_THUMBNAIL;
                 } else {
                     String encodedImageUrl = data.getPreview().getImages().get(0).getSource().getUrl();
                     postDatum.imageUrl = decodeHtml(encodedImageUrl).toString();
