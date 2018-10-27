@@ -12,8 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -30,14 +28,11 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
-import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import static android.R.anim.*;
 
 //TODO: check these interfaces
 public class MainActivity extends BaseActivity implements
@@ -141,7 +136,7 @@ public class MainActivity extends BaseActivity implements
             id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
         }
 
-        viewModel.insertReadPostId(id);
+        viewModel.insertClickedPostId(id);
         viewModel.fetchPostComments(id);
 
         if (isSelfPost) {

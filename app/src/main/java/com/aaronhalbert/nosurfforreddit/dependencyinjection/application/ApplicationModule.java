@@ -5,18 +5,14 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
-import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
-import com.aaronhalbert.nosurfforreddit.room.ReadPostIdRoomDatabase;
+import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ApplicationModule {
@@ -28,7 +24,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, @Named("oAuthSharedPrefs") SharedPreferences preferences, ReadPostIdRoomDatabase db) {
+    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, @Named("oAuthSharedPrefs") SharedPreferences preferences, ClickedPostIdRoomDatabase db) {
         return new NoSurfRepository(retrofit, preferences, db);
     }
 
@@ -54,7 +50,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    ReadPostIdRoomDatabase provideReadPostIdRoomDatabase() {
-        return ReadPostIdRoomDatabase.getDatabase(application);
+    ClickedPostIdRoomDatabase provideReadPostIdRoomDatabase() {
+        return ClickedPostIdRoomDatabase.getDatabase(application);
     }
 }

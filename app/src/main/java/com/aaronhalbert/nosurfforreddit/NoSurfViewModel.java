@@ -12,7 +12,7 @@ import android.text.Spanned;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.redditschema.Data_;
-import com.aaronhalbert.nosurfforreddit.room.ReadPostId;
+import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
@@ -229,19 +229,19 @@ public class NoSurfViewModel extends ViewModel {
         repository.logout();
     }
 
-    public void insertReadPostId(String id) {
-        repository.insertReadPostId(new ReadPostId(id));
+    public void insertClickedPostId(String id) {
+        repository.insertClickedPostId(new ClickedPostId(id));
     }
 
-    public LiveData<String[]> getReadPostIdsLiveData() {
-        return Transformations.map(repository.getReadPostIdLiveData(), input -> {
+    public LiveData<String[]> getClickedPostIdsLiveData() {
+        return Transformations.map(repository.getClickedPostIdLiveData(), input -> {
             int size = input.size();
-            String[] readPostIds = new String[size];
+            String[] clickedPostIds = new String[size];
 
             for (int i = 0; i < size; i++) {
-                readPostIds[i] = input.get(i).getReadPostId();
+                clickedPostIds[i] = input.get(i).getClickedPostId();
             }
-            return readPostIds;
+            return clickedPostIds;
         });
     }
 

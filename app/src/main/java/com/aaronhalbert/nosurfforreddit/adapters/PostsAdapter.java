@@ -2,7 +2,7 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 
 import androidx.lifecycle.LiveData;
 import android.graphics.Paint;
-import androidx.annotation.NonNull;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
@@ -24,7 +24,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private LiveData<PostsViewState> postsLiveDataViewState;
     private int lastClickedRow;
     //initialize to empty array in case it is read from before written to by Observer
-    private String[] readPostIds = new String[0];     //TODO: eliminate?
+    private String[] clickedPostIds = new String[0];     //TODO: eliminate?
 
     public PostsAdapter(launchPostCallback launchPostCallback,
                         NoSurfViewModel viewModel,
@@ -60,7 +60,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     @Override
     public void onBindViewHolder(RowHolder rowHolder, int position) {
         rowHolder.bindModel();
-        strikethroughReadPosts(rowHolder, position);
+        strikethroughClickedPosts(rowHolder, position);
     }
 
     // region helper methods -----------------------------------------------------------------------
@@ -69,14 +69,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         return lastClickedRow;
     }
 
-    public void setReadPostIds(String[] readPostIds) {
-        this.readPostIds = readPostIds;
+    public void setClickedPostIds(String[] clickedPostIds) {
+        this.clickedPostIds = clickedPostIds;
     }
 
     //TODO: change font color as well
-    public void strikethroughReadPosts(RowHolder rowHolder, int position) {
+    public void strikethroughClickedPosts(RowHolder rowHolder, int position) {
         if (postsLiveDataViewState.getValue() != null) {
-            if (Arrays.asList(readPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
+            if (Arrays.asList(clickedPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));

@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +33,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         postsAdapter = newPostsAdapter();
         setPostsLiveData();
         observePostsLiveData();
-        observeReadPostIdsLiveData();
+        observeClickedPostIdsLiveData();
     }
 
     @Override
@@ -64,9 +63,9 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         });
     }
 
-    void observeReadPostIdsLiveData() {
-        viewModel.getReadPostIdsLiveData().observe(this, readPostIds -> {
-            postsAdapter.setReadPostIds(readPostIds);
+    void observeClickedPostIdsLiveData() {
+        viewModel.getClickedPostIdsLiveData().observe(this, clickedPostIds -> {
+            postsAdapter.setClickedPostIds(clickedPostIds);
             //ensure last clicked post is struck through when going BACK to PostsFragment
             postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow());
         });
