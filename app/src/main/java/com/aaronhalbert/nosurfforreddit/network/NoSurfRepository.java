@@ -44,10 +44,10 @@ public class NoSurfRepository {
     String previousCommentId;
     private LiveData<List<ClickedPostId>> clickedPostIdLiveData;
 
-    private MutableLiveData<String> userOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
-    private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
-    private MutableLiveData<String> appOnlyOAuthTokenLiveData = new MutableLiveData<>(); //TODO: convert to regular variable, I never observe this
+    private String userOAuthToken;
+    private String appOnlyOAuthToken;
 
+    private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
@@ -77,7 +77,7 @@ public class NoSurfRepository {
                 String appOnlyAccessToken = response.body().getAccessToken();
 
                 //"cache" token in a LiveData
-                appOnlyOAuthTokenLiveData.setValue(appOnlyAccessToken);
+                appOnlyOAuthToken = appOnlyAccessToken;
 
                 preferences
                         .edit()
@@ -112,7 +112,7 @@ public class NoSurfRepository {
                 String userAccessRefreshToken = response.body().getRefreshToken();
 
                 //"cache" tokens in a LiveData
-                userOAuthTokenLiveData.setValue(userAccessToken);
+                userOAuthToken = userAccessToken;
                 userOAuthRefreshTokenLiveData.setValue(userAccessRefreshToken);
 
                 preferences
@@ -142,7 +142,7 @@ public class NoSurfRepository {
                 String userAccessToken = response.body().getAccessToken();
 
                 //"cache" token in a LiveData
-                userOAuthTokenLiveData.setValue(userAccessToken);
+                userOAuthToken = userAccessToken;
 
                 preferences
                         .edit()
@@ -176,10 +176,10 @@ public class NoSurfRepository {
         String bearerAuth;
 
         if (isUserLoggedIn) {
-            accessToken = userOAuthTokenLiveData.getValue();
+            accessToken = userOAuthToken;
             bearerAuth = "Bearer " + accessToken;
         } else {
-            accessToken = appOnlyOAuthTokenLiveData.getValue();
+            accessToken = appOnlyOAuthToken;
             bearerAuth = "Bearer " + accessToken;
         }
 
@@ -205,7 +205,7 @@ public class NoSurfRepository {
     /* Should only run when user is logged in */
 
     public void refreshSubscribedPosts(final boolean isUserLoggedIn) {
-        String bearerAuth = "Bearer " + userOAuthTokenLiveData.getValue();
+        String bearerAuth = "Bearer " + userOAuthToken;
 
         if (isUserLoggedIn) {
             ri.refreshSubscribedPosts(bearerAuth).enqueue(new Callback<Listing>() {
@@ -247,10 +247,10 @@ public class NoSurfRepository {
         final String finalIdToPass = idToPass; // need a final String for the anonymous inner class
 
         if (isUserLoggedIn) {
-            accessToken = userOAuthTokenLiveData.getValue();
+            accessToken = userOAuthToken;
             bearerAuth = BEARER + accessToken;
         } else {
-            accessToken = appOnlyOAuthTokenLiveData.getValue();
+            accessToken = appOnlyOAuthToken;
             bearerAuth = BEARER + accessToken;
         }
 
@@ -288,7 +288,7 @@ public class NoSurfRepository {
 
     public void logout() {
 
-        userOAuthTokenLiveData.setValue("");
+        userOAuthToken = "";
         userOAuthRefreshTokenLiveData.setValue("");
 
         preferences
@@ -303,7 +303,7 @@ public class NoSurfRepository {
         String userOAuthToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
         String userOAuthRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
 
-        userOAuthTokenLiveData.setValue(userOAuthToken);
+        this.userOAuthToken = userOAuthToken;
         userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
     }
 
