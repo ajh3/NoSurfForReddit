@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 
 import androidx.fragment.app.Fragment;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ abstract public class PostFragment extends BaseFragment {
     static final String KEY_POSITION = "position";
     static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";
+    static final String KEY_ID = "id";
 
     final TextView[] comments = new TextView[3];
     final TextView[] commentsDetails = new TextView[3];
@@ -35,6 +37,7 @@ abstract public class PostFragment extends BaseFragment {
     public int position;
     boolean externalBrowser;
     boolean isSubscribedPost;
+    String id;
 
     LiveData<PostsViewState> postsLiveDataViewState;
     OnFragmentInteractionListener mListener;
@@ -56,6 +59,7 @@ abstract public class PostFragment extends BaseFragment {
         if (getArguments() != null) {
             position = getArguments().getInt(KEY_POSITION);
             isSubscribedPost = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POST);
+            id = getArguments().getString(KEY_ID);
         }
 
         if (isSubscribedPost) {
@@ -73,6 +77,7 @@ abstract public class PostFragment extends BaseFragment {
         findPostViews();
         setupPostViews();
         observeCommentsFinishedLoadingLiveEvent();
+        viewModel.fetchPostComments(id);
 
         return fragmentPostBinding.getRoot();
     }
@@ -125,6 +130,8 @@ abstract public class PostFragment extends BaseFragment {
     private void observeCommentsFinishedLoadingLiveEvent() {
         //display the appropriate text fields and dividers depending on how many comments the current post has
         viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
+            Log.e(getClass().toString(), "comments observer called" + aBoolean);
+
             if (aBoolean) {
                 int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
 
@@ -138,6 +145,10 @@ abstract public class PostFragment extends BaseFragment {
                 }
 
                 fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
+
+                Log.e(getClass().toString(), "comments event handled");
+
+                viewModel.consumeCommentsLiveDataChangedEvent();
             }
         });
     }

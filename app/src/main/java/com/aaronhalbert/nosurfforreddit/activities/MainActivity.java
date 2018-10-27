@@ -133,6 +133,8 @@ public class MainActivity extends BaseActivity implements
         String id;
         Fragment f;
 
+        Log.e(getClass().toString(), "launchPost");
+
         if (isSubscribedPost) {
             id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
         } else {
@@ -140,12 +142,12 @@ public class MainActivity extends BaseActivity implements
         }
 
         viewModel.insertReadPostId(id);
-        viewModel.refreshPostComments(id);
+        viewModel.fetchPostComments(id);
 
         if (isSelfPost) {
-            f = SelfPostFragment.newInstance(position, isSubscribedPost);
+            f = SelfPostFragment.newInstance(position, isSubscribedPost, id);
         } else {
-            f = LinkPostFragment.newInstance(position, isSubscribedPost);
+            f = LinkPostFragment.newInstance(position, isSubscribedPost, id);
         }
 
         fm.beginTransaction()

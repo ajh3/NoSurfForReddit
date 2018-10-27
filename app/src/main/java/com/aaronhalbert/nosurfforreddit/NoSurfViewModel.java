@@ -184,6 +184,14 @@ public class NoSurfViewModel extends ViewModel {
         return repository.getCommentsFinishedLoadingLiveEvent();
     }
 
+    public void dispatchCommentsLiveDataChangedEvent() {
+        repository.dispatchCommentsLiveDataChangedEvent();
+    }
+
+    public void consumeCommentsLiveDataChangedEvent() {
+        repository.consumeCommentsLiveDataChangedEvent();
+    }
+
     public void initApp() {
         repository.initializeTokensFromSharedPrefs();
 
@@ -209,8 +217,8 @@ public class NoSurfViewModel extends ViewModel {
         repository.refreshSubscribedPosts(isUserLoggedIn());
     }
 
-    public void refreshPostComments(String id) {
-        repository.refreshPostComments(id, isUserLoggedIn());
+    public void fetchPostComments(String id) {
+        repository.fetchPostComments(id, isUserLoggedIn());
     }
 
     public void requestUserOAuthToken(String code) {

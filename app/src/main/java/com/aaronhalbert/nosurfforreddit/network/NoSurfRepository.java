@@ -96,7 +96,7 @@ public class NoSurfRepository {
                         refreshAllPosts(false);
                         break;
                     case "refreshPostComments":
-                        refreshPostComments(id, false);
+                        fetchPostComments(id, false);
                         break;
                     case "":
                         break;
@@ -164,7 +164,7 @@ public class NoSurfRepository {
                         refreshSubscribedPosts(true);
                         break;
                     case "refreshPostComments":
-                        refreshPostComments(id, true);
+                        fetchPostComments(id, true);
                         break;
                 }
             }
@@ -242,7 +242,7 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void refreshPostComments(String id, final boolean isUserLoggedIn) {
+    public void fetchPostComments(String id, final boolean isUserLoggedIn) {
         String accessToken;
         String bearerAuth;
         String idToPass;
@@ -269,15 +269,18 @@ public class NoSurfRepository {
         ri.refreshPostComments(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
+
                 if ((response.code() == 401) && (isUserLoggedIn)) {
                     refreshExpiredUserOAuthToken("refreshPostComments", finalIdToPass);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
                     requestAppOnlyOAuthToken("refreshPostComments", finalIdToPass);
                 } else {
+                    Log.e(getClass().toString(), "successful comment refresh");
+
                     commentsLiveData.setValue(response.body());
-                    commentsFinishedLoadingLiveEvent.setValue(true);
-                    commentsFinishedLoadingLiveEvent.setValue(false);
+                    dispatchCommentsLiveDataChangedEvent();
                 }
+
             }
 
             @Override
@@ -285,6 +288,18 @@ public class NoSurfRepository {
                 Log.e(getClass().toString(), "--> refreshPostComments call failed: " + t.toString());
             }
         });
+    }
+
+    //TODO: this doesn't really belong in repository (?)
+    public void dispatchCommentsLiveDataChangedEvent() {
+        Log.e(getClass().toString(), "setting true");
+        commentsFinishedLoadingLiveEvent.setValue(true);
+    }
+
+    //TODO: this doesn't really belong in repository (?)
+    public void consumeCommentsLiveDataChangedEvent() {
+        Log.e(getClass().toString(), "setting false");
+        commentsFinishedLoadingLiveEvent.setValue(false);
     }
 
     public void logout() {
