@@ -30,8 +30,8 @@ public class NoSurfRepository {
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
     private static final String KEY_APP_ONLY_TOKEN = "appOnlyAccessToken";
-    private static final String KEY_USER_ACCESS_TOKEN = "userAccessToken";
-    private static final String KEY_USER_ACCESS_REFRESH_TOKEN = "userAccessRefreshToken";
+    private static final String KEY_USER_OAUTH_ACCESS_TOKEN = "userAccessToken";
+    private static final String KEY_USER_OAUTH_REFRESH_TOKEN = "userAccessRefreshToken";
     private static final String AUTH_HEADER = okhttp3.Credentials.basic(CLIENT_ID, "");
     private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
@@ -41,8 +41,7 @@ public class NoSurfRepository {
     private static final String REFRESH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsSync call failed: ";
     private static final String BEARER = "Bearer ";
 
-    private String previousCommentId;
-    private String userOAuthToken;
+    private String userOAuthAccessToken;
     private String appOnlyOAuthToken;
 
     private LiveData<List<ClickedPostId>> clickedPostIdLiveData;
@@ -64,25 +63,25 @@ public class NoSurfRepository {
         clickedPostIdLiveData = clickedPostIdDao.getAllClickedPostIds(); //TODO: assigning this seems weird?
     }
 
-    /* Called if the user has never logged in before, so user can browse /r/all */
-    /* Also called to "refresh" the app-only token, there is no separate method */
+    // region network auth calls -------------------------------------------------------------------
 
+    /* Called if the user has never logged in before, so user can browse /r/all anonymously */
+    /* Also called to refresh the anonymous app-only token when it expires */
+    //TODO: eliminate need to pass ID by stashing it in vm?
     public void fetchAppOnlyOAuthTokenSync(final String callback, final String id) {
         ri.fetchAppOnlyOAuthTokenSync(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, AUTH_HEADER)
                 .enqueue(new Callback<AppOnlyOAuthToken>() {
 
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call, Response<AppOnlyOAuthToken> response) {
-                String appOnlyAccessToken = response.body().getAccessToken();
-
-                //"cache" token in a LiveData
-                appOnlyOAuthToken = appOnlyAccessToken;
+                appOnlyOAuthToken = response.body().getAccessToken();
 
                 preferences
                         .edit()
-                        .putString(KEY_APP_ONLY_TOKEN, appOnlyAccessToken)
+                        .putString(KEY_APP_ONLY_TOKEN, appOnlyOAuthToken)
                         .apply();
 
+                //TODO: convert to enum
                 switch (callback) {
                     case "fetchAllPostsSync":
                         fetchAllPostsSync(false);
@@ -105,19 +104,19 @@ public class NoSurfRepository {
     public void fetchUserOAuthTokenSync(String code) {
         ri.fetchUserOAuthTokenSync(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, AUTH_HEADER)
                 .enqueue(new Callback<UserOAuthToken>() {
+
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
-                String userAccessToken = response.body().getAccessToken();
-                String userAccessRefreshToken = response.body().getRefreshToken();
+                userOAuthAccessToken = response.body().getAccessToken();
+                String userOAuthRefreshToken = response.body().getRefreshToken();
 
-                //"cache" tokens in a LiveData
-                userOAuthToken = userAccessToken;
-                userOAuthRefreshTokenLiveData.setValue(userAccessRefreshToken);
+                //TODO: handle login status such that this LiveData is no longer needed
+                userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
 
                 preferences
                         .edit()
-                        .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
-                        .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
+                        .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessToken)
+                        .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshToken)
                         .apply();
 
                 fetchAllPostsSync(true);
@@ -131,23 +130,23 @@ public class NoSurfRepository {
         });
     }
 
+    //TODO: eliminate need to pass ID by stashing it in vm?
     private void refreshExpiredUserOAuthTokenSync(final String callback, final String id) {
-        String userAccessRefreshToken = userOAuthRefreshTokenLiveData.getValue();
+        String userOAuthRefreshToken = userOAuthRefreshTokenLiveData.getValue();
 
-        ri.refreshExpiredUserOAuthTokenSync(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, AUTH_HEADER)
+        ri.refreshExpiredUserOAuthTokenSync(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userOAuthRefreshToken, AUTH_HEADER)
                 .enqueue(new Callback<UserOAuthToken>() {
+
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
-                String userAccessToken = response.body().getAccessToken();
-
-                //"cache" token in a LiveData
-                userOAuthToken = userAccessToken;
+                userOAuthAccessToken = response.body().getAccessToken();
 
                 preferences
                         .edit()
-                        .putString(KEY_USER_ACCESS_TOKEN, userAccessToken)
+                        .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessToken)
                         .apply();
 
+                //TODO: convert to enum
                 switch (callback) {
                     case "fetchAllPostsSync":
                         fetchAllPostsSync(true);
@@ -168,21 +167,24 @@ public class NoSurfRepository {
         });
     }
 
-    /* Can be called when user is logged in or out */
+    // endregion network auth calls ----------------------------------------------------------------
+
+    // region network data calls -------------------------------------------------------------------
 
     public void fetchAllPostsSync(final boolean isUserLoggedIn) {
-        final String accessToken;
+        String accessToken;
         String bearerAuth;
 
         if (isUserLoggedIn) {
-            accessToken = userOAuthToken;
-            bearerAuth = "Bearer " + accessToken;
+            accessToken = userOAuthAccessToken;
         } else {
             accessToken = appOnlyOAuthToken;
-            bearerAuth = "Bearer " + accessToken;
         }
 
+        bearerAuth = BEARER + accessToken;
+
         ri.fetchAllPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
+
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
@@ -201,13 +203,12 @@ public class NoSurfRepository {
         });
     }
 
-    /* Should only run when user is logged in */
-
     public void fetchSubscribedPostsSync(final boolean isUserLoggedIn) {
-        String bearerAuth = "Bearer " + userOAuthToken;
+        String bearerAuth = BEARER + userOAuthAccessToken;
 
         if (isUserLoggedIn) {
             ri.fetchSubscribedPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
+
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == 401) {
@@ -223,44 +224,30 @@ public class NoSurfRepository {
                 }
             });
         } else {
-            // do nothing
+            // do nothing if user is logged out
         }
     }
 
-    /* Can be called when user is logged in or out */
-
-    public void fetchPostCommentsSync(String id, final boolean isUserLoggedIn) {
+    public void fetchPostCommentsSync(final String id, final boolean isUserLoggedIn) {
         String accessToken;
         String bearerAuth;
-        String idToPass;
-
-        //to let refresh button refresh last comments
-        if (id.equals("previous") && previousCommentId == null) {
-            return;
-        } else if (id.equals("previous")) {
-            idToPass = previousCommentId;
-        } else {
-            previousCommentId = idToPass = id;
-        }
-
-        final String finalIdToPass = idToPass; // need a final String for the anonymous inner class
 
         if (isUserLoggedIn) {
-            accessToken = userOAuthToken;
-            bearerAuth = BEARER + accessToken;
+            accessToken = userOAuthAccessToken;
         } else {
             accessToken = appOnlyOAuthToken;
-            bearerAuth = BEARER + accessToken;
         }
 
-        ri.fetchPostCommentsSync(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
+        bearerAuth = BEARER + accessToken;
+
+        ri.fetchPostCommentsSync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-
                 if ((response.code() == 401) && (isUserLoggedIn)) {
-                    refreshExpiredUserOAuthTokenSync("fetchPostCommentsSync", finalIdToPass);
+                    refreshExpiredUserOAuthTokenSync("fetchPostCommentsSync", id);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
-                    fetchAppOnlyOAuthTokenSync("fetchPostCommentsSync", finalIdToPass);
+                    fetchAppOnlyOAuthTokenSync("fetchPostCommentsSync", id);
                 } else {
                     commentsLiveData.setValue(response.body());
                     dispatchCommentsLiveDataChangedEvent();
@@ -275,6 +262,36 @@ public class NoSurfRepository {
         });
     }
 
+    // endregion network data calls ----------------------------------------------------------------
+
+    // region init/de-init methods -----------------------------------------------------------------
+
+    //TODO: this doesn't really belong in repository (?)
+    public void logout() {
+        userOAuthAccessToken = "";
+        userOAuthRefreshTokenLiveData.setValue("");
+
+        preferences
+                .edit()
+                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, "")
+                .putString(KEY_USER_OAUTH_REFRESH_TOKEN, "")
+                .apply();
+    }
+
+    //TODO: this doesn't really belong in repository (?)
+    public void initializeTokensFromSharedPrefs() {
+        userOAuthAccessToken = preferences
+                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, null);
+        String userOAuthRefreshToken = preferences
+                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, null);
+
+        userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
+    }
+
+    // endregion init/de-init methods --------------------------------------------------------------
+
+    // region event handling -----------------------------------------------------------------------
+
     //TODO: this doesn't really belong in repository (?)
     public void dispatchCommentsLiveDataChangedEvent() {
         commentsFinishedLoadingLiveEvent.setValue(true);
@@ -285,26 +302,9 @@ public class NoSurfRepository {
         commentsFinishedLoadingLiveEvent.setValue(false);
     }
 
-    public void logout() {
+    //endregion event handling ---------------------------------------------------------------------
 
-        userOAuthToken = "";
-        userOAuthRefreshTokenLiveData.setValue("");
-
-        preferences
-                .edit()
-                .putString(KEY_USER_ACCESS_TOKEN, "")
-                .putString(KEY_USER_ACCESS_REFRESH_TOKEN, "")
-                .apply();
-    }
-
-    public void initializeTokensFromSharedPrefs() {
-
-        String userOAuthToken = preferences.getString(KEY_USER_ACCESS_TOKEN, null);
-        String userOAuthRefreshToken = preferences.getString(KEY_USER_ACCESS_REFRESH_TOKEN, null);
-
-        this.userOAuthToken = userOAuthToken;
-        userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
-    }
+    // region getter methods -----------------------------------------------------------------------
 
     public LiveData<Listing> getAllPostsLiveData() {
         return allPostsLiveData;
@@ -330,6 +330,10 @@ public class NoSurfRepository {
         return clickedPostIdLiveData;
     }
 
+    // endregion getter methods --------------------------------------------------------------------
+
+    // region room methods and classes -------------------------------------------------------------
+
     public void insertClickedPostId(ClickedPostId id) {
         new InsertAsyncTask(clickedPostIdDao).execute(id);
     }
@@ -347,4 +351,6 @@ public class NoSurfRepository {
             return null;
         }
     }
+
+    // endregion room methods and classes ----------------------------------------------------------
 }
