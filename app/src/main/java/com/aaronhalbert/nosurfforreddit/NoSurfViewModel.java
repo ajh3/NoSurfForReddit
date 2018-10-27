@@ -196,10 +196,10 @@ public class NoSurfViewModel extends ViewModel {
         repository.initializeTokensFromSharedPrefs();
 
         if (isUserLoggedIn()) {
-            refreshAllPosts();
-            refreshSubscribedPosts();
+            fetchAllPostsSync();
+            fetchSubscribedPostsSync();
         } else {
-            repository.requestAppOnlyOAuthToken("refreshAllPosts", null);
+            repository.fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
         }
     }
 
@@ -209,20 +209,20 @@ public class NoSurfViewModel extends ViewModel {
         return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
     }
 
-    public void refreshAllPosts() {
-        repository.refreshAllPosts(isUserLoggedIn());
+    public void fetchAllPostsSync() {
+        repository.fetchAllPostsSync(isUserLoggedIn());
     }
 
-    public void refreshSubscribedPosts() {
-        repository.refreshSubscribedPosts(isUserLoggedIn());
+    public void fetchSubscribedPostsSync() {
+        repository.fetchSubscribedPostsSync(isUserLoggedIn());
     }
 
-    public void fetchPostComments(String id) {
-        repository.fetchPostComments(id, isUserLoggedIn());
+    public void fetchPostCommentsSync(String id) {
+        repository.fetchPostCommentsSync(id, isUserLoggedIn());
     }
 
-    public void requestUserOAuthToken(String code) {
-        repository.requestUserOAuthToken(code);
+    public void fetchUserOAuthTokenSync(String code) {
+        repository.fetchUserOAuthTokenSync(code);
     }
 
     public void logout() {

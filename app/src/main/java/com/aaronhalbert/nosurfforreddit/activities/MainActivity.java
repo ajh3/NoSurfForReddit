@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         viewModel.insertClickedPostId(id);
-        viewModel.fetchPostComments(id);
+        viewModel.fetchPostCommentsSync(id);
 
         if (isSelfPost) {
             f = SelfPostFragment.newInstance(position, isSubscribedPost, id);
@@ -243,7 +243,7 @@ public class MainActivity extends BaseActivity implements
             if (error != null && error.equals("access_denied")) {
                 Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show();
             } else {
-                viewModel.requestUserOAuthToken(code);
+                viewModel.fetchUserOAuthTokenSync(code);
             }
         }
     }

@@ -22,7 +22,7 @@ public interface RetrofitInterface {
     @Headers({USER_AGENT})
     @FormUrlEncoded
     @POST   // can't provide a relative URL here when using @Url
-    Call<AppOnlyOAuthToken> requestAppOnlyOAuthToken(
+    Call<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenSync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("device_id") String deviceId,
@@ -31,7 +31,7 @@ public interface RetrofitInterface {
     @Headers({USER_AGENT})
     @FormUrlEncoded
     @POST
-    Call<UserOAuthToken> requestUserOAuthToken(
+    Call<UserOAuthToken> fetchUserOAuthTokenSync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("code") String code,
@@ -41,7 +41,7 @@ public interface RetrofitInterface {
     @Headers({USER_AGENT})
     @FormUrlEncoded
     @POST
-    Call<UserOAuthToken> refreshExpiredUserOAuthToken(
+    Call<UserOAuthToken> refreshExpiredUserOAuthTokenSync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("refresh_token") String refreshToken,
@@ -49,17 +49,17 @@ public interface RetrofitInterface {
 
     @Headers({USER_AGENT})
     @GET("r/all/hot")
-    Call<Listing> refreshAllPosts(
+    Call<Listing> fetchAllPostsSync(
             @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("hot")
-    Call<Listing> refreshSubscribedPosts(
+    Call<Listing> fetchSubscribedPostsSync(
             @Header("Authorization") String authorization);
 
     @Headers({USER_AGENT})
     @GET("comments/{article}")
-    Call<List<Listing>> refreshPostComments(
+    Call<List<Listing>> fetchPostCommentsSync(
             @Header("Authorization") String authorization,
             @Path("article") String article);
 }

@@ -36,17 +36,16 @@ public class NoSurfRepository {
     private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
     private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
-    private static final String REFRESH_ALL_POSTS_CALL_FAILED = "refreshAllPosts call failed: ";
-    private static final String REFRESH_SUBSCRIBED_POSTS_CALL_FAILED = "refreshSubscribedPosts call failed: ";
-    private static final String REFRESH_POST_COMMENTS_CALL_FAILED = "refreshPostComments call failed: ";
+    private static final String REFRESH_ALL_POSTS_CALL_FAILED = "fetchAllPostsSync call failed: ";
+    private static final String REFRESH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsSync call failed: ";
+    private static final String REFRESH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsSync call failed: ";
     private static final String BEARER = "Bearer ";
 
-    String previousCommentId;
-    private LiveData<List<ClickedPostId>> clickedPostIdLiveData;
-
+    private String previousCommentId;
     private String userOAuthToken;
     private String appOnlyOAuthToken;
 
+    private LiveData<List<ClickedPostId>> clickedPostIdLiveData;
     private MutableLiveData<String> userOAuthRefreshTokenLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
@@ -68,8 +67,8 @@ public class NoSurfRepository {
     /* Called if the user has never logged in before, so user can browse /r/all */
     /* Also called to "refresh" the app-only token, there is no separate method */
 
-    public void requestAppOnlyOAuthToken(final String callback, final String id) {
-        ri.requestAppOnlyOAuthToken(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, AUTH_HEADER)
+    public void fetchAppOnlyOAuthTokenSync(final String callback, final String id) {
+        ri.fetchAppOnlyOAuthTokenSync(OAUTH_BASE_URL, APP_ONLY_GRANT_TYPE, DEVICE_ID, AUTH_HEADER)
                 .enqueue(new Callback<AppOnlyOAuthToken>() {
 
             @Override
@@ -85,11 +84,11 @@ public class NoSurfRepository {
                         .apply();
 
                 switch (callback) {
-                    case "refreshAllPosts":
-                        refreshAllPosts(false);
+                    case "fetchAllPostsSync":
+                        fetchAllPostsSync(false);
                         break;
-                    case "refreshPostComments":
-                        fetchPostComments(id, false);
+                    case "fetchPostCommentsSync":
+                        fetchPostCommentsSync(id, false);
                         break;
                     case "":
                         break;
@@ -103,8 +102,8 @@ public class NoSurfRepository {
         });
     }
 
-    public void requestUserOAuthToken(String code) {
-        ri.requestUserOAuthToken(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, AUTH_HEADER)
+    public void fetchUserOAuthTokenSync(String code) {
+        ri.fetchUserOAuthTokenSync(OAUTH_BASE_URL, USER_GRANT_TYPE, code, REDIRECT_URI, AUTH_HEADER)
                 .enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
@@ -121,8 +120,8 @@ public class NoSurfRepository {
                         .putString(KEY_USER_ACCESS_REFRESH_TOKEN, userAccessRefreshToken)
                         .apply();
 
-                refreshAllPosts(true);
-                refreshSubscribedPosts(true);
+                fetchAllPostsSync(true);
+                fetchSubscribedPostsSync(true);
             }
 
             @Override
@@ -132,10 +131,10 @@ public class NoSurfRepository {
         });
     }
 
-    private void refreshExpiredUserOAuthToken(final String callback, final String id) {
+    private void refreshExpiredUserOAuthTokenSync(final String callback, final String id) {
         String userAccessRefreshToken = userOAuthRefreshTokenLiveData.getValue();
 
-        ri.refreshExpiredUserOAuthToken(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, AUTH_HEADER)
+        ri.refreshExpiredUserOAuthTokenSync(OAUTH_BASE_URL, USER_REFRESH_GRANT_TYPE, userAccessRefreshToken, AUTH_HEADER)
                 .enqueue(new Callback<UserOAuthToken>() {
             @Override
             public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
@@ -150,14 +149,14 @@ public class NoSurfRepository {
                         .apply();
 
                 switch (callback) {
-                    case "refreshAllPosts":
-                        refreshAllPosts(true);
+                    case "fetchAllPostsSync":
+                        fetchAllPostsSync(true);
                         break;
-                    case "refreshSubscribedPosts":
-                        refreshSubscribedPosts(true);
+                    case "fetchSubscribedPostsSync":
+                        fetchSubscribedPostsSync(true);
                         break;
-                    case "refreshPostComments":
-                        fetchPostComments(id, true);
+                    case "fetchPostCommentsSync":
+                        fetchPostCommentsSync(id, true);
                         break;
                 }
             }
@@ -171,7 +170,7 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void refreshAllPosts(final boolean isUserLoggedIn) {
+    public void fetchAllPostsSync(final boolean isUserLoggedIn) {
         final String accessToken;
         String bearerAuth;
 
@@ -183,13 +182,13 @@ public class NoSurfRepository {
             bearerAuth = "Bearer " + accessToken;
         }
 
-        ri.refreshAllPosts(bearerAuth).enqueue(new Callback<Listing>() {
+        ri.fetchAllPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == 401) && (isUserLoggedIn)) {
-                    refreshExpiredUserOAuthToken("refreshAllPosts", null);
+                    refreshExpiredUserOAuthTokenSync("fetchAllPostsSync", null);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
-                    requestAppOnlyOAuthToken("refreshAllPosts", null);
+                    fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -204,15 +203,15 @@ public class NoSurfRepository {
 
     /* Should only run when user is logged in */
 
-    public void refreshSubscribedPosts(final boolean isUserLoggedIn) {
+    public void fetchSubscribedPostsSync(final boolean isUserLoggedIn) {
         String bearerAuth = "Bearer " + userOAuthToken;
 
         if (isUserLoggedIn) {
-            ri.refreshSubscribedPosts(bearerAuth).enqueue(new Callback<Listing>() {
+            ri.fetchSubscribedPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == 401) {
-                        refreshExpiredUserOAuthToken("refreshSubscribedPosts", null);
+                        refreshExpiredUserOAuthTokenSync("fetchSubscribedPostsSync", null);
                     } else {
                         subscribedPostsLiveData.setValue(response.body());
                     }
@@ -230,7 +229,7 @@ public class NoSurfRepository {
 
     /* Can be called when user is logged in or out */
 
-    public void fetchPostComments(String id, final boolean isUserLoggedIn) {
+    public void fetchPostCommentsSync(String id, final boolean isUserLoggedIn) {
         String accessToken;
         String bearerAuth;
         String idToPass;
@@ -254,14 +253,14 @@ public class NoSurfRepository {
             bearerAuth = BEARER + accessToken;
         }
 
-        ri.refreshPostComments(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
+        ri.fetchPostCommentsSync(bearerAuth, finalIdToPass).enqueue(new Callback<List<Listing>>() {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
 
                 if ((response.code() == 401) && (isUserLoggedIn)) {
-                    refreshExpiredUserOAuthToken("refreshPostComments", finalIdToPass);
+                    refreshExpiredUserOAuthTokenSync("fetchPostCommentsSync", finalIdToPass);
                 } else if ((response.code() == 401) && (!isUserLoggedIn)) {
-                    requestAppOnlyOAuthToken("refreshPostComments", finalIdToPass);
+                    fetchAppOnlyOAuthTokenSync("fetchPostCommentsSync", finalIdToPass);
                 } else {
                     commentsLiveData.setValue(response.body());
                     dispatchCommentsLiveDataChangedEvent();

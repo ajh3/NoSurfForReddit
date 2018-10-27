@@ -37,7 +37,8 @@ public class ContainerFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
         viewModel.getUserOAuthRefreshTokenLiveData().observe(this, s -> {
-            //TODO: handle below logic inside the vm itself
+            //TODO: handle below logic inside the vm itself?
+            //TODO: universalize login status inside vm?
             boolean isUserLoggedIn = !(s == null) && !(s.equals(""));
             setContainerChildFragment(isUserLoggedIn);
         });

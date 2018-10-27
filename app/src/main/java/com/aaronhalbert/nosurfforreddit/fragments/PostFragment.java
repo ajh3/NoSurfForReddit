@@ -3,13 +3,10 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
-import androidx.fragment.app.Fragment;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,7 +74,7 @@ abstract public class PostFragment extends BaseFragment {
         findPostViews();
         setupPostViews();
         observeCommentsFinishedLoadingLiveEvent();
-        viewModel.fetchPostComments(id);
+        viewModel.fetchPostCommentsSync(id);
 
         return fragmentPostBinding.getRoot();
     }
