@@ -14,6 +14,4 @@ public class CommentsViewState {
         commentBodies = new Spanned[numComments];
         commentDetails = new String[numComments];
     }
-
-
 }
