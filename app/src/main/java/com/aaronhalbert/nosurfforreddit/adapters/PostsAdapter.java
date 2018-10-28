@@ -24,7 +24,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private LiveData<PostsViewState> postsLiveDataViewState;
     private int lastClickedRow;
     //initialize to empty array in case it is read from before written to by Observer
-    private String[] clickedPostIds = new String[0];     //TODO: eliminate?
+    private String[] clickedPostIds = new String[0];
 
     public PostsAdapter(launchPostCallback launchPostCallback,
                         NoSurfViewModel viewModel,
@@ -73,7 +73,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.clickedPostIds = clickedPostIds;
     }
 
-    //TODO: change font color as well
     public void strikethroughClickedPosts(RowHolder rowHolder, int position) {
         if (postsLiveDataViewState.getValue() != null) {
             if (Arrays.asList(clickedPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
