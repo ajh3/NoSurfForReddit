@@ -62,10 +62,9 @@ public class MainActivity extends BaseActivity implements
     private NoSurfViewModel viewModel;
     private boolean darkMode;
     private FragmentManager fm;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e(getClass().toString(), "onCreate");
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setupStrictMode();
@@ -74,6 +73,10 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
 
         fm = getSupportFragmentManager();
+
+        // only necessary to specify the factory the first time here, subsequent calls to
+        // ViewModelProviders.of for this activity will get the right vm without specifying
+        // the factory
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
         if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
@@ -211,6 +214,10 @@ public class MainActivity extends BaseActivity implements
             nightModeOff();
         }
     }
+
+    // TODO: is this a bug or the expected behavior?
+    // note that calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
+    // activity to be recreated after onCreate() finishes
 
     private void nightModeOn() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
