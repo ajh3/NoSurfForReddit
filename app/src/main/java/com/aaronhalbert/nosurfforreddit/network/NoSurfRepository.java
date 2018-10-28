@@ -68,7 +68,7 @@ public class NoSurfRepository {
 
     // region network auth calls -------------------------------------------------------------------
 
-    /* Called if the user has never logged in before, so user can browse /r/all anonymously */
+    /* Called if the user hasn't logged in, so user can browse /r/all anonymously */
     /* Also called to refresh the anonymous app-only token when it expires */
     //TODO: eliminate need to pass ID by stashing it in vm?
     public void fetchAppOnlyOAuthTokenSync(final String callback, final String id) {
