@@ -83,6 +83,9 @@ public class MainActivity extends BaseActivity implements
             fm.beginTransaction()
                     .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance(), TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
+
+            Log.e(getClass().toString(), "adding vpf");
+
         }
     }
 
@@ -104,7 +107,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void logout() {
-        viewModel.logout();
+        viewModel.logUserOut();
     }
 
     public void launchWebView(String url, String tag, boolean doAnimation) {
@@ -127,8 +130,6 @@ public class MainActivity extends BaseActivity implements
     public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
         String id;
         Fragment f;
-
-        Log.e(getClass().toString(), "launchPost");
 
         if (isSubscribedPost) {
             id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;

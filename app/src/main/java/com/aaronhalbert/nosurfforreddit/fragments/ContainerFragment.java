@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,7 @@ public class ContainerFragment extends BaseFragment {
     private FragmentManager fm;
 
     public static ContainerFragment newInstance() {
-        ContainerFragment fragment = new ContainerFragment();
-        return fragment;
+        return new ContainerFragment();
     }
 
     @Override
@@ -36,15 +37,7 @@ public class ContainerFragment extends BaseFragment {
         fm = getChildFragmentManager();
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
-        viewModel.getUserOAuthRefreshTokenLiveData().observe(this, s -> {
-            //TODO: handle below logic inside the vm itself?
-            //TODO: universalize login status inside vm?
-            boolean isUserLoggedIn = !(s == null) && !(s.equals(""));
-            setContainerChildFragment(isUserLoggedIn);
-        });
-
-        boolean isUserLoggedIn = viewModel.isUserLoggedIn();
-        setContainerChildFragment(isUserLoggedIn);
+        observeIsUserLoggedInLiveData();
     }
 
     @Override
@@ -54,8 +47,17 @@ public class ContainerFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_container, container, false);
     }
 
+    // instantly update "Your Subreddits" viewpager tab when user logs in or out
+    private void observeIsUserLoggedInLiveData() {
+        viewModel.getIsUserLoggedInLiveData().observe(this, isUserLoggedIn -> {
+            refreshContainerChildFragment(isUserLoggedIn);
+            Log.e(getClass().toString(), "CF observer triggered" + isUserLoggedIn);
+
+        });
+    }
+
     //TODO: how do I simplify this total mess?
-    public void setContainerChildFragment(boolean isUserLoggedIn) {
+    private void refreshContainerChildFragment(boolean isUserLoggedIn) {
         Fragment loginFragment = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
         Fragment subscribedPostsFragment = fm.findFragmentByTag(TAG_SUBSCRIBED_POSTS_FRAGMENT);
 

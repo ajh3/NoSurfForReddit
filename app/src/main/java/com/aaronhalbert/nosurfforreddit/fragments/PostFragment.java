@@ -22,24 +22,24 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 abstract public class PostFragment extends BaseFragment {
+    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     static final String KEY_POSITION = "position";
-    static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";
     static final String KEY_ID = "id";
 
-    final TextView[] comments = new TextView[3];
-    final TextView[] commentsDetails = new TextView[3];
-    final View[] dividers = new View[2];
+    private final TextView[] comments = new TextView[3];
+    private final TextView[] commentsDetails = new TextView[3];
+    private final View[] dividers = new View[2];
 
     public int position;
-    boolean externalBrowser;
-    boolean isSubscribedPost;
-    String id;
+    private boolean externalBrowser;
+    private boolean isSubscribedPost;
+    private String id;
 
     LiveData<PostsViewState> postsLiveDataViewState;
-    OnFragmentInteractionListener mListener;
     FragmentPostBinding fragmentPostBinding;
-    NoSurfViewModel viewModel;
+    private OnFragmentInteractionListener mListener;
+    private NoSurfViewModel viewModel;
 
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
 
@@ -127,7 +127,6 @@ abstract public class PostFragment extends BaseFragment {
     private void observeCommentsFinishedLoadingLiveEvent() {
         //display the appropriate text fields and dividers depending on how many comments the current post has
         viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
-            Log.e(getClass().toString(), "comments observer called" + aBoolean);
 
             if (aBoolean) {
                 int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
@@ -142,8 +141,6 @@ abstract public class PostFragment extends BaseFragment {
                 }
 
                 fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
-
-                Log.e(getClass().toString(), "comments event handled");
 
                 viewModel.consumeCommentsLiveDataChangedEvent();
             }

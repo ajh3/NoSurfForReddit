@@ -32,7 +32,7 @@ public class NoSurfViewModel extends ViewModel {
     private static final String NSFW = "nsfw";
     private static final String IMAGE = "image";
 
-    NoSurfRepository repository;
+    private NoSurfRepository repository;
 
     private LiveData<CommentsViewState> commentsLiveDataViewState;
     private LiveData<PostsViewState> allPostsLiveDataViewState;
@@ -56,15 +56,15 @@ public class NoSurfViewModel extends ViewModel {
     // region network data calls -------------------------------------------------------------------
 
     public void fetchAllPostsSync() {
-        repository.fetchAllPostsSync(isUserLoggedIn());
+        repository.fetchAllPostsSync();
     }
 
     public void fetchSubscribedPostsSync() {
-        repository.fetchSubscribedPostsSync(isUserLoggedIn());
+        repository.fetchSubscribedPostsSync();
     }
 
     public void fetchPostCommentsSync(String id) {
-        repository.fetchPostCommentsSync(id, isUserLoggedIn());
+        repository.fetchPostCommentsSync(id);
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -74,22 +74,12 @@ public class NoSurfViewModel extends ViewModel {
     public void initApp() {
         repository.initializeTokensFromSharedPrefs();
 
-        if (isUserLoggedIn()) {
-            fetchAllPostsSync();
-            fetchSubscribedPostsSync();
-        } else {
-            repository.fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
-        }
+        fetchAllPostsSync();
+        fetchSubscribedPostsSync();
     }
 
-    public boolean isUserLoggedIn() {
-        String userOAuthRefreshToken = repository.getUserOAuthRefreshTokenLiveData().getValue();
-
-        return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
-    }
-
-    public void logout() {
-        repository.logout();
+    public void logUserOut() {
+        repository.logUserOut();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------
@@ -128,7 +118,7 @@ public class NoSurfViewModel extends ViewModel {
         return subscribedPostsLiveDataViewState;
     }
 
-    public LiveData<List<Listing>> getCommentsLiveData() {
+    private LiveData<List<Listing>> getCommentsLiveData() {
         return repository.getCommentsLiveData();
     }
 
@@ -136,8 +126,8 @@ public class NoSurfViewModel extends ViewModel {
         return commentsLiveDataViewState;
     }
 
-    public LiveData<String> getUserOAuthRefreshTokenLiveData() {
-        return repository.getUserOAuthRefreshTokenLiveData();
+    public LiveData<Boolean> getIsUserLoggedInLiveData() {
+        return repository.getIsUserLoggedInLiveData();
     }
 
     // endregion getter methods --------------------------------------------------------------------
@@ -255,9 +245,8 @@ public class NoSurfViewModel extends ViewModel {
     private Spanned formatCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
         String unescaped = getCommentBodyHtml(input, autoModOffset, i);
         Spanned escaped = decodeHtml(unescaped);
-        Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(escaped);
 
-        return trailingNewLinesStripped;
+        return (Spanned) trimTrailingWhitespace(escaped);
     }
 
     private String pickImageUrl(Listing input, int i) {

@@ -30,7 +30,6 @@ public class NoSurfWebViewClient extends WebViewClient {
         //checks if URL is a custom NoSurf redirect URI
 
         if (url.contains(NOSURF_REDIRECT_URI)) {
-            Log.e(getClass().toString(), "URL is NoSurf redirect URI" + url);
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             hostFragmentActivity.startActivity(intent);
             return true;

@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -10,6 +11,7 @@ import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.google.android.material.tabs.TabLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,22 +24,20 @@ import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
 public class ViewPagerFragment extends BaseFragment {
     private ViewPager pager;
-    private NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter;
     private NoSurfViewModel viewModel;
-
-    private MenuItem loginMenuItem;
-    private MenuItem logoutMenuItem;
+    private boolean isUserLoggedIn = false;
 
     public static ViewPagerFragment newInstance() {
-        ViewPagerFragment fragment = new ViewPagerFragment();
-        return fragment;
+        return new ViewPagerFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+        observeIsUserLoggedInLiveData();
+        Log.e(getClass().toString(), "vpf oncreate");
     }
 
     @Override
@@ -48,12 +48,12 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
-        noSurfFragmentPagerAdapter = new NoSurfFragmentPagerAdapter(getChildFragmentManager());
+        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter = new NoSurfFragmentPagerAdapter(getChildFragmentManager());
 
         pager.setAdapter(noSurfFragmentPagerAdapter);
         tabs.setupWithViewPager(pager);
@@ -97,15 +97,24 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        loginMenuItem = menu.findItem(R.id.login);
-        logoutMenuItem = menu.findItem(R.id.logout);
+        MenuItem loginMenuItem = menu.findItem(R.id.login);
+        MenuItem logoutMenuItem = menu.findItem(R.id.logout);
 
-        if (viewModel.isUserLoggedIn()) {
+        if (isUserLoggedIn) {
             loginMenuItem.setVisible(false);
             logoutMenuItem.setVisible(true);
         } else {
             loginMenuItem.setVisible(true);
             logoutMenuItem.setVisible(false);
         }
+    }
+
+    private void observeIsUserLoggedInLiveData() {
+        viewModel.getIsUserLoggedInLiveData().observe(this, b -> {
+            Log.e(getClass().toString(), "VPF observer triggered" + this.toString());
+
+            isUserLoggedIn = b;
+
+        });
     }
 }
