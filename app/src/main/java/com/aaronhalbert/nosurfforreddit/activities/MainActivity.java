@@ -42,8 +42,6 @@ public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
-    private static final String TAG_ABOUT_FRAGMENT = "aboutFragmentTag";
-    private static final String TAG_SETTINGS_FRAGMENT = "settingsFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_DARK_MODE = "darkMode";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
@@ -67,6 +65,7 @@ public class MainActivity extends BaseActivity implements
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e(getClass().toString(), "onCreate");
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setupStrictMode();
@@ -77,15 +76,12 @@ public class MainActivity extends BaseActivity implements
         fm = getSupportFragmentManager();
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
-        if (savedInstanceState == null) {
+        if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
             viewModel.initApp();
 
             fm.beginTransaction()
                     .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance(), TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
-
-            Log.e(getClass().toString(), "adding vpf");
-
         }
     }
 

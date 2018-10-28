@@ -33,11 +33,11 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.e(getClass().toString(), "ViewPagerFragment onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
         observeIsUserLoggedInLiveData();
-        Log.e(getClass().toString(), "vpf oncreate");
     }
 
     @Override
