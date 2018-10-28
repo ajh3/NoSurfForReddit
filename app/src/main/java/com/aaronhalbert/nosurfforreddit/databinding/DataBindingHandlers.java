@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
 
+@SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {
     //binding framework calls this any time it finds an ImageView with an imageUrl synthetic property
     @BindingAdapter("imageUrl")

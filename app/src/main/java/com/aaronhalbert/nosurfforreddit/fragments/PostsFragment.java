@@ -20,8 +20,8 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    SwipeRefreshLayout swipeRefreshLayout;
-    PostsAdapter postsAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
     LiveData<Listing> postsLiveData;
 
@@ -46,7 +46,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         return v;
     }
 
-    void cancelRefreshingAnimation() {
+    private void cancelRefreshingAnimation() {
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }

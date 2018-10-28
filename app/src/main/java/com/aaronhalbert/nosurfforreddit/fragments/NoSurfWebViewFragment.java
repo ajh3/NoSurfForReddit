@@ -27,7 +27,6 @@ public class NoSurfWebViewFragment extends BaseFragment {
     @Inject NoSurfWebViewClient noSurfWebViewClient;
 
     private String url;
-    private WebView browser;
 
     public static NoSurfWebViewFragment newInstance(String url) {
         NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
@@ -52,7 +51,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_nosurf_webview, container, false);
 
-        browser = result.findViewById(R.id.nosurf_webview_fragment_webview);
+        WebView browser = result.findViewById(R.id.nosurf_webview_fragment_webview);
         WebSettings browserSettings = browser.getSettings();
         browserSettings.setDomStorageEnabled(true); // Imgur needs this
         browserSettings.setJavaScriptEnabled(true);

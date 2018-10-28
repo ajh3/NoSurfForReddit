@@ -24,6 +24,7 @@ public class NoSurfWebViewClient extends WebViewClient {
     }
 
     @Override
+    @TargetApi(21) //TODO: support down to 19
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
 

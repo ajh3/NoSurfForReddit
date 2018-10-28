@@ -5,17 +5,15 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 public class AllPostsFragment extends PostsFragment {
 
     public static AllPostsFragment newInstance() {
-        AllPostsFragment fragment = new AllPostsFragment();
-        return fragment;
+        return new AllPostsFragment();
     }
 
     @Override
     PostsAdapter newPostsAdapter() {
-        PostsAdapter postsAdapter = new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(),
+        return new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(),
                 viewModel,
                 this,
                 false);
-        return postsAdapter;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -38,7 +39,7 @@ public class ApplicationModule {
     @Provides
     @Named("oAuthSharedPrefs")
         SharedPreferences provideOAuthSharedPrefs() {
-        return application.getSharedPreferences(application.getPackageName() + "oauth", application.MODE_PRIVATE);
+        return application.getSharedPreferences(application.getPackageName() + "oauth", Context.MODE_PRIVATE);
     }
 
     @Singleton

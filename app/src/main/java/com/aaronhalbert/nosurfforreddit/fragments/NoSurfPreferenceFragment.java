@@ -8,8 +8,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 public class NoSurfPreferenceFragment extends PreferenceFragmentCompat {
 
     public static NoSurfPreferenceFragment newInstance() {
-        NoSurfPreferenceFragment fragment = new NoSurfPreferenceFragment();
-        return fragment;
+        return new NoSurfPreferenceFragment();
     }
 
     @Override

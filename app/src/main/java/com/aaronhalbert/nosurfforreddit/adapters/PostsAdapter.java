@@ -73,7 +73,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.clickedPostIds = clickedPostIds;
     }
 
-    public void strikethroughClickedPosts(RowHolder rowHolder, int position) {
+    private void strikethroughClickedPosts(RowHolder rowHolder, int position) {
         if (postsLiveDataViewState.getValue() != null) {
             if (Arrays.asList(clickedPostIds).contains(postsLiveDataViewState.getValue().postData.get(position).id)) {
                 rowHolder.rowSinglePostBinding.title.setPaintFlags(rowHolder.rowSinglePostBinding.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

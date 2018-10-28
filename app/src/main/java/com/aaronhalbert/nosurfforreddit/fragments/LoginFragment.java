@@ -15,8 +15,7 @@ public class LoginFragment extends BaseFragment {
     private OnLoginFragmentButtonListener onLoginFragmentButtonListener;
 
     public static LoginFragment newInstance() {
-        LoginFragment fragment = new LoginFragment();
-        return fragment;
+        return new LoginFragment();
     }
 
     @Override
