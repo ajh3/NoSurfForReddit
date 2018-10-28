@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit;
 
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import android.os.Build;
@@ -41,182 +40,20 @@ public class NoSurfViewModel extends ViewModel {
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
-        commentsLiveDataViewState = transformCommentsLiveDataToCommentsLiveDataViewState();
-        allPostsLiveDataViewState = transformPostsLiveDataToPostsLiveDataViewState(false);
-        subscribedPostsLiveDataViewState = transformPostsLiveDataToPostsLiveDataViewState(true);
+        commentsLiveDataViewState = transformCommentsLiveDataToViewState();
+        allPostsLiveDataViewState = transformPostsLiveDataToViewState(false);
+        subscribedPostsLiveDataViewState = transformPostsLiveDataToViewState(true);
     }
 
-    //TODO: why doesn't a lambda work here?
-    private LiveData<CommentsViewState> transformCommentsLiveDataToCommentsLiveDataViewState() {
-        return Transformations.map(getCommentsLiveData(), new Function<List<Listing>, CommentsViewState>() {
-            @Override
-            public CommentsViewState apply(List<Listing> input) {
-                CommentsViewState commentsViewState = null;
+    // region network auth calls -------------------------------------------------------------------
 
-                //check if there are any comments at all
-                if (input.get(0).getData().getChildren().get(0).getData().getNumComments() > 0) {
-                    int autoModOffset;
-
-                    //skip first comment if it's by AutoMod
-                    if ((input.get(1).getData().getChildren().get(0).getData().getAuthor()).equals(AUTO_MODERATOR)) {
-                        autoModOffset = 1;
-                    } else {
-                        autoModOffset = 0;
-                    }
-
-                    //calculate the number of valid comments left after excluding AutoMod
-                    int numTopLevelComments = input.get(1).getData().getChildren().size();
-                    numTopLevelComments = numTopLevelComments - autoModOffset; // avoid running past array in cases where numTopLevelComments < 4 and one of them is an AutoMod post
-                    if (numTopLevelComments > 3) numTopLevelComments = 3;
-
-                    commentsViewState = new CommentsViewState(numTopLevelComments);
-
-                    //for each valid comment, get its body and double unescape it and strip trailing new lines, then get its author and score
-                    for (int i = 0; i < numTopLevelComments; i++) {
-                        String unescaped = getCommentBodyHtml(input, autoModOffset, i);
-                        Spanned escaped = decodeHtml(unescaped);
-                        Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(escaped);
-
-                        String commentAuthor = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getAuthor();
-                        int commentScore = input.get(1).getData().getChildren().get(autoModOffset + i).getData().getScore();
-                        String commentDetails = USER_ABBREVIATION + commentAuthor + BULLET_POINT + Integer.toString(commentScore);
-
-                        commentsViewState.commentBodies[i] = trailingNewLinesStripped;
-                        commentsViewState.commentDetails[i] = commentDetails;
-                    }
-                } else { //if zero comments
-                    commentsViewState = new CommentsViewState(0);
-                }
-                return commentsViewState;
-            }
-        });
+    public void fetchUserOAuthTokenSync(String code) {
+        repository.fetchUserOAuthTokenSync(code);
     }
 
+    // endregion network auth calls ----------------------------------------------------------------
 
-
-    private LiveData<PostsViewState> transformPostsLiveDataToPostsLiveDataViewState(boolean isSubscribed) {
-        LiveData<Listing> postsLiveData;
-
-        if (isSubscribed) {
-            postsLiveData = getSubscribedPostsLiveData();
-        } else {
-            postsLiveData = getAllPostsLiveData();
-        }
-
-        return Transformations.map(postsLiveData, input -> {
-            PostsViewState postsViewState = new PostsViewState();
-
-            for (int i = 0; i < 25; i++) {
-                PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
-                
-                Data_ data = input.getData().getChildren().get(i).getData();
-
-                String title = data.getTitle();
-                String encodedUrl = data.getUrl();
-                String encodedThumbnailUrl = data.getThumbnail();
-
-                postDatum.isSelf = data.isIsSelf();
-                postDatum.id = data.getId();
-                postDatum.title = decodeHtml(title).toString(); // some titles contain HTML special entities
-                postDatum.author = data.getAuthor();
-                postDatum.subreddit = data.getSubreddit();
-                postDatum.score = data.getScore();
-                postDatum.numComments = data.getNumComments();
-                postDatum.url = decodeHtml(encodedUrl).toString();
-
-                if (encodedThumbnailUrl.equals(DEFAULT)) {
-                    postDatum.thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
-                } else if (encodedThumbnailUrl.equals(SELF)) {
-                    postDatum.thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
-                } else if (encodedThumbnailUrl.equals(NSFW)) {
-                    postDatum.thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
-                } else if (encodedThumbnailUrl.equals(IMAGE)) {
-                    postDatum.thumbnailUrl = NoSurfViewModel.LINK_POST_DEFAULT_THUMBNAIL;
-                } else {
-                    postDatum.thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
-                }
-
-                if (data.getPreview() == null) {
-                    postDatum.imageUrl = LINK_POST_DEFAULT_THUMBNAIL;
-                } else {
-                    String encodedImageUrl = data.getPreview().getImages().get(0).getSource().getUrl();
-                    postDatum.imageUrl = decodeHtml(encodedImageUrl).toString();
-                }
-
-                if (postDatum.isSelf) {
-                    String twiceEncodedSelfTextHtml = data.getSelfTextHtml();
-                    if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
-                        String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
-                        String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
-                        postDatum.selfTextHtml = (String) trimTrailingWhitespace(decodedSelfTextHtml);
-                    } else {
-                        postDatum.selfTextHtml = "";
-                    }
-                }
-
-                postsViewState.postData.add(postDatum);
-            }
-
-            return postsViewState;
-        });
-    }
-
-    public LiveData<Listing> getAllPostsLiveData() {
-        return repository.getAllPostsLiveData();
-    }
-
-    public LiveData<Listing> getSubscribedPostsLiveData() {
-        return repository.getSubscribedPostsLiveData();
-    }
-
-    public LiveData<List<Listing>> getCommentsLiveData() {
-        return repository.getCommentsLiveData();
-    }
-
-    public LiveData<String> getUserOAuthRefreshTokenLiveData() {
-        return repository.getUserOAuthRefreshTokenLiveData();
-    }
-
-    public LiveData<CommentsViewState> getCommentsLiveDataViewState() {
-        return commentsLiveDataViewState;
-    }
-
-    public LiveData<PostsViewState> getAllPostsLiveDataViewState() {
-        return allPostsLiveDataViewState;
-    }
-
-    public LiveData<PostsViewState> getSubscribedPostsLiveDataViewState() {
-        return subscribedPostsLiveDataViewState;
-    }
-
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
-        return repository.getCommentsFinishedLoadingLiveEvent();
-    }
-
-    public void dispatchCommentsLiveDataChangedEvent() {
-        repository.dispatchCommentsLiveDataChangedEvent();
-    }
-
-    public void consumeCommentsLiveDataChangedEvent() {
-        repository.consumeCommentsLiveDataChangedEvent();
-    }
-
-    public void initApp() {
-        repository.initializeTokensFromSharedPrefs();
-
-        if (isUserLoggedIn()) {
-            fetchAllPostsSync();
-            fetchSubscribedPostsSync();
-        } else {
-            repository.fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
-        }
-    }
-
-    public boolean isUserLoggedIn() {
-        String userOAuthRefreshToken = repository.getUserOAuthRefreshTokenLiveData().getValue();    // get straight from repository because the switchMap transformation seems to be asynchronous
-
-        return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
-    }
+    // region network data calls -------------------------------------------------------------------
 
     public void fetchAllPostsSync() {
         repository.fetchAllPostsSync(isUserLoggedIn());
@@ -230,13 +67,82 @@ public class NoSurfViewModel extends ViewModel {
         repository.fetchPostCommentsSync(id, isUserLoggedIn());
     }
 
-    public void fetchUserOAuthTokenSync(String code) {
-        repository.fetchUserOAuthTokenSync(code);
+    // endregion network data calls ----------------------------------------------------------------
+
+    // region init/de-init methods -----------------------------------------------------------------
+
+    public void initApp() {
+        repository.initializeTokensFromSharedPrefs();
+
+        if (isUserLoggedIn()) {
+            fetchAllPostsSync();
+            fetchSubscribedPostsSync();
+        } else {
+            repository.fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
+        }
+    }
+
+    public boolean isUserLoggedIn() {
+        String userOAuthRefreshToken = repository.getUserOAuthRefreshTokenLiveData().getValue();
+
+        return ((userOAuthRefreshToken != null) && !(userOAuthRefreshToken.equals("")));
     }
 
     public void logout() {
         repository.logout();
     }
+
+    // endregion init/de-init methods --------------------------------------------------------------
+
+    // region event handling -----------------------------------------------------------------------
+
+    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
+        return repository.getCommentsFinishedLoadingLiveEvent();
+    }
+
+    public void dispatchCommentsLiveDataChangedEvent() {
+        repository.dispatchCommentsLiveDataChangedEvent();
+    }
+
+    public void consumeCommentsLiveDataChangedEvent() {
+        repository.consumeCommentsLiveDataChangedEvent();
+    }
+
+    // endregion event handling --------------------------------------------------------------------
+
+    // region getter methods -----------------------------------------------------------------------
+
+    public LiveData<Listing> getAllPostsLiveData() {
+        return repository.getAllPostsLiveData();
+    }
+
+    public LiveData<Listing> getSubscribedPostsLiveData() {
+        return repository.getSubscribedPostsLiveData();
+    }
+
+    public LiveData<PostsViewState> getAllPostsLiveDataViewState() {
+        return allPostsLiveDataViewState;
+    }
+
+    public LiveData<PostsViewState> getSubscribedPostsLiveDataViewState() {
+        return subscribedPostsLiveDataViewState;
+    }
+
+    public LiveData<List<Listing>> getCommentsLiveData() {
+        return repository.getCommentsLiveData();
+    }
+
+    public LiveData<CommentsViewState> getCommentsLiveDataViewState() {
+        return commentsLiveDataViewState;
+    }
+
+    public LiveData<String> getUserOAuthRefreshTokenLiveData() {
+        return repository.getUserOAuthRefreshTokenLiveData();
+    }
+
+    // endregion getter methods --------------------------------------------------------------------
+
+    // region room methods and classes -------------------------------------------------------------
 
     public void insertClickedPostId(String id) {
         repository.insertClickedPostId(new ClickedPostId(id));
@@ -252,6 +158,188 @@ public class NoSurfViewModel extends ViewModel {
             }
             return clickedPostIds;
         });
+    }
+
+    // endregion room methods and classes ----------------------------------------------------------
+
+    // region viewstate Transformations ------------------------------------------------------------
+
+    private LiveData<CommentsViewState> transformCommentsLiveDataToViewState() {
+        return Transformations.map(getCommentsLiveData(), input -> {
+            CommentsViewState commentsViewState;
+            int autoModOffset;
+
+            //check if there is at least 1 comment
+            if (getNumTopLevelComments(input) > 0) {
+
+                //calculate the number of valid comments after checking for & excluding AutoMod
+                autoModOffset = calculateAutoModOffset(input);
+                int numComments = getNumTopLevelComments(input) - autoModOffset;
+
+                // only display first 3 top-level comments
+                if (numComments > 3) numComments = 3;
+
+                commentsViewState = new CommentsViewState(numComments);
+
+                // construct the viewstate object
+                for (int i = 0; i < numComments; i++) {
+                    String commentAuthor = getCommentAuthor(input, autoModOffset + i);
+                    int commentScore = getCommentScore(input, autoModOffset, i);
+
+                    commentsViewState.commentBodies[i] = formatCommentBodyHtml(input, autoModOffset, i);
+                    commentsViewState.commentDetails[i] = formatCommentDetails(commentAuthor, commentScore);
+                }
+            } else { //if zero comments
+                commentsViewState = new CommentsViewState(0);
+            }
+            return commentsViewState;
+        });
+    }
+
+    private LiveData<PostsViewState> transformPostsLiveDataToViewState(boolean isSubscribedPost) {
+        LiveData<Listing> postsLiveData;
+
+        if (isSubscribedPost) {
+            postsLiveData = getSubscribedPostsLiveData();
+        } else {
+            postsLiveData = getAllPostsLiveData();
+        }
+
+        return Transformations.map(postsLiveData, input -> {
+            PostsViewState postsViewState = new PostsViewState();
+
+            for (int i = 0; i < 25; i++) {
+                PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+
+                Data_ data = input.getData().getChildren().get(i).getData();
+
+                // both link posts and self posts share these attributes
+                postDatum.isSelf = data.isIsSelf();
+                postDatum.id = data.getId();
+                postDatum.title = (decodeHtml(data.getTitle()).toString()); // some titles contain HTML special entities
+                postDatum.author = data.getAuthor();
+                postDatum.subreddit = data.getSubreddit();
+                postDatum.score = data.getScore();
+                postDatum.numComments = data.getNumComments();
+                postDatum.thumbnailUrl = pickThumbnailUrl(data.getThumbnail());
+
+                // assign link- and self-post specific attributes
+                if (postDatum.isSelf) {
+                    postDatum.selfTextHtml = formatSelfPostSelfTextHtml(data.getSelfTextHtml());
+                } else {
+                    postDatum.url = decodeHtml(data.getUrl()).toString();
+                    postDatum.imageUrl = pickImageUrl(input, i);
+                }
+
+                postsViewState.postData.add(postDatum);
+            }
+
+            return postsViewState;
+        });
+    }
+
+    // endregion viewstate Transformations ---------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
+
+    private String formatSelfPostSelfTextHtml(String twiceEncodedSelfTextHtml) {
+        if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
+            String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
+            String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
+            return (String) trimTrailingWhitespace(decodedSelfTextHtml);
+        } else {
+            return "";
+        }
+    }
+
+    private Spanned formatCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
+        String unescaped = getCommentBodyHtml(input, autoModOffset, i);
+        Spanned escaped = decodeHtml(unescaped);
+        Spanned trailingNewLinesStripped = (Spanned) trimTrailingWhitespace(escaped);
+
+        return trailingNewLinesStripped;
+    }
+
+    private String pickImageUrl(Listing input, int i) {
+        Data_ data = input.getData().getChildren().get(i).getData();
+
+        if (data.getPreview() == null) {
+            return LINK_POST_DEFAULT_THUMBNAIL;
+        } else {
+            String encodedImageUrl = data
+                    .getPreview()
+                    .getImages()
+                    .get(0)
+                    .getSource()
+                    .getUrl();
+            return decodeHtml(encodedImageUrl).toString();
+        }
+    }
+
+    private String pickThumbnailUrl(String encodedThumbnailUrl) {
+        String thumbnailUrl;
+
+        switch (encodedThumbnailUrl) {
+            case DEFAULT:
+                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                break;
+            case SELF:
+                thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
+                break;
+            case NSFW:
+                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                break;
+            case IMAGE:
+                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                break;
+            default:
+                thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
+                break;
+        }
+        return thumbnailUrl;
+    }
+
+    private int getNumTopLevelComments(List<Listing> input) {
+        return input.get(1).getData().getChildren().size();
+    }
+
+    private boolean isFirstCommentByAutoMod(List<Listing> input) {
+        return (getCommentAuthor(input, 0)).equals(AUTO_MODERATOR);
+    }
+
+    private int calculateAutoModOffset(List<Listing> input) {
+        if (isFirstCommentByAutoMod(input)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private String getCommentAuthor(List<Listing> input, int i) {
+        return input
+                .get(1)
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getAuthor();
+    }
+
+    private int getCommentScore(List<Listing> input, int autoModOffset, int i) {
+        return input
+                .get(1)
+                .getData()
+                .getChildren()
+                .get(autoModOffset + i)
+                .getData()
+                .getScore();
+    }
+
+    private String formatCommentDetails(String commentAuthor, int commentScore) {
+        return USER_ABBREVIATION
+                + commentAuthor
+                + BULLET_POINT
+                + Integer.toString(commentScore);
     }
 
     private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
@@ -287,7 +375,6 @@ public class NoSurfViewModel extends ViewModel {
         return decodedHtml;
     }
 
-
     private CharSequence trimTrailingWhitespace(CharSequence source) {
         if (source == null) return "";
 
@@ -300,5 +387,5 @@ public class NoSurfViewModel extends ViewModel {
         return source.subSequence(0, i+1);
     }
 
-
+    // endregion helper methods --------------------------------------------------------------------
 }

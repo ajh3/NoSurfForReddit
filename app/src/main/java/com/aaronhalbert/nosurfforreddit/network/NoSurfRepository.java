@@ -268,6 +268,16 @@ public class NoSurfRepository {
     // region init/de-init methods -----------------------------------------------------------------
 
     //TODO: this doesn't really belong in repository (?)
+    public void initializeTokensFromSharedPrefs() {
+        userOAuthAccessToken = preferences
+                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, null);
+        String userOAuthRefreshToken = preferences
+                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, null);
+
+        userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
+    }
+
+    //TODO: this doesn't really belong in repository (?)
     public void logout() {
         userOAuthAccessToken = "";
         userOAuthRefreshTokenLiveData.setValue("");
@@ -279,19 +289,13 @@ public class NoSurfRepository {
                 .apply();
     }
 
-    //TODO: this doesn't really belong in repository (?)
-    public void initializeTokensFromSharedPrefs() {
-        userOAuthAccessToken = preferences
-                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, null);
-        String userOAuthRefreshToken = preferences
-                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, null);
-
-        userOAuthRefreshTokenLiveData.setValue(userOAuthRefreshToken);
-    }
-
     // endregion init/de-init methods --------------------------------------------------------------
 
     // region event handling -----------------------------------------------------------------------
+
+    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
+        return commentsFinishedLoadingLiveEvent;
+    }
 
     //TODO: this doesn't really belong in repository (?)
     public void dispatchCommentsLiveDataChangedEvent() {
@@ -317,10 +321,6 @@ public class NoSurfRepository {
 
     public LiveData<List<Listing>> getCommentsLiveData() {
         return commentsLiveData;
-    }
-
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
-        return commentsFinishedLoadingLiveEvent;
     }
 
     public LiveData<String> getUserOAuthRefreshTokenLiveData() {
