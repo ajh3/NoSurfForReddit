@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -137,9 +136,9 @@ public class MainActivity extends BaseActivity implements
         Fragment f;
 
         if (isSubscribedPost) {
-            id = viewModel.getSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
+            id = viewModel.getStitchedSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
         } else {
-            id = viewModel.getAllPostsLiveDataViewState().getValue().postData.get(position).id;
+            id = viewModel.getStitchedAllPostsLiveDataViewState().getValue().postData.get(position).id;
         }
 
         viewModel.insertClickedPostId(id);

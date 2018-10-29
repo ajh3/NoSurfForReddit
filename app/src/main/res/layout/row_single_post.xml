@@ -11,9 +11,6 @@
             name="controller"
             type="com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter.RowHolder"/>
 
-        <variable
-            name="viewModel"
-            type="com.aaronhalbert.nosurfforreddit.NoSurfViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,13 +27,14 @@
             style="@style/RecyclerViewRowTitle"
             android:id="@+id/title"
             android:text="@{controller.postsLiveDataViewState.postData[controller.position].title}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].title) ? View.GONE : View.VISIBLE}" />
+            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].title) ? View.GONE : View.VISIBLE}"
+            app:strikethroughClickedPostTitle="@{controller.postsLiveDataViewState.hasBeenClicked[controller.position]}"/>
 
         <TextView
             style="@style/RecyclerViewRowDetails"
             android:id="@+id/details"
             android:text="@{controller.postsLiveDataViewState.postData[controller.position].subreddit + ` • ` + controller.postsLiveDataViewState.postData[controller.position].score + ` • ` + controller.postsLiveDataViewState.postData[controller.position].numComments + ` comments`}"
-            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}" />
+            android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -60,9 +60,9 @@ abstract public class PostFragment extends BaseFragment {
         }
 
         if (isSubscribedPost) {
-            postsLiveDataViewState = viewModel.getSubscribedPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
         } else {
-            postsLiveDataViewState = viewModel.getAllPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
         }
     }
 
@@ -129,20 +129,23 @@ abstract public class PostFragment extends BaseFragment {
         viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
 
             if (aBoolean) {
-                int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
+                if (viewModel.getCommentsLiveDataViewState().getValue() != null) {
+                    int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
 
-                for (int i = 0; i < numComments; i++) {
-                    comments[i].setVisibility(View.VISIBLE);
-                    commentsDetails[i].setVisibility(View.VISIBLE);
+                    for (int i = 0; i < numComments; i++) {
+                        comments[i].setVisibility(View.VISIBLE);
+                        commentsDetails[i].setVisibility(View.VISIBLE);
+                    }
+
+                    for (int i = 0; i < (numComments - 1); i++) {
+                        dividers[i].setVisibility(View.VISIBLE);
+                    }
+
+                    fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
+
+                    viewModel.consumeCommentsLiveDataChangedEvent();
                 }
 
-                for (int i = 0; i < (numComments - 1); i++) {
-                    dividers[i].setVisibility(View.VISIBLE);
-                }
-
-                fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
-
-                viewModel.consumeCommentsLiveDataChangedEvent();
             }
         });
     }

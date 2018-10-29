@@ -9,7 +9,7 @@ public class SubscribedPostsFragment extends PostsFragment {
     }
 
     @Override
-    PostsAdapter newPostsAdapter() {
+    PostsAdapter setPostsAdapter() {
         return new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(),
                 viewModel,
                 this,
@@ -17,8 +17,8 @@ public class SubscribedPostsFragment extends PostsFragment {
     }
 
     @Override
-    void setPostsLiveData() {
-        postsLiveData = viewModel.getSubscribedPostsLiveData();
+    void setPostsLiveDataViewState() {
+        postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
     }
 
     @Override

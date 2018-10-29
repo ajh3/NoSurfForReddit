@@ -1,14 +1,23 @@
 package com.aaronhalbert.nosurfforreddit.viewstate;
 
-import android.text.Spanned;
-
 import java.util.ArrayList;
 
 public class PostsViewState {
 
     private static final int INITIAL_CAPACITY = 25;
+    public ArrayList<PostDatum> postData;
+    public boolean[] hasBeenClicked;
 
-    public ArrayList<PostDatum> postData = new ArrayList<>(INITIAL_CAPACITY);
+    public PostsViewState() {
+        postData = new ArrayList<>(INITIAL_CAPACITY);
+        hasBeenClicked = new boolean[INITIAL_CAPACITY];
+
+        // make sure initial *size* (not just capacity) of postData == INITIAL_CAPACITY
+        // so we can start set()ing its elements right away from the ViewModel
+        for (int i = 0; i < INITIAL_CAPACITY; i++) {
+            postData.add(new PostDatum());
+        }
+    }
 
     public static class PostDatum {
         public boolean isSelf;

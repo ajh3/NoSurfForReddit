@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 import android.os.Build;
 
@@ -16,6 +17,7 @@ import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
@@ -34,15 +36,18 @@ public class NoSurfViewModel extends ViewModel {
 
     private NoSurfRepository repository;
 
+    private LiveData<PostsViewState> stitchedAllPostsLiveDataViewState;
+    private LiveData<PostsViewState> stitchedSubscribedPostsLiveDataViewState;
     private LiveData<CommentsViewState> commentsLiveDataViewState;
-    private LiveData<PostsViewState> allPostsLiveDataViewState;
-    private LiveData<PostsViewState> subscribedPostsLiveDataViewState;
+
+    private PostsViewState stitchedAllPostsCache = new PostsViewState();
+    private PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
-        commentsLiveDataViewState = transformCommentsLiveDataToViewState();
-        allPostsLiveDataViewState = transformPostsLiveDataToViewState(false);
-        subscribedPostsLiveDataViewState = transformPostsLiveDataToViewState(true);
+        stitchedAllPostsLiveDataViewState = stitchClickedPostIdsToPostsViewState(false);
+        stitchedSubscribedPostsLiveDataViewState = stitchClickedPostIdsToPostsViewState(true);
+        commentsLiveDataViewState = buildCommentsViewState();
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -90,6 +95,7 @@ public class NoSurfViewModel extends ViewModel {
         return repository.getCommentsFinishedLoadingLiveEvent();
     }
 
+    //TODO ?
     public void dispatchCommentsLiveDataChangedEvent() {
         repository.dispatchCommentsLiveDataChangedEvent();
     }
@@ -102,24 +108,12 @@ public class NoSurfViewModel extends ViewModel {
 
     // region getter methods -----------------------------------------------------------------------
 
-    public LiveData<Listing> getAllPostsLiveData() {
-        return repository.getAllPostsLiveData();
+    public LiveData<PostsViewState> getStitchedAllPostsLiveDataViewState() {
+        return stitchedAllPostsLiveDataViewState;
     }
 
-    public LiveData<Listing> getSubscribedPostsLiveData() {
-        return repository.getSubscribedPostsLiveData();
-    }
-
-    public LiveData<PostsViewState> getAllPostsLiveDataViewState() {
-        return allPostsLiveDataViewState;
-    }
-
-    public LiveData<PostsViewState> getSubscribedPostsLiveDataViewState() {
-        return subscribedPostsLiveDataViewState;
-    }
-
-    private LiveData<List<Listing>> getCommentsLiveData() {
-        return repository.getCommentsLiveData();
+    public LiveData<PostsViewState> getStitchedSubscribedPostsLiveDataViewState() {
+        return stitchedSubscribedPostsLiveDataViewState;
     }
 
     public LiveData<CommentsViewState> getCommentsLiveDataViewState() {
@@ -138,7 +132,7 @@ public class NoSurfViewModel extends ViewModel {
         repository.insertClickedPostId(new ClickedPostId(id));
     }
 
-    public LiveData<String[]> getClickedPostIdsLiveData() {
+    private LiveData<String[]> getClickedPostIdsLiveData() {
         return Transformations.map(repository.getClickedPostIdLiveData(), input -> {
             int size = input.size();
             String[] clickedPostIds = new String[size];
@@ -154,8 +148,8 @@ public class NoSurfViewModel extends ViewModel {
 
     // region viewstate Transformations ------------------------------------------------------------
 
-    private LiveData<CommentsViewState> transformCommentsLiveDataToViewState() {
-        return Transformations.map(getCommentsLiveData(), input -> {
+    private LiveData<CommentsViewState> buildCommentsViewState() {
+        return Transformations.map(repository.getCommentsLiveData(), input -> {
             CommentsViewState commentsViewState;
             int autoModOffset;
 
@@ -186,13 +180,13 @@ public class NoSurfViewModel extends ViewModel {
         });
     }
 
-    private LiveData<PostsViewState> transformPostsLiveDataToViewState(boolean isSubscribedPost) {
+    private LiveData<PostsViewState> buildPostsViewState(boolean isSubscribedPosts) {
         LiveData<Listing> postsLiveData;
 
-        if (isSubscribedPost) {
-            postsLiveData = getSubscribedPostsLiveData();
+        if (isSubscribedPosts) {
+            postsLiveData = repository.getSubscribedPostsLiveData();
         } else {
-            postsLiveData = getAllPostsLiveData();
+            postsLiveData = repository.getAllPostsLiveData();
         }
 
         return Transformations.map(postsLiveData, input -> {
@@ -221,11 +215,46 @@ public class NoSurfViewModel extends ViewModel {
                     postDatum.imageUrl = pickImageUrl(input, i);
                 }
 
-                postsViewState.postData.add(postDatum);
+                postsViewState.postData.set(i, postDatum);
             }
 
             return postsViewState;
         });
+    }
+
+    private LiveData<PostsViewState> stitchClickedPostIdsToPostsViewState(boolean isSubscribedPosts){
+        final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
+
+        LiveData<PostsViewState> postsLiveDataViewState;
+        PostsViewState postsViewStateCache;
+
+        if (isSubscribedPosts) {
+            postsLiveDataViewState = buildPostsViewState(true);
+            postsViewStateCache = stitchedSubscribedPostsCache;
+        } else {
+            postsLiveDataViewState = buildPostsViewState(false);;
+            postsViewStateCache = stitchedAllPostsCache;
+        }
+
+        mediator.addSource(postsLiveDataViewState, postsViewState -> {
+            for (int i = 0; i < 25; i++) {
+                postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
+            }
+
+            mediator.setValue(postsViewStateCache);
+        });
+
+        mediator.addSource(getClickedPostIdsLiveData(), strings -> {
+            for (int i = 0; i < 25; i++) {
+                if (Arrays.asList(strings).contains(postsViewStateCache.postData.get(i).id)) {
+                    postsViewStateCache.hasBeenClicked[i] = true;
+                }
+            }
+
+            mediator.setValue(postsViewStateCache);
+        });
+
+        return mediator;
     }
 
     // endregion viewstate Transformations ---------------------------------------------------------

@@ -17,33 +17,43 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
-    LiveData<Listing> postsLiveData;
+    LiveData<PostsViewState> postsLiveDataViewState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
-        postsAdapter = newPostsAdapter();
-        setPostsLiveData();
-        observePostsLiveData();
-        observeClickedPostIdsLiveData();
+        postsAdapter = setPostsAdapter();
+        setPostsLiveDataViewState();
+        observePostsLiveDataViewState();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_posts, container, false);
+
         setupRecyclerView(v);
         setupSwipeRefreshLayout(v);
 
         return v;
+    }
+
+
+
+    // region helper methods -----------------------------------------------------------------------
+
+    private void observePostsLiveDataViewState() {
+        postsLiveDataViewState.observe(this, listing -> {
+            cancelRefreshingAnimation();
+        });
     }
 
     private void cancelRefreshingAnimation() {
@@ -52,26 +62,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         }
     }
 
-    // region helper methods -----------------------------------------------------------------------
-
-    // TODO: eliminate all this coordination between PostsFragment and PostsAdapter and multiple observers by zip()ing disparate data sources in repository
-    void observePostsLiveData() {
-        postsLiveData.observe(this, listing -> {
-            cancelRefreshingAnimation();
-            //ensure that strikethroughs are performed when postsLiveData is loaded w/ data
-            postsAdapter.notifyDataSetChanged();
-        });
-    }
-
-    void observeClickedPostIdsLiveData() {
-        viewModel.getClickedPostIdsLiveData().observe(this, clickedPostIds -> {
-            postsAdapter.setClickedPostIds(clickedPostIds);
-            //ensure last clicked post is struck through when going BACK to PostsFragment
-            postsAdapter.notifyItemChanged(postsAdapter.getLastClickedRow());
-        });
-    }
-
-    void setupRecyclerView(View v) {
+    private void setupRecyclerView(View v) {
         Context context = getContext();
 
         RecyclerView rv = v.findViewById(R.id.posts_fragment_recyclerview);
@@ -81,7 +72,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         rv.setHasFixedSize(true);
     }
 
-    void setupSwipeRefreshLayout(View v) {
+    private void setupSwipeRefreshLayout(View v) {
         swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
     }
@@ -91,8 +82,8 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
 
     // region abstract methods ---------------------------------------------------------------------
 
-    abstract PostsAdapter newPostsAdapter();
-    abstract void setPostsLiveData();
+    abstract PostsAdapter setPostsAdapter();
+    abstract void setPostsLiveDataViewState();
 
     // endregion abstract methods ------------------------------------------------------------------
 }

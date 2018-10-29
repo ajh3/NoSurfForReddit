@@ -16,5 +16,6 @@
     <string name="logout">Logout</string>
     <string name="login_instructions">You must log in to view your subscribed subreddits.</string>
     <string name="about_fragment">Copyright 2018. By /u/Suspicious_Advantage</string>
+    <string name="post_image_description">Post image</string>
 
 </resources>

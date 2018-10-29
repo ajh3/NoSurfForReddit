@@ -35,6 +35,7 @@
                 style="@style/PostFragmentImageForLinkPostsOnly"
                 android:id="@+id/post_fragment_image_for_link_posts_only"
                 android:onClick="@{postFragment::onImageClick}"
+                android:contentDescription="@string/post_image_description"
                 app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.position].imageUrl}" />
 
             <View
@@ -93,6 +94,5 @@
                 android:text="@{viewModel.commentsLiveDataViewState.commentBodies[2]}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
 </layout>

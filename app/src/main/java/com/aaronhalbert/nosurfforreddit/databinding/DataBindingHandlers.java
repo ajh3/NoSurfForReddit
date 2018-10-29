@@ -1,7 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.databinding;
 
 import androidx.databinding.BindingAdapter;
+
+import android.graphics.Paint;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
 
@@ -15,5 +18,14 @@ public class DataBindingHandlers {
                 .load(url)
                 .centerCrop()
                 .into(iv);
+    }
+
+    @BindingAdapter("strikethroughClickedPostTitle")
+    public static void strikethru(TextView tv, boolean hasBeenClicked) {
+        if (hasBeenClicked) {
+            tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            tv.setPaintFlags(tv.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+        }
     }
 }
