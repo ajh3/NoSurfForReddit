@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">NoSurf for reddit</string>
-    <string name="thumbnail">Thumbnail image</string>
     <string name="subreddit_abbreviation">%1$s</string>
     <string name="score">\u0020\u2022 %1$d</string>
     <string name="comments"><b>Comments placeholder</b></string>
@@ -17,5 +16,5 @@
     <string name="login_instructions">You must log in to view your subscribed subreddits.</string>
     <string name="about_fragment">Copyright 2018. By /u/Suspicious_Advantage</string>
     <string name="post_image_description">Post image</string>
-
+    <string name="post_thumbnail_description">Post thumbnail image</string>
 </resources>

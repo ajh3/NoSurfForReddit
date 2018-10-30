@@ -38,7 +38,7 @@
     <style name="RecyclerViewRowThumbnail">
         <item name="android:layout_width">90sp</item>
         <item name="android:layout_height">90sp</item>
-        <item name="android:contentDescription">@string/thumbnail</item>
+        <item name="android:contentDescription">@string/post_thumbnail_description</item>
         <item name="android:padding">2dp</item>
         <item name="layout_constraintStart_toStartOf">@id/list_item</item>
         <item name="layout_constraintTop_toTopOf">@id/list_item</item>

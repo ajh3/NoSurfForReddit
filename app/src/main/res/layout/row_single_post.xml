@@ -21,6 +21,7 @@
         <ImageView
             style="@style/RecyclerViewRowThumbnail"
             android:id="@+id/thumbnail"
+            android:contentDescription="@string/post_thumbnail_description"
             app:imageUrl="@{controller.postsLiveDataViewState.postData[controller.position].thumbnailUrl}" />
 
         <TextView
