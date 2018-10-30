@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
@@ -91,13 +92,8 @@ public class NoSurfViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
-        return repository.getCommentsFinishedLoadingLiveEvent();
-    }
-
-    //TODO ?
-    public void dispatchCommentsLiveDataChangedEvent() {
-        repository.dispatchCommentsLiveDataChangedEvent();
+    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvents() {
+        return repository.getCommentsFinishedLoadingLiveEvents();
     }
 
     public void consumeCommentsLiveDataChangedEvent() {
@@ -133,13 +129,15 @@ public class NoSurfViewModel extends ViewModel {
     }
 
     private LiveData<String[]> getClickedPostIdsLiveData() {
-        return Transformations.map(repository.getClickedPostIdLiveData(), input -> {
+        return Transformations.map(repository.getClickedPostIdsLiveData(), input -> {
             int size = input.size();
+
             String[] clickedPostIds = new String[size];
 
             for (int i = 0; i < size; i++) {
                 clickedPostIds[i] = input.get(i).getClickedPostId();
             }
+
             return clickedPostIds;
         });
     }
@@ -237,6 +235,8 @@ public class NoSurfViewModel extends ViewModel {
         }
 
         mediator.addSource(postsLiveDataViewState, postsViewState -> {
+            Log.e(getClass().toString(), "postsViewState observer called");
+
             for (int i = 0; i < 25; i++) {
                 postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
             }
@@ -245,6 +245,8 @@ public class NoSurfViewModel extends ViewModel {
         });
 
         mediator.addSource(getClickedPostIdsLiveData(), strings -> {
+            Log.e(getClass().toString(), "clicked post IDs observer called");
+
             for (int i = 0; i < 25; i++) {
                 if (Arrays.asList(strings).contains(postsViewStateCache.postData.get(i).id)) {
                     postsViewStateCache.hasBeenClicked[i] = true;

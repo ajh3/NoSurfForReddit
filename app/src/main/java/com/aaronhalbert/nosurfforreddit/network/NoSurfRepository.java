@@ -47,13 +47,13 @@ public class NoSurfRepository {
     private String appOnlyOAuthTokenCache;
     private boolean isUserLoggedInCache = false;
 
-    private LiveData<List<ClickedPostId>> clickedPostIdLiveData;
+    private LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
     private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
     private MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
 
-    private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvent = new SingleLiveEvent<>();
+    private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvents = new SingleLiveEvent<>();
 
     private RetrofitInterface ri;
     private ClickedPostIdDao clickedPostIdDao;
@@ -63,7 +63,7 @@ public class NoSurfRepository {
         this.preferences = preferences;
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
-        clickedPostIdLiveData = clickedPostIdDao.getAllClickedPostIds(); //TODO: assigning this seems weird?
+        clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -326,18 +326,16 @@ public class NoSurfRepository {
 
     // region event handling -----------------------------------------------------------------------
 
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvent() {
-        return commentsFinishedLoadingLiveEvent;
+    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvents() {
+        return commentsFinishedLoadingLiveEvents;
     }
 
-    //TODO: this doesn't really belong in repository (?)
-    public void dispatchCommentsLiveDataChangedEvent() {
-        commentsFinishedLoadingLiveEvent.setValue(true);
+    private void dispatchCommentsLiveDataChangedEvent() {
+        commentsFinishedLoadingLiveEvents.setValue(true);
     }
 
-    //TODO: this doesn't really belong in repository (?)
     public void consumeCommentsLiveDataChangedEvent() {
-        commentsFinishedLoadingLiveEvent.setValue(false);
+        commentsFinishedLoadingLiveEvents.setValue(false);
     }
 
     //endregion event handling ---------------------------------------------------------------------
@@ -360,8 +358,8 @@ public class NoSurfRepository {
         return isUserLoggedInLiveData;
     }
 
-    public LiveData<List<ClickedPostId>> getClickedPostIdLiveData() {
-        return clickedPostIdLiveData;
+    public LiveData<List<ClickedPostId>> getClickedPostIdsLiveData() {
+        return clickedPostIdsLiveData;
     }
 
     // endregion getter methods --------------------------------------------------------------------
