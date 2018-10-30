@@ -126,7 +126,7 @@ abstract public class PostFragment extends BaseFragment {
 
     private void observeCommentsFinishedLoadingLiveEvent() {
         //display the appropriate text fields and dividers depending on how many comments the current post has
-        viewModel.getCommentsFinishedLoadingLiveEvent().observe(this, aBoolean -> {
+        viewModel.getCommentsFinishedLoadingLiveEvents().observe(this, aBoolean -> {
 
             if (aBoolean) {
                 if (viewModel.getCommentsLiveDataViewState().getValue() != null) {
