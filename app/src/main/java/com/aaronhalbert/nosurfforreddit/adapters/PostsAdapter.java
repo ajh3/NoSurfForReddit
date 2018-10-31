@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 
@@ -79,10 +80,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         @Override
         public void onClick(View v) {
-            int i = getAdapterPosition();
-            boolean isSelfPost = getPostsLiveDataViewState().getValue().postData.get(i).isSelf;
+            int position = getAdapterPosition();
 
-            launchPostCallback.launchPost(i, isSelfPost, isSubscribedPostsAdapter);
+            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
+                    position,
+                    postsLiveDataViewState.getValue().postData.get(position).id,
+                    postsLiveDataViewState.getValue().postData.get(position).isSelf,
+                    isSubscribedPostsAdapter));
+
+            launchPostCallback.launchPost();
         }
     }
 
@@ -91,7 +97,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // region interfaces ---------------------------------------------------------------------------
 
     public interface launchPostCallback {
-        void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost);
+        void launchPost();
     }
 
     // endregion interfaces ------------------------------------------------------------------------

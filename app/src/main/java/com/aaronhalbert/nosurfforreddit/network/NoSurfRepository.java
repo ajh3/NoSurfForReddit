@@ -70,7 +70,6 @@ public class NoSurfRepository {
 
     /* Called if the user hasn't logged in, so user can browse /r/all anonymously */
     /* Also called to refresh the anonymous app-only token when it expires */
-    //TODO: eliminate need to pass ID by stashing it in vm?
     private void fetchAppOnlyOAuthTokenSync(final String callback, final String id) {
         ri.fetchAppOnlyOAuthTokenSync(
                 OAUTH_BASE_URL,
@@ -138,7 +137,6 @@ public class NoSurfRepository {
         });
     }
 
-    //TODO: eliminate need to pass ID by stashing it in vm?
     private void refreshExpiredUserOAuthTokenSync(final String callback, final String id) {
 
         ri.refreshExpiredUserOAuthTokenSync(

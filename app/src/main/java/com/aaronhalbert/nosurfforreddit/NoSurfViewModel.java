@@ -15,6 +15,7 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
+import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.Arrays;
@@ -44,6 +45,7 @@ public class NoSurfViewModel extends ViewModel {
     private PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
 
     private String[] clickedPostIdsCache = new String[25];
+    private LastClickedPostMetadata lastClickedPostMetadata;
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
@@ -121,7 +123,19 @@ public class NoSurfViewModel extends ViewModel {
         return repository.getIsUserLoggedInLiveData();
     }
 
+    public LastClickedPostMetadata getLastClickedPostMetadata() {
+        return lastClickedPostMetadata;
+    }
+
     // endregion getter methods --------------------------------------------------------------------
+
+    // region setter methods -----------------------------------------------------------------------
+
+    public void setLastClickedPostMetadata(LastClickedPostMetadata lastClickedPostMetadata) {
+        this.lastClickedPostMetadata = lastClickedPostMetadata;
+    }
+
+    // endregion setter methods --------------------------------------------------------------------
 
     // region room methods and classes -------------------------------------------------------------
 

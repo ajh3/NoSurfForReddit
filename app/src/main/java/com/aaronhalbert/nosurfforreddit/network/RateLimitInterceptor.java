@@ -21,6 +21,12 @@ public class RateLimitInterceptor implements Interceptor {
         if (response.header("x-ratelimit-reset") != null && response.header("x-ratelimit-remaining") != null) {
 
             int xRateLimitReset = Integer.parseInt(response.header("x-ratelimit-reset"));
+
+            //prevent divide-by-zero
+            if (xRateLimitReset == 600) {
+                xRateLimitReset = 599;
+            }
+
             //int xRateLimitRemaining = (int) Double.parseDouble(response.header("x-ratelimit-remaining"));
             int xRateLimitUsed = Integer.parseInt(response.header("x-ratelimit-used"));
 

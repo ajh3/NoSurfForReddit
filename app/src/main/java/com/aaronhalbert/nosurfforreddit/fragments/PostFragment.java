@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,23 +22,18 @@ import javax.inject.Named;
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
-    static final String KEY_POSITION = "position";
-    static final String KEY_IS_SUBSCRIBED_POST = "isSubscribedPost";
-    static final String KEY_ID = "id";
 
     private final TextView[] comments = new TextView[3];
     private final TextView[] commentsDetails = new TextView[3];
     private final View[] dividers = new View[2];
 
-    public int position;
+    public int lastClickedPostPosition;
+    private String lastClickedPostId;
     private boolean externalBrowser;
-    private boolean isSubscribedPost;
-    private String id;
-
-    LiveData<PostsViewState> postsLiveDataViewState;
-    FragmentPostBinding fragmentPostBinding;
     private OnFragmentInteractionListener mListener;
     private NoSurfViewModel viewModel;
+    LiveData<PostsViewState> postsLiveDataViewState;
+    FragmentPostBinding fragmentPostBinding;
 
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
 
@@ -52,14 +46,14 @@ abstract public class PostFragment extends BaseFragment {
         externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
-        // TODO: checking if savedInstanceState is null instead of using getArguments() crashes the app...why?
-        if (getArguments() != null) {
-            position = getArguments().getInt(KEY_POSITION);
-            isSubscribedPost = getArguments().getBoolean(KEY_IS_SUBSCRIBED_POST);
-            id = getArguments().getString(KEY_ID);
-        }
+        lastClickedPostPosition = viewModel
+                .getLastClickedPostMetadata()
+                .getLastClickedPostPosition();
+        lastClickedPostId = viewModel
+                .getLastClickedPostMetadata()
+                .getLastClickedPostId();
 
-        if (isSubscribedPost) {
+        if (viewModel.getLastClickedPostMetadata().isLastClickedPostIsSubscribed()) {
             postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
         } else {
             postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
@@ -74,27 +68,32 @@ abstract public class PostFragment extends BaseFragment {
         findPostViews();
         setupPostViews();
         observeCommentsFinishedLoadingLiveEvent();
-        viewModel.fetchPostCommentsSync(id);
+        viewModel.fetchPostCommentsSync(lastClickedPostId);
+        viewModel.insertClickedPostId(lastClickedPostId);
 
         return fragmentPostBinding.getRoot();
     }
 
     public void onImageClick(View view) {
-        if (externalBrowser) {
-            if (mListener != null) {
-                Uri uri = Uri.parse(postsLiveDataViewState.getValue().postData.get(position).url);
-                mListener.launchExternalBrowser(uri);
-            }
-        } else {
-            if (mListener != null) {
-                mListener.launchWebView(postsLiveDataViewState.getValue().postData.get(position).url, null, false);
+        String url = postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).url;
+
+        if (mListener != null) {
+            if (externalBrowser) {
+                mListener.launchExternalBrowser(Uri.parse(url));
+            } else {
+                mListener.launchWebView(url, null, false);
             }
         }
     }
 
+    // region getter methods -----------------------------------------------------------------------
+
+    // for data binding
     public LiveData<PostsViewState> getPostsLiveDataViewState() {
         return postsLiveDataViewState;
     }
+
+    // endregion getter methods --------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
 

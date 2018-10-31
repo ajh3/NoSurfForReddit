@@ -24,19 +24,19 @@
             <TextView
                 style="@style/PostFragmentTitle"
                 android:id="@+id/post_fragment_title"
-                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.position].title}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].title}" />
 
             <TextView
                 style="@style/PostFragmentDetails"
                 android:id="@+id/post_fragment_details"
-                android:text="@{`in r/` + postFragment.postsLiveDataViewState.postData[postFragment.position].subreddit + ` by u/` + postFragment.postsLiveDataViewState.postData[postFragment.position].author + ` • ` + postFragment.postsLiveDataViewState.postData[postFragment.position].score}"/>
+                android:text="@{`in r/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].subreddit + ` by u/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].author + ` • ` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].score}"/>
 
             <ImageView
                 style="@style/PostFragmentImageForLinkPostsOnly"
                 android:id="@+id/post_fragment_image_for_link_posts_only"
                 android:onClick="@{postFragment::onImageClick}"
                 android:contentDescription="@string/post_image_description"
-                app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.position].imageUrl}" />
+                app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].imageUrl}" />
 
             <View
                 style="@style/PostFragmentDividerUnderDetailsForSelfPostsOnly"
@@ -45,7 +45,7 @@
             <TextView
                 style="@style/PostFragmentSelftextForSelfPostsOnly"
                 android:id="@+id/post_fragment_selftext_for_self_posts_only"
-                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.position].selfTextHtml}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].selfTextHtml}" />
 
             <View
                 style="@style/PostFragmentDividerUnderSelftextForSelfPostsOnly"

@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.activities;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -32,6 +33,7 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.UUID;
 
@@ -131,23 +133,13 @@ public class MainActivity extends BaseActivity implements
         startActivity(intent);
     }
 
-    public void launchPost(int position, boolean isSelfPost, boolean isSubscribedPost) {
-        String id;
+    public void launchPost() {
         Fragment f;
 
-        if (isSubscribedPost) {
-            id = viewModel.getStitchedSubscribedPostsLiveDataViewState().getValue().postData.get(position).id;
+        if (viewModel.getLastClickedPostMetadata().isLastClickedPostIsSelf()) {
+            f = SelfPostFragment.newInstance();
         } else {
-            id = viewModel.getStitchedAllPostsLiveDataViewState().getValue().postData.get(position).id;
-        }
-
-        viewModel.insertClickedPostId(id);
-        viewModel.fetchPostCommentsSync(id);
-
-        if (isSelfPost) {
-            f = SelfPostFragment.newInstance(position, isSubscribedPost, id);
-        } else {
-            f = LinkPostFragment.newInstance(position, isSubscribedPost, id);
+            f = LinkPostFragment.newInstance();
         }
 
         fm.beginTransaction()

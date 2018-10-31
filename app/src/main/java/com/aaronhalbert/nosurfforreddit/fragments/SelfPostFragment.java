@@ -1,25 +1,17 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.os.Bundle;
 import android.view.View;
 
 public class SelfPostFragment extends PostFragment {
-    public static SelfPostFragment newInstance(int position, boolean isSubscribedPost, String id) {
-        SelfPostFragment fragment = new SelfPostFragment();
-        Bundle args = new Bundle();
-        args.putInt(KEY_POSITION, position);
-        args.putBoolean(KEY_IS_SUBSCRIBED_POST, isSubscribedPost);
-        args.putString(KEY_ID, id);
-        fragment.setArguments(args);
-
-        return fragment;
+    public static SelfPostFragment newInstance() {
+        return new SelfPostFragment();
     }
 
     @Override
     void setupPostViews() {
         fragmentPostBinding.postFragmentDividerUnderDetailsForSelfPostsOnly.setVisibility(View.VISIBLE);
 
-        if (!(postsLiveDataViewState.getValue().postData.get(position).selfTextHtml).equals("")) {
+        if (!(postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).selfTextHtml).equals("")) {
             fragmentPostBinding.postFragmentSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
             fragmentPostBinding.postFragmentDividerUnderSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
         }
