@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
@@ -15,18 +16,18 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private static final int ITEM_COUNT = 25;
 
-    private launchPostCallback launchPostCallback;
+    private PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener;
     private NoSurfViewModel viewModel;
     private Fragment hostFragment;
     private boolean isSubscribedPostsAdapter;
     private LiveData<PostsViewState> postsLiveDataViewState;
 
-    public PostsAdapter(launchPostCallback launchPostCallback,
+    public PostsAdapter(PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener,
                         NoSurfViewModel viewModel,
                         Fragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 
-        this.launchPostCallback = launchPostCallback;
+        this.postsFragmentInteractionListener = postsFragmentInteractionListener;
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
@@ -88,17 +89,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                     postsLiveDataViewState.getValue().postData.get(position).isSelf,
                     isSubscribedPostsAdapter));
 
-            launchPostCallback.launchPost();
+            postsFragmentInteractionListener.launchPost();
         }
     }
 
     // endregion helper classes---------------------------------------------------------------------
 
-    // region interfaces ---------------------------------------------------------------------------
 
-    public interface launchPostCallback {
-        void launchPost();
-    }
-
-    // endregion interfaces ------------------------------------------------------------------------
 }

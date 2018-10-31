@@ -11,8 +11,7 @@ import android.widget.Button;
 import com.aaronhalbert.nosurfforreddit.R;
 
 public class LoginFragment extends BaseFragment {
-
-    private OnLoginFragmentButtonListener onLoginFragmentButtonListener;
+    private LoginFragmentInteractionListener loginFragmentInteractionListener;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -28,31 +27,35 @@ public class LoginFragment extends BaseFragment {
 
         return v;
     }
-    
+
+    public void login() {
+        if (loginFragmentInteractionListener != null) {
+            loginFragmentInteractionListener.login();
+        }
+    }
+
+    // region interfaces ---------------------------------------------------------------------------
+
+    public interface LoginFragmentInteractionListener {
+        void login();
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnLoginFragmentButtonListener) {
-            onLoginFragmentButtonListener = (OnLoginFragmentButtonListener) context;
+        if (context instanceof LoginFragmentInteractionListener) {
+            loginFragmentInteractionListener = (LoginFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnLoginFragmentButtonListener");
+                    + " must implement LoginFragmentInteractionListener");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        onLoginFragmentButtonListener = null;
+        loginFragmentInteractionListener = null;
     }
 
-    public void login() {
-        if (onLoginFragmentButtonListener != null) {
-            onLoginFragmentButtonListener.login();
-        }
-    }
-
-    public interface OnLoginFragmentButtonListener {
-        void login();
-    }
+    // endregion interfaces ------------------------------------------------------------------------
 }

@@ -22,8 +22,11 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private PostsAdapter postsAdapter;
+    PostsFragmentInteractionListener postsFragmentInteractionListener;
     NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsLiveDataViewState;
+
+    // region lifecycle methods --------------------------------------------------------------------
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,8 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
 
         return v;
     }
+
+    // endregion lifecycle methods -----------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
 
@@ -83,4 +88,29 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     abstract void setPostsLiveDataViewState();
 
     // endregion abstract methods ------------------------------------------------------------------
+
+    // region interfaces ---------------------------------------------------------------------------
+
+    public interface PostsFragmentInteractionListener {
+        void launchPost();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof PostsFragmentInteractionListener) {
+            postsFragmentInteractionListener = (PostsFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement PostsFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        postsFragmentInteractionListener = null;
+    }
+
+    // endregion interfaces ------------------------------------------------------------------------
 }

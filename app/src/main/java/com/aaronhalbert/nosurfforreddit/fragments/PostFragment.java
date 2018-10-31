@@ -30,7 +30,7 @@ abstract public class PostFragment extends BaseFragment {
     public int lastClickedPostPosition;
     private String lastClickedPostId;
     private boolean externalBrowser;
-    private OnFragmentInteractionListener mListener;
+    private PostFragmentInteractionListener postFragmentInteractionListener;
     private NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsLiveDataViewState;
     FragmentPostBinding fragmentPostBinding;
@@ -77,11 +77,11 @@ abstract public class PostFragment extends BaseFragment {
     public void onImageClick(View view) {
         String url = postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).url;
 
-        if (mListener != null) {
+        if (postFragmentInteractionListener != null) {
             if (externalBrowser) {
-                mListener.launchExternalBrowser(Uri.parse(url));
+                postFragmentInteractionListener.launchExternalBrowser(Uri.parse(url));
             } else {
-                mListener.launchWebView(url, null, false);
+                postFragmentInteractionListener.launchWebView(url, null, false);
             }
         }
     }
@@ -158,7 +158,7 @@ abstract public class PostFragment extends BaseFragment {
 
     // region interfaces ---------------------------------------------------------------------------
 
-    public interface OnFragmentInteractionListener {
+    public interface PostFragmentInteractionListener {
         void launchWebView(String url, String tag, boolean doAnimation);
         void launchExternalBrowser(Uri uri);
     }
@@ -166,18 +166,18 @@ abstract public class PostFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof PostFragmentInteractionListener) {
+            postFragmentInteractionListener = (PostFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement PostFragmentInteractionListener");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        postFragmentInteractionListener = null;
     }
 
     // endregion interfaces ------------------------------------------------------------------------

@@ -10,7 +10,8 @@ public class AllPostsFragment extends PostsFragment {
 
     @Override
     PostsAdapter setPostsAdapter() {
-        return new PostsAdapter((PostsAdapter.launchPostCallback) getActivity(),
+        return new PostsAdapter(
+                postsFragmentInteractionListener,
                 viewModel,
                 this,
                 false);

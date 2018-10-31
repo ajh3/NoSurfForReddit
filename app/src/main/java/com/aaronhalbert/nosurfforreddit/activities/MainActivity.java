@@ -23,13 +23,13 @@ import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
-import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.PostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
@@ -38,13 +38,12 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-//TODO: check these interfaces
 public class MainActivity extends BaseActivity implements
-        PostFragment.OnFragmentInteractionListener,
-        PostsAdapter.launchPostCallback,
-        LoginFragment.OnLoginFragmentButtonListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        ViewPagerFragment.ViewPagerFragmentInteractionListener {
+        PostFragment.PostFragmentInteractionListener,
+        PostsFragment.PostsFragmentInteractionListener,
+        LoginFragment.LoginFragmentInteractionListener,
+        ViewPagerFragment.ViewPagerFragmentInteractionListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
