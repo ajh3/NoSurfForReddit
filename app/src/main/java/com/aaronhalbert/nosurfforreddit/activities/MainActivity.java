@@ -43,7 +43,8 @@ public class MainActivity extends BaseActivity implements
         PostFragment.OnFragmentInteractionListener,
         PostsAdapter.launchPostCallback,
         LoginFragment.OnLoginFragmentButtonListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        ViewPagerFragment.ViewPagerFragmentInteractionListener {
 
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";

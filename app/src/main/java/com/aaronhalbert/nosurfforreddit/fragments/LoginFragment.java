@@ -53,6 +53,6 @@ public class LoginFragment extends BaseFragment {
     }
 
     public interface OnLoginFragmentButtonListener {
-        public void login();
+        void login();
     }
 }
