@@ -28,5 +28,4 @@ public class UserOAuthToken {
     public String getRefreshToken() {
         return refreshToken;
     }
-
 }

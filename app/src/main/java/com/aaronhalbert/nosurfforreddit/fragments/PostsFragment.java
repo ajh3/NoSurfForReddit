@@ -46,8 +46,6 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         return v;
     }
 
-
-
     // region helper methods -----------------------------------------------------------------------
 
     private void observePostsLiveDataViewState() {
@@ -78,7 +76,6 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     }
 
     // endregion helper methods --------------------------------------------------------------------
-
 
     // region abstract methods ---------------------------------------------------------------------
 

@@ -5,10 +5,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Child {
-
     @SerializedName("kind")
     @Expose
     private String kind;
+
     @SerializedName("data")
     @Expose
     private Data_ data;
@@ -20,5 +20,4 @@ public class Child {
     public Data_ getData() {
         return data;
     }
-
 }

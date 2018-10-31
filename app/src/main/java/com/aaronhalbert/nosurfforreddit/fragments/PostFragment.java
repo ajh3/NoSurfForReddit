@@ -145,7 +145,6 @@ abstract public class PostFragment extends BaseFragment {
 
                     viewModel.consumeCommentsLiveDataChangedEvent();
                 }
-
             }
         });
     }

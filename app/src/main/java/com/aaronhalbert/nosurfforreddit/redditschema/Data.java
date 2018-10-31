@@ -6,7 +6,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Data {
-
     @SerializedName("modhash")
     @Expose
     private String modhash;
@@ -46,5 +45,4 @@ public class Data {
     public String getBefore() {
         return before;
     }
-
 }

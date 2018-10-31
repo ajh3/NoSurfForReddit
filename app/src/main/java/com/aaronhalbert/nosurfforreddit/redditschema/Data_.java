@@ -5,7 +5,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Data_ {
-
     @SerializedName("subreddit")
     @Expose
     private String subreddit;
@@ -65,7 +64,6 @@ public class Data_ {
     @SerializedName("num_comments")
     @Expose
     private int numComments;
-
 
     public String getSubreddit() {
         return subreddit;
