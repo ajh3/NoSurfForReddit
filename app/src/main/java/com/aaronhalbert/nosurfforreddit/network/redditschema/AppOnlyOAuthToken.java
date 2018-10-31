@@ -1,13 +1,12 @@
-package com.aaronhalbert.nosurfforreddit.redditschema;
+package com.aaronhalbert.nosurfforreddit.network.redditschema;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserOAuthToken {
+public class AppOnlyOAuthToken {
     @SerializedName("access_token") private String accessToken;
     @SerializedName("token_type") private String tokenType;
     @SerializedName("expires_in") private int expiresIn;
     @SerializedName("scope") private String scope;
-    @SerializedName("refresh_token") private String refreshToken;
 
     public String getAccessToken() {
         return accessToken;
@@ -23,9 +22,5 @@ public class UserOAuthToken {
 
     public String getScope() {
         return scope;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
     }
 }

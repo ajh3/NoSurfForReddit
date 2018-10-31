@@ -10,9 +10,9 @@ import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
-import com.aaronhalbert.nosurfforreddit.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
-import com.aaronhalbert.nosurfforreddit.redditschema.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
 
 import java.util.List;
 

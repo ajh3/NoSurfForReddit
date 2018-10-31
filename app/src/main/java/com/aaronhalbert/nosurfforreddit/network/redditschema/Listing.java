@@ -1,23 +1,23 @@
 
-package com.aaronhalbert.nosurfforreddit.redditschema;
+package com.aaronhalbert.nosurfforreddit.network.redditschema;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Child {
+public class Listing {
     @SerializedName("kind")
     @Expose
     private String kind;
 
     @SerializedName("data")
     @Expose
-    private Data_ data;
+    private Data data;
 
     public String getKind() {
         return kind;
     }
 
-    public Data_ getData() {
+    public Data getData() {
         return data;
     }
 }

@@ -1,8 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
-import com.aaronhalbert.nosurfforreddit.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
-import com.aaronhalbert.nosurfforreddit.redditschema.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
 
 import java.util.List;
 

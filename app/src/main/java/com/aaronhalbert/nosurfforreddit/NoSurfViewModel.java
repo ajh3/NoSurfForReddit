@@ -9,12 +9,11 @@ import androidx.lifecycle.ViewModel;
 
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.redditschema.Data_;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
-import com.aaronhalbert.nosurfforreddit.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -221,7 +220,7 @@ public class NoSurfViewModel extends ViewModel {
             return postsViewState;
         });
     }
-    
+
     private LiveData<PostsViewState> stitchClickedPostIdsToPostsViewState(boolean isSubscribedPosts){
         final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
 
