@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.activities;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -33,7 +32,6 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
-import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.UUID;
 
@@ -69,6 +67,8 @@ public class MainActivity extends BaseActivity implements
     private boolean darkMode;
     private FragmentManager fm;
 
+    // region lifecycle methods --------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
@@ -89,13 +89,20 @@ public class MainActivity extends BaseActivity implements
             viewModel.initApp();
 
             fm.beginTransaction()
-                    .add(R.id.main_activity_frame_layout, ViewPagerFragment.newInstance(), TAG_VIEW_PAGER_FRAGMENT)
+                    .add(R.id.main_activity_frame_layout,
+                            ViewPagerFragment.newInstance(),
+                            TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
     }
 
+    // endregion lifecycle methods -----------------------------------------------------------------
+
+    // region login/logout -------------------------------------------------------------------------
+
     public void login() {
-        final String authUrl = AUTH_URL_BASE
+        final String authUrl
+                = AUTH_URL_BASE
                 + CLIENT_ID
                 + AUTH_URL_RESPONSE_TYPE
                 + RESPONSE_TYPE
@@ -116,11 +123,19 @@ public class MainActivity extends BaseActivity implements
         viewModel.logUserOut();
     }
 
+    // endregion login/logout ----------------------------------------------------------------------
+
+    // region app navigation -----------------------------------------------------------------------
+
     public void launchWebView(String url, String tag, boolean doAnimation) {
         FragmentTransaction ft = fm.beginTransaction();
 
         if (doAnimation) {
-            ft.setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out);
+            ft.setCustomAnimations(
+                    R.anim.push_up_in,
+                    R.anim.push_up_out,
+                    R.anim.push_down_in,
+                    R.anim.push_down_out);
         }
 
         ft.add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
@@ -143,7 +158,11 @@ public class MainActivity extends BaseActivity implements
         }
 
         fm.beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .setCustomAnimations(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left,
+                        R.anim.slide_in_left,
+                        R.anim.slide_out_right)
                 .replace(R.id.main_activity_frame_layout, f)
                 .addToBackStack(null)
                 .commit();
@@ -151,7 +170,11 @@ public class MainActivity extends BaseActivity implements
 
     public void launchPreferencesScreen() {
         fm.beginTransaction()
-                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
+                .setCustomAnimations(
+                        R.anim.push_up_in,
+                        R.anim.push_up_out,
+                        R.anim.push_down_in,
+                        R.anim.push_down_out)
                 .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
@@ -159,11 +182,19 @@ public class MainActivity extends BaseActivity implements
 
     public void launchAboutScreen() {
         fm.beginTransaction()
-                .setCustomAnimations(R.anim.push_up_in, R.anim.push_up_out, R.anim.push_down_in, R.anim.push_down_out)
+                .setCustomAnimations(
+                        R.anim.push_up_in,
+                        R.anim.push_up_out,
+                        R.anim.push_down_in,
+                        R.anim.push_down_out)
                 .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
+
+    // endregion app navigation --------------------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
 
     private String generateRandomAlphaNumericString() {
         return UUID.randomUUID().toString();
@@ -189,6 +220,46 @@ public class MainActivity extends BaseActivity implements
         darkMode = preferences.getBoolean(KEY_DARK_MODE, true);
     }
 
+    private void initNightMode() {
+        if (darkMode) {
+            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
+            nightModeOn();
+        } else {
+            nightModeOff();
+        }
+    }
+
+    // calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
+    // activity to be recreated after onCreate() finishes
+    // unclear if it's expected behavior or a bug
+    private void nightModeOn() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
+    private void nightModeOff() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    // clears cookies in the app's WebView
+    private void clearCookies() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(getApplication());
+            cookieSyncManager.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncManager.stopSync();
+            cookieSyncManager.sync();
+        }
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
+
+    // region listeners ----------------------------------------------------------------------------
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, true);
@@ -201,27 +272,6 @@ public class MainActivity extends BaseActivity implements
             nightModeOff();
             recreate();
         }
-    }
-
-    private void initNightMode() {
-        if (darkMode) {
-            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
-            nightModeOn();
-        } else {
-            nightModeOff();
-        }
-    }
-
-    // TODO: is this a bug or the expected behavior?
-    // note that calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
-    // activity to be recreated after onCreate() finishes
-
-    private void nightModeOn() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-    }
-
-    private void nightModeOff() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     // captures result from Reddit login page
@@ -249,20 +299,5 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    // clears cookies in the app's WebView
-
-    private void clearCookies() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            CookieManager.getInstance().removeAllCookies(null);
-            CookieManager.getInstance().flush();
-        } else {
-            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(getApplication());
-            cookieSyncManager.startSync();
-            CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.removeAllCookie();
-            cookieManager.removeSessionCookie();
-            cookieSyncManager.stopSync();
-            cookieSyncManager.sync();
-        }
-    }
+    // endregion listeners -------------------------------------------------------------------------
 }
