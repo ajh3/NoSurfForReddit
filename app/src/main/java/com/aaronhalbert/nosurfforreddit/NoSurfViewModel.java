@@ -44,6 +44,8 @@ public class NoSurfViewModel extends ViewModel {
     private PostsViewState stitchedAllPostsCache = new PostsViewState();
     private PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
 
+    private String[] clickedPostIdsCache = new String[25];
+
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
         stitchedAllPostsLiveDataViewState = stitchClickedPostIdsToPostsViewState(false);
@@ -219,7 +221,7 @@ public class NoSurfViewModel extends ViewModel {
             return postsViewState;
         });
     }
-
+    
     private LiveData<PostsViewState> stitchClickedPostIdsToPostsViewState(boolean isSubscribedPosts){
         final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
 
@@ -235,25 +237,23 @@ public class NoSurfViewModel extends ViewModel {
         }
 
         mediator.addSource(postsLiveDataViewState, postsViewState -> {
-            Log.e(getClass().toString(), "postsViewState observer called");
 
             for (int i = 0; i < 25; i++) {
                 postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
+
+                updateCachedClickedPostIds(postsViewStateCache, i);
             }
 
             mediator.setValue(postsViewStateCache);
         });
 
         mediator.addSource(getClickedPostIdsLiveData(), strings -> {
-            Log.e(getClass().toString(), "clicked post IDs observer called");
+
+            clickedPostIdsCache = strings;
 
             for (int i = 0; i < 25; i++) {
-                if (Arrays.asList(strings).contains(postsViewStateCache.postData.get(i).id)) {
-                    postsViewStateCache.hasBeenClicked[i] = true;
-                }
+                updateCachedClickedPostIds(postsViewStateCache, i);
             }
-
-            mediator.setValue(postsViewStateCache);
         });
 
         return mediator;
@@ -262,6 +262,12 @@ public class NoSurfViewModel extends ViewModel {
     // endregion viewstate Transformations ---------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
+
+    private void updateCachedClickedPostIds(PostsViewState postsViewStateCache, int i) {
+        if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {
+            postsViewStateCache.hasBeenClicked[i] = true;
+        }
+    }
 
     private String formatSelfPostSelfTextHtml(String twiceEncodedSelfTextHtml) {
         if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
