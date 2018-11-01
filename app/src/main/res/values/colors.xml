@@ -3,4 +3,6 @@
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#00796b</color>
     <color name="colorAccent">#607D8B</color>
+    <color name="colorRecyclerViewText">#8A000000</color>
+    <color name="colorRecyclerViewTextClicked">#8ABFBFBF</color>
 </resources>

@@ -25,6 +25,7 @@
             android:id="@+id/thumbnail"
             android:contentDescription="@string/post_thumbnail_description"
             app:imageUrl="@{controller.postsLiveDataViewState.postData[controller.position].thumbnailUrl}"
+            app:transparency="@{controller.postsLiveDataViewState.hasBeenClicked[controller.position]}"
             app:layout_constraintStart_toStartOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item"/>
 
@@ -33,7 +34,7 @@
             android:id="@+id/title"
             android:text="@{controller.postsLiveDataViewState.postData[controller.position].title}"
             android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].title) ? View.GONE : View.VISIBLE}"
-            app:strikethroughClickedPostTitle="@{controller.postsLiveDataViewState.hasBeenClicked[controller.position]}"
+            app:strikethrough="@{controller.postsLiveDataViewState.hasBeenClicked[controller.position]}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintEnd_toEndOf="@id/list_item"
             app:layout_constraintTop_toTopOf="@id/list_item" />
@@ -43,6 +44,7 @@
             android:id="@+id/details"
             android:text="@{controller.postsLiveDataViewState.postData[controller.position].subreddit + ` • ` + controller.postsLiveDataViewState.postData[controller.position].score + ` • ` + controller.postsLiveDataViewState.postData[controller.position].numComments + ` comments`}"
             android:visibility="@{TextUtils.isEmpty(controller.postsLiveDataViewState.postData[controller.position].subreddit) ? View.GONE : View.VISIBLE}"
+            app:strikethrough="@{controller.postsLiveDataViewState.hasBeenClicked[controller.position]}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintEnd_toEndOf="@id/list_item" />
