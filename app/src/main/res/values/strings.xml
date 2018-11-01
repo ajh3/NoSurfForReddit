@@ -1,19 +1,15 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">NoSurf for reddit</string>
-    <string name="subreddit_abbreviation">%1$s</string>
-    <string name="score">\u0020\u2022 %1$d</string>
-    <string name="comments"><b>Comments placeholder</b></string>
     <string name="refresh">Refresh</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
     <string name="dark_mode">Dark mode</string>
     <string name="external_browser">Use external browser</string>
     <string name="external_browser_summary">Launch links using external browser instead of in-app browser</string>
-    <string name="author">\nby u/%1$s</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="login_instructions">You must log in to view your subscribed subreddits.</string>
     <string name="about_fragment">Copyright 2018. By /u/Suspicious_Advantage</string>
-    <string name="post_image_description">Post image</string>
-    <string name="post_thumbnail_description">Post thumbnail image</string>
+    <string name="post_image_description" tools:keep="@string/post_image_description">Post image</string>
+    <string name="post_thumbnail_description" tools:keep="@string/post_thumbnail_description">Post thumbnail image</string>
 </resources>

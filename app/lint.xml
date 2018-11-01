@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/drawable-nodpi/link_post_default_thumbnail_192.png" />
+        <ignore path="src/main/res/drawable-nodpi/link_post_nsfw_thumbnail_192.png" />
+        <ignore path="src/main/res/drawable-nodpi/self_post_default_thumbnail_192.png" />
+    </issue>
+</lint>

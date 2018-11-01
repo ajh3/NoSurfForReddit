@@ -9,7 +9,7 @@ import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.ViewMod
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     private boolean isInjectorUsed;
 
     @UiThread
