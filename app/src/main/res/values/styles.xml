@@ -21,18 +21,13 @@
         <item name="android:paddingStart">2dp</item>
         <item name="android:paddingEnd">2dp</item>
         <item name="android:paddingTop">2dp</item>
-        <item name="layout_constraintStart_toEndOf">@id/thumbnail</item>
-        <item name="layout_constraintEnd_toEndOf">@id/list_item</item>
-        <item name="layout_constraintTop_toTopOf">@id/list_item</item>
     </style>
 
     <style name="RecyclerViewRowDetails">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">14sp</item>
-        <item name="layout_constraintStart_toEndOf">@id/thumbnail</item>
-        <item name="layout_constraintTop_toBottomOf">@id/title</item>
-        <item name="layout_constraintEnd_toEndOf">@id/list_item</item>
+
     </style>
 
     <style name="RecyclerViewRowThumbnail">
@@ -40,8 +35,6 @@
         <item name="android:layout_height">90sp</item>
         <item name="android:contentDescription">@string/post_thumbnail_description</item>
         <item name="android:padding">2dp</item>
-        <item name="layout_constraintStart_toStartOf">@id/list_item</item>
-        <item name="layout_constraintTop_toTopOf">@id/list_item</item>
     </style>
 
     <style name="PostFragmentTitle">
@@ -52,7 +45,6 @@
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
         <item name="android:paddingTop">5dp</item>
-        <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
     <style name="PostFragmentDetails">
@@ -61,14 +53,12 @@
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
         <item name="android:paddingBottom">5dp</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_title</item>
     </style>
 
     <style name="PostFragmentImageForLinkPostsOnly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">200dp</item>
         <item name="android:visibility">gone</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_details</item>
     </style>
 
     <style name="PostFragmentDividerUnderDetailsForSelfPostsOnly">
@@ -76,7 +66,6 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:visibility">gone</item>
         <item name="android:background">?android:attr/colorForeground</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_image_for_link_posts_only</item>
     </style>
 
     <style name="PostFragmentSelftextForSelfPostsOnly">
@@ -84,19 +73,14 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">5dp</item>
         <item name="android:visibility">gone</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_divider_under_details_for_self_posts_only</item>
     </style>
 
-    <style name="PostFragmentDividerUnderSelftextForSelfPostsOnly" parent="PostFragmentDividerUnderDetailsForSelfPostsOnly">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_selftext_for_self_posts_only</item>
-    </style>
+    <style name="PostFragmentDividerUnderSelftextForSelfPostsOnly"
+        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" />
 
     <style name="PostFragmentCommentProgressBar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_divider_under_selftext_for_self_posts_only</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
     <style name="PostFragmentFirstCommentDetails">
@@ -105,7 +89,6 @@
         <item name="android:padding">5dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_comment_progress_bar</item>
     </style>
 
     <style name="PostFragmentFirstComment">
@@ -115,33 +98,26 @@
         <item name="android:paddingEnd">10dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:visibility">gone</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_first_comment_details</item>
     </style>
 
-    <style name="PostFragmentDividerUnderFirstComment" parent="PostFragmentDividerUnderDetailsForSelfPostsOnly">
+    <style name="PostFragmentDividerUnderFirstComment"
+        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly">
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_first_comment</item>
     </style>
 
-    <style name="PostFragmentSecondCommentDetails" parent="PostFragmentFirstCommentDetails">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_divider_under_first_comment</item>
-    </style>
+    <style name="PostFragmentSecondCommentDetails"
+        parent="PostFragmentFirstCommentDetails" />
 
-    <style name="PostFragmentSecondComment" parent="PostFragmentFirstComment">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_second_comment_details</item>
-    </style>
+    <style name="PostFragmentSecondComment"
+        parent="PostFragmentFirstComment" />
 
-    <style name="PostFragmentDividerUnderSecondComment" parent="PostFragmentDividerUnderFirstComment">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_second_comment</item>
-    </style>
+    <style name="PostFragmentDividerUnderSecondComment"
+        parent="PostFragmentDividerUnderFirstComment" />
 
-    <style name="PostFragmentThirdCommentDetails" parent="PostFragmentFirstCommentDetails">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_divider_under_second_comment</item>
-    </style>
+    <style name="PostFragmentThirdCommentDetails"
+        parent="PostFragmentFirstCommentDetails" />
 
-    <style name="PostFragmentThirdComment" parent="PostFragmentFirstComment">
-        <item name="layout_constraintTop_toBottomOf">@id/post_fragment_third_comment_details</item>
-    </style>
-
+    <style name="PostFragmentThirdComment"
+        parent="PostFragmentFirstComment" />
 </resources>

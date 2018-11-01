@@ -24,74 +24,91 @@
             <TextView
                 style="@style/PostFragmentTitle"
                 android:id="@+id/post_fragment_title"
-                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].title}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].title}"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 style="@style/PostFragmentDetails"
                 android:id="@+id/post_fragment_details"
-                android:text="@{`in r/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].subreddit + ` by u/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].author + ` • ` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].score}"/>
+                android:text="@{`in r/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].subreddit + ` by u/` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].author + ` • ` + postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].score}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_title"/>
 
             <ImageView
                 style="@style/PostFragmentImageForLinkPostsOnly"
                 android:id="@+id/post_fragment_image_for_link_posts_only"
                 android:onClick="@{postFragment::onImageClick}"
                 android:contentDescription="@string/post_image_description"
-                app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].imageUrl}" />
+                app:imageUrl="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].imageUrl}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_details"/>
 
             <View
                 style="@style/PostFragmentDividerUnderDetailsForSelfPostsOnly"
-                android:id="@+id/post_fragment_divider_under_details_for_self_posts_only" />
+                android:id="@+id/post_fragment_divider_under_details_for_self_posts_only"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_image_for_link_posts_only"/>
 
             <TextView
                 style="@style/PostFragmentSelftextForSelfPostsOnly"
                 android:id="@+id/post_fragment_selftext_for_self_posts_only"
-                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].selfTextHtml}" />
+                android:text="@{postFragment.postsLiveDataViewState.postData[postFragment.lastClickedPostPosition].selfTextHtml}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_details_for_self_posts_only"/>
 
             <View
                 style="@style/PostFragmentDividerUnderSelftextForSelfPostsOnly"
-                android:id="@+id/post_fragment_divider_under_selftext_for_self_posts_only" />
+                android:id="@+id/post_fragment_divider_under_selftext_for_self_posts_only"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_selftext_for_self_posts_only"/>
 
             <ProgressBar
                 style="@style/PostFragmentCommentProgressBar"
-                android:id="@+id/post_fragment_comment_progress_bar" />
+                android:id="@+id/post_fragment_comment_progress_bar"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_selftext_for_self_posts_only"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 style="@style/PostFragmentFirstCommentDetails"
                 android:id="@+id/post_fragment_first_comment_details"
-                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[0]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[0]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_comment_progress_bar"/>
 
             <TextView
                 style="@style/PostFragmentFirstComment"
                 android:id="@+id/post_fragment_first_comment"
-                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[0]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[0]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_first_comment_details"/>
 
             <View
                 style="@style/PostFragmentDividerUnderFirstComment"
-                android:id="@+id/post_fragment_divider_under_first_comment" />
+                android:id="@+id/post_fragment_divider_under_first_comment"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_first_comment"/>
 
             <TextView
                 style="@style/PostFragmentSecondCommentDetails"
                 android:id="@+id/post_fragment_second_comment_details"
-                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[1]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[1]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_first_comment"/>
 
             <TextView
                 style="@style/PostFragmentSecondComment"
                 android:id="@+id/post_fragment_second_comment"
-                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[1]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[1]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_second_comment_details"/>
 
             <View
                 style="@style/PostFragmentDividerUnderSecondComment"
-                android:id="@+id/post_fragment_divider_under_second_comment" />
+                android:id="@+id/post_fragment_divider_under_second_comment"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_second_comment"/>
 
             <TextView
                 style="@style/PostFragmentThirdCommentDetails"
                 android:id="@+id/post_fragment_third_comment_details"
-                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[2]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentDetails[2]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_second_comment"/>
 
             <TextView
                 style="@style/PostFragmentThirdComment"
                 android:id="@+id/post_fragment_third_comment"
-                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[2]}" />
+                android:text="@{viewModel.commentsLiveDataViewState.commentBodies[2]}"
+                app:layout_constraintTop_toBottomOf="@id/post_fragment_third_comment_details"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
