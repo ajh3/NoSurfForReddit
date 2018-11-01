@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -8,12 +9,14 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
@@ -22,6 +25,7 @@ import javax.inject.Named;
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+    private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
 
     private final TextView[] comments = new TextView[3];
     private final TextView[] commentsDetails = new TextView[3];
@@ -29,9 +33,9 @@ abstract public class PostFragment extends BaseFragment {
 
     @SuppressWarnings("WeakerAccess")
     public int lastClickedPostPosition;
-
     private String lastClickedPostId;
     private boolean externalBrowser;
+    private boolean commentsAlreadyLoaded;
     private PostFragmentInteractionListener postFragmentInteractionListener;
     private NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsLiveDataViewState;
@@ -40,26 +44,22 @@ abstract public class PostFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
 
+    // region lifecycle methods --------------------------------------------------------------------
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
-        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
 
-        lastClickedPostPosition = viewModel
-                .getLastClickedPostMetadata()
-                .getLastClickedPostPosition();
-        lastClickedPostId = viewModel
-                .getLastClickedPostMetadata()
-                .getLastClickedPostId();
+        setHasOptionsMenu(true);
+        loadPrefs();
+        lookupPostMetadata();
 
-        if (viewModel.getLastClickedPostMetadata().isLastClickedPostIsSubscribed()) {
-            postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
-        } else {
-            postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
+        // avoid additional comments network call on config change
+        if (savedInstanceState != null) {
+            commentsAlreadyLoaded = savedInstanceState.getBoolean(KEY_COMMENTS_ALREADY_LOADED, false);
         }
     }
 
@@ -70,12 +70,28 @@ abstract public class PostFragment extends BaseFragment {
         setupBinding(container);
         findPostViews();
         setupPostViews();
-        observeCommentsFinishedLoadingLiveEvent();
-        viewModel.fetchPostCommentsSync(lastClickedPostId);
-        viewModel.insertClickedPostId(lastClickedPostId);
+
+        if (!commentsAlreadyLoaded) {
+            observeCommentsFinishedLoadingLiveEvent();
+            viewModel.fetchPostCommentsSync(lastClickedPostId);
+            viewModel.insertClickedPostId(lastClickedPostId);
+        } else {
+            updateViewVisibilities();
+        }
 
         return fragmentPostBinding.getRoot();
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean(KEY_COMMENTS_ALREADY_LOADED, commentsAlreadyLoaded);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    // endregion lifecycle methods -----------------------------------------------------------------
+
+    // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
         String url = postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).url;
@@ -89,9 +105,11 @@ abstract public class PostFragment extends BaseFragment {
         }
     }
 
+    // endregion listeners -------------------------------------------------------------------------
+
     // region getter methods -----------------------------------------------------------------------
 
-    // for data binding
+    // for data binding class
     public LiveData<PostsViewState> getPostsLiveDataViewState() {
         return postsLiveDataViewState;
     }
@@ -127,28 +145,51 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void observeCommentsFinishedLoadingLiveEvent() {
-        //display the appropriate text fields and dividers depending on how many comments the current post has
+
         viewModel.getCommentsFinishedLoadingLiveEvents().observe(this, aBoolean -> {
 
             if (aBoolean) {
                 if (viewModel.getCommentsLiveDataViewState().getValue() != null) {
-                    int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
 
-                    for (int i = 0; i < numComments; i++) {
-                        comments[i].setVisibility(View.VISIBLE);
-                        commentsDetails[i].setVisibility(View.VISIBLE);
-                    }
-
-                    for (int i = 0; i < (numComments - 1); i++) {
-                        dividers[i].setVisibility(View.VISIBLE);
-                    }
-
-                    fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
+                    updateViewVisibilities();
 
                     viewModel.consumeCommentsLiveDataChangedEvent();
+                    commentsAlreadyLoaded = true;
                 }
             }
         });
+    }
+
+    private void updateViewVisibilities() {
+        int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
+
+        for (int i = 0; i < numComments; i++) {
+            comments[i].setVisibility(View.VISIBLE);
+            commentsDetails[i].setVisibility(View.VISIBLE);
+        }
+
+        for (int i = 0; i < (numComments - 1); i++) {
+            dividers[i].setVisibility(View.VISIBLE);
+        }
+
+        fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
+    }
+
+    private void lookupPostMetadata() {
+        LastClickedPostMetadata lastClickedPostMetadata = viewModel.getLastClickedPostMetadata();
+
+        lastClickedPostPosition = lastClickedPostMetadata.getLastClickedPostPosition();
+        lastClickedPostId = lastClickedPostMetadata.getLastClickedPostId();
+
+        if (lastClickedPostMetadata.isLastClickedPostIsSubscribed()) {
+            postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
+        } else {
+            postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
+        }
+    }
+
+    private void loadPrefs() {
+        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
     }
 
     // endregion helper methods --------------------------------------------------------------------
