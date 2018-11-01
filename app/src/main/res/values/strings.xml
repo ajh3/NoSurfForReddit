@@ -3,9 +3,9 @@
     <string name="refresh">Refresh</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
-    <string name="dark_mode">Dark mode</string>
-    <string name="external_browser">Use external browser</string>
-    <string name="external_browser_summary">Launch links using external browser instead of in-app browser</string>
+    <string name="night_mode">Night mode</string>
+    <string name="amoled_night_mode">AMOLED night mode</string>
+    <string name="external_browser">Launch links in external browser</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="login_instructions">You must log in to view your subscribed subreddits.</string>

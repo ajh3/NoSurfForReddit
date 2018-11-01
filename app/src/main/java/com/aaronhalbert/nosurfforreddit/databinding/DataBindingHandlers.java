@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.databinding;
 
-import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
 import android.graphics.Paint;
@@ -26,10 +25,10 @@ public class DataBindingHandlers {
     public static void strikethru(TextView tv, boolean hasBeenClicked) {
         if (hasBeenClicked) {
             tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            tv.setTextColor(ContextCompat.getColor(tv.getContext(), R.color.colorRecyclerViewTextClicked));
+            tv.setTextColor(tv.getResources().getColor(R.color.colorRecyclerViewTextClicked));
         } else {
             tv.setPaintFlags(tv.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            tv.setTextColor(ContextCompat.getColor(tv.getContext(), R.color.colorRecyclerViewText));
+            tv.setTextColor(tv.getResources().getColor(R.color.colorRecyclerViewText));
         }
     }
 

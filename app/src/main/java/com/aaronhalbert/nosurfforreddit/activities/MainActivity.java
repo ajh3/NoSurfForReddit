@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -46,7 +47,8 @@ public class MainActivity extends BaseActivity implements
 
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
-    private static final String KEY_DARK_MODE = "darkMode";
+    private static final String KEY_NIGHT_MODE = "nightMode";
+    private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
     private static final String RESPONSE_TYPE = "code";
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
@@ -66,7 +68,8 @@ public class MainActivity extends BaseActivity implements
     @Inject ViewModelFactory viewModelFactory;
     
     private NoSurfViewModel viewModel;
-    private boolean darkMode;
+    private boolean nightMode;
+    private boolean amoledNightMode;
     private FragmentManager fm;
 
     // region lifecycle methods --------------------------------------------------------------------
@@ -219,12 +222,12 @@ public class MainActivity extends BaseActivity implements
     private void initPrefs() {
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
         preferences.registerOnSharedPreferenceChangeListener(this);
-        darkMode = preferences.getBoolean(KEY_DARK_MODE, true);
+        nightMode = preferences.getBoolean(KEY_NIGHT_MODE, true);
+        amoledNightMode = preferences.getBoolean(KEY_AMOLED_NIGHT_MODE, false);
     }
 
     private void initNightMode() {
-        if (darkMode) {
-            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
+        if (nightMode) {
             nightModeOn();
         } else {
             nightModeOff();
@@ -235,7 +238,14 @@ public class MainActivity extends BaseActivity implements
     // activity to be recreated after onCreate() finishes
     // unclear if it's expected behavior or a bug
     private void nightModeOn() {
+        new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        if (amoledNightMode) {
+            getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorAmoledNightBg));
+        } else {
+            getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorNightBg));
+        }
     }
 
     private void nightModeOff() {
@@ -264,10 +274,9 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        darkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, true);
+        nightMode = sharedPreferences.getBoolean(KEY_NIGHT_MODE, true);
 
-        if (darkMode) {
-            new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
+        if (nightMode) {
             nightModeOn();
             recreate();
         } else {
