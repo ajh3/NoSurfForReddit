@@ -1,0 +1,38 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="RecyclerViewRowTitle" tools:keep="@style/RecyclerViewRowTitle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingStart">2dp</item>
+        <item name="android:paddingEnd">2dp</item>
+        <item name="android:paddingTop">2dp</item>
+    </style>
+
+    <style name="PostFragmentTitle" tools:keep="@style/PostFragmentTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+    </style>
+
+    <style name="PostFragmentDetails" tools:keep="@style/PostFragmentDetails">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="PostFragmentFirstComment" tools:keep="@style/PostFragmentFirstComment">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+</resources>
