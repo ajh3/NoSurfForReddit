@@ -76,8 +76,7 @@ public class ContainerFragment extends BaseFragment {
             Log.e(getClass().toString(), "CF observer triggered" + isUserLoggedIn);
         });
     }
-
-    //TODO: how do I simplify this total mess?
+    
     private void refreshContainerChildFragment(boolean isUserLoggedIn) {
 
         FragmentTransaction ft = fm.beginTransaction();
