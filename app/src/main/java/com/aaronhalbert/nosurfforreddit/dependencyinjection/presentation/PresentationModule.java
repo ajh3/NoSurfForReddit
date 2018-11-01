@@ -1,10 +1,9 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
-import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
-import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
+import android.os.Build;
 
-import javax.inject.Singleton;
+import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
+import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClientApiLevelBelow24;
 
 import androidx.fragment.app.FragmentActivity;
 import dagger.Module;
@@ -20,6 +19,11 @@ public class PresentationModule {
 
     @Provides
     NoSurfWebViewClient provideNoSurfWebViewClient() {
-        return new NoSurfWebViewClient(fragmentActivity);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return new NoSurfWebViewClient(fragmentActivity);
+        } else {
+            return new NoSurfWebViewClientApiLevelBelow24(fragmentActivity);
+        }
     }
 }

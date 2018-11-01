@@ -3,13 +3,9 @@ package com.aaronhalbert.nosurfforreddit;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
-import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.aaronhalbert.nosurfforreddit.fragments.BaseFragment;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -24,12 +20,15 @@ public class NoSurfWebViewClient extends WebViewClient {
     }
 
     @Override
-    @TargetApi(21) //TODO: support down to 19
+    @TargetApi(23)
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
 
-        //checks if URL is a custom NoSurf redirect URI
+        return processUrl(url);
+    }
 
+    //checks if URL is a custom NoSurf redirect URI
+    boolean processUrl(String url) {
         if (url.contains(NOSURF_REDIRECT_URI)) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             hostFragmentActivity.startActivity(intent);
