@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
@@ -34,8 +35,28 @@ public class ContainerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        fm = getChildFragmentManager();
         viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+        fm = getChildFragmentManager();
+
+        if (findLoginFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.container_fragment_base_view,
+                            LoginFragment.newInstance(),
+                            TAG_LOGIN_FRAGMENT)
+                    .commit();
+        }
+
+        if (findSubscribedPostsFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.container_fragment_base_view,
+                            SubscribedPostsFragment.newInstance(),
+                            TAG_SUBSCRIBED_POSTS_FRAGMENT)
+                    .commit();
+        }
 
         observeIsUserLoggedInLiveData();
     }
@@ -47,62 +68,32 @@ public class ContainerFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_container, container, false);
     }
 
-    // instantly update "Your Subreddits" viewpager tab when user logs in or out
     private void observeIsUserLoggedInLiveData() {
+
         viewModel.getIsUserLoggedInLiveData().observe(this, isUserLoggedIn -> {
             refreshContainerChildFragment(isUserLoggedIn);
-            Log.e(getClass().toString(), "CF observer triggered" + isUserLoggedIn);
 
+            Log.e(getClass().toString(), "CF observer triggered" + isUserLoggedIn);
         });
     }
 
     //TODO: how do I simplify this total mess?
     private void refreshContainerChildFragment(boolean isUserLoggedIn) {
-        Fragment loginFragment = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
-        Fragment subscribedPostsFragment = fm.findFragmentByTag(TAG_SUBSCRIBED_POSTS_FRAGMENT);
+
+        FragmentTransaction ft = fm.beginTransaction();
 
         if (isUserLoggedIn) {
-            if (loginFragment != null) {
-                if (subscribedPostsFragment != null) { // if both subscribedPostsFragment and loginFragment exist
-                    fm.beginTransaction()
-                            .remove(loginFragment)
-                            .commit();
-                } else { // if only loginFragment exists
-                    fm.beginTransaction()
-                            .remove(loginFragment)
-                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance(), TAG_SUBSCRIBED_POSTS_FRAGMENT)
-                            .commit();
-                }
-            } else {
-                if (subscribedPostsFragment == null) { // if neither subscribedPostsFragment nor loginFragment exist
-                    fm.beginTransaction()
-                            .add(R.id.container_fragment_base_view, SubscribedPostsFragment.newInstance(), TAG_SUBSCRIBED_POSTS_FRAGMENT)
-                            .commit();
-                } else { // if only subscribedPostsFragment exists
-                    //do nothing
-                }
-            }
-        } else { // if not logged in
-            if (loginFragment != null) {
-                if (subscribedPostsFragment != null) { // if both subscribedPostsFragment and loginFragment exist
-                    fm.beginTransaction()
-                            .remove(subscribedPostsFragment)
-                            .commit();
-                } else { // if only loginFragment exists
-                    //do nothing
-                }
-            } else {
-                if (subscribedPostsFragment == null) { // if neither subscribedPostsFragment nor loginFragment exist
-                    fm.beginTransaction()
-                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance(), TAG_LOGIN_FRAGMENT)
-                            .commit();
-                } else { // if only subscribedPostsFragment exists
-                    fm.beginTransaction()
-                            .remove(subscribedPostsFragment)
-                            .add(R.id.container_fragment_base_view, LoginFragment.newInstance(), TAG_LOGIN_FRAGMENT)
-                            .commit();
-                }
-            }
+            ft.hide(findLoginFragment()).show(findSubscribedPostsFragment()).commit();
+        } else {
+            ft.show(findLoginFragment()).hide(findSubscribedPostsFragment()).commit();
         }
+    }
+
+    private Fragment findLoginFragment() {
+        return fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
+    }
+
+    private Fragment findSubscribedPostsFragment() {
+        return fm.findFragmentByTag(TAG_SUBSCRIBED_POSTS_FRAGMENT);
     }
 }
