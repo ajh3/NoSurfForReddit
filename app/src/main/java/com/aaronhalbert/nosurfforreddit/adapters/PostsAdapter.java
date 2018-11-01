@@ -16,11 +16,11 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private static final int ITEM_COUNT = 25;
 
-    private PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener;
-    private NoSurfViewModel viewModel;
-    private Fragment hostFragment;
-    private boolean isSubscribedPostsAdapter;
-    private LiveData<PostsViewState> postsLiveDataViewState;
+    private final PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener;
+    private final NoSurfViewModel viewModel;
+    private final Fragment hostFragment;
+    private final boolean isSubscribedPostsAdapter;
+    private final LiveData<PostsViewState> postsLiveDataViewState;
 
     public PostsAdapter(PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener,
                         NoSurfViewModel viewModel,

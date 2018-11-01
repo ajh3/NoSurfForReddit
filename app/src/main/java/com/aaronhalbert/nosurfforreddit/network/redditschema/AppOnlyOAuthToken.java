@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.network.redditschema;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("ALL")
 public class AppOnlyOAuthToken {
     @SerializedName("access_token") private String accessToken;
     @SerializedName("token_type") private String tokenType;

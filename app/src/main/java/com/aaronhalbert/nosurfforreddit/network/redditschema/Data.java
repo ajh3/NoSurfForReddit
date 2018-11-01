@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("ALL")
 public class Data {
     @SerializedName("modhash")
     @Expose
@@ -16,7 +17,7 @@ public class Data {
 
     @SerializedName("children")
     @Expose
-    private List<Child> children = null;
+    private final List<Child> children = null;
 
     @SerializedName("after")
     @Expose

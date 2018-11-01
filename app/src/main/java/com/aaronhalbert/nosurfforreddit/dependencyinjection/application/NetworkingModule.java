@@ -12,7 +12,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
-public class NetworkingModule {
+class NetworkingModule {
     private static final String API_BASE_URL = "https://oauth.reddit.com/";
 
     @Singleton

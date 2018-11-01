@@ -17,6 +17,7 @@ import javax.inject.Inject;
 public class NoSurfWebViewFragment extends BaseFragment {
     private static final String KEY_URL = "url";
 
+    @SuppressWarnings("WeakerAccess")
     @Inject NoSurfWebViewClient noSurfWebViewClient;
 
     private String url;

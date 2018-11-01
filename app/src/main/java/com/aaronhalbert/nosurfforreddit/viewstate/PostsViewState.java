@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class PostsViewState {
 
     private static final int INITIAL_CAPACITY = 25;
-    public ArrayList<PostDatum> postData;
-    public boolean[] hasBeenClicked;
+    public final ArrayList<PostDatum> postData;
+    public final boolean[] hasBeenClicked;
 
     public PostsViewState() {
         postData = new ArrayList<>(INITIAL_CAPACITY);

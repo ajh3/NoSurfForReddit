@@ -20,6 +20,7 @@ public interface ClickedPostIdDao {
     void insertClickedPostId(ClickedPostId clickedPostId);
 
     // DELETE FROM with no WHERE clause deletes all records in the table
+    @SuppressWarnings("unused")
     @Query("DELETE FROM clicked_post_id_table")
     void deleteAllClickedPostIds();
 }

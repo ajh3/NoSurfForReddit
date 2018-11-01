@@ -47,17 +47,17 @@ public class NoSurfRepository {
     private String appOnlyOAuthTokenCache;
     private boolean isUserLoggedInCache = false;
 
-    private LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
-    private MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
-    private MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+    private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
+    private final MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
 
-    private SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvents = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvents = new SingleLiveEvent<>();
 
-    private RetrofitInterface ri;
-    private ClickedPostIdDao clickedPostIdDao;
-    private SharedPreferences preferences;
+    private final RetrofitInterface ri;
+    private final ClickedPostIdDao clickedPostIdDao;
+    private final SharedPreferences preferences;
 
     public NoSurfRepository(Retrofit retrofit, SharedPreferences preferences, ClickedPostIdRoomDatabase db) {
         this.preferences = preferences;
@@ -370,7 +370,7 @@ public class NoSurfRepository {
     }
 
     private static class InsertAsyncTask extends AsyncTask<ClickedPostId, Void, Void> {
-        private ClickedPostIdDao asyncTaskDao;
+        private final ClickedPostIdDao asyncTaskDao;
 
         InsertAsyncTask(ClickedPostIdDao dao) {
             asyncTaskDao = dao;

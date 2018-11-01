@@ -35,14 +35,14 @@ public class NoSurfViewModel extends ViewModel {
     private static final String NSFW = "nsfw";
     private static final String IMAGE = "image";
 
-    private NoSurfRepository repository;
+    private final NoSurfRepository repository;
 
-    private LiveData<PostsViewState> stitchedAllPostsLiveDataViewState;
-    private LiveData<PostsViewState> stitchedSubscribedPostsLiveDataViewState;
-    private LiveData<CommentsViewState> commentsLiveDataViewState;
+    private final LiveData<PostsViewState> stitchedAllPostsLiveDataViewState;
+    private final LiveData<PostsViewState> stitchedSubscribedPostsLiveDataViewState;
+    private final LiveData<CommentsViewState> commentsLiveDataViewState;
 
-    private PostsViewState stitchedAllPostsCache = new PostsViewState();
-    private PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
+    private final PostsViewState stitchedAllPostsCache = new PostsViewState();
+    private final PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
 
     private String[] clickedPostIdsCache = new String[25];
     private LastClickedPostMetadata lastClickedPostMetadata;

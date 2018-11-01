@@ -4,9 +4,9 @@ import android.text.Spanned;
 
 public class CommentsViewState {
 
-    public int numComments;
-    public Spanned[] commentBodies;
-    public String[] commentDetails;
+    public final int numComments;
+    public final Spanned[] commentBodies;
+    public final String[] commentDetails;
 
     public CommentsViewState(int numComments) {
         this.numComments = numComments;

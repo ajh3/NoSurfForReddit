@@ -4,6 +4,7 @@ package com.aaronhalbert.nosurfforreddit.network.redditschema;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("ALL")
 public class Data_ {
     @SerializedName("subreddit")
     @Expose

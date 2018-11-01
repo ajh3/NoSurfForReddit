@@ -8,6 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+@SuppressWarnings("ALL")
 @Database(entities = {ClickedPostId.class}, version = 1)
 public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
 
@@ -33,7 +34,7 @@ public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
     }
 
     // called once, when the DB is first created
-    private static RoomDatabase.Callback clickedPostIdRoomDatabaseCallback = new RoomDatabase.Callback(){
+    private static final RoomDatabase.Callback clickedPostIdRoomDatabaseCallback = new RoomDatabase.Callback(){
         @Override
         public void onCreate (@NonNull SupportSQLiteDatabase db){
             super.onCreate(db);
@@ -42,7 +43,7 @@ public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
     };
 
     private static class InitDbAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ClickedPostIdDao dao;
+        private final ClickedPostIdDao dao;
 
         InitDbAsyncTask(ClickedPostIdRoomDatabase db) {
             dao = db.clickedPostIdDao();

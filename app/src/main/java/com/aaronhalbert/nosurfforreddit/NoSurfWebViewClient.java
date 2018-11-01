@@ -13,7 +13,7 @@ public class NoSurfWebViewClient extends WebViewClient {
 
     private static final String NOSURF_REDIRECT_URI = "nosurfforreddit://oauth";
 
-    private FragmentActivity hostFragmentActivity;
+    private final FragmentActivity hostFragmentActivity;
 
     public NoSurfWebViewClient(FragmentActivity hostFragmentActivity) {
         this.hostFragmentActivity = hostFragmentActivity;

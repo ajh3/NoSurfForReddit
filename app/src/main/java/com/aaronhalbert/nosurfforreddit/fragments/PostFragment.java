@@ -27,7 +27,9 @@ abstract public class PostFragment extends BaseFragment {
     private final TextView[] commentsDetails = new TextView[3];
     private final View[] dividers = new View[2];
 
+    @SuppressWarnings("WeakerAccess")
     public int lastClickedPostPosition;
+
     private String lastClickedPostId;
     private boolean externalBrowser;
     private PostFragmentInteractionListener postFragmentInteractionListener;
@@ -35,6 +37,7 @@ abstract public class PostFragment extends BaseFragment {
     LiveData<PostsViewState> postsLiveDataViewState;
     FragmentPostBinding fragmentPostBinding;
 
+    @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
 
     @Override
@@ -64,7 +67,7 @@ abstract public class PostFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        setupBinding(inflater, container);
+        setupBinding(container);
         findPostViews();
         setupPostViews();
         observeCommentsFinishedLoadingLiveEvent();
@@ -97,7 +100,7 @@ abstract public class PostFragment extends BaseFragment {
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void setupBinding(LayoutInflater inflater, ViewGroup container) {
+    private void setupBinding(ViewGroup container) {
         fragmentPostBinding = FragmentPostBinding.inflate(getActivity().getLayoutInflater(),
                 container,
                 false);

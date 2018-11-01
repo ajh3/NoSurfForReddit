@@ -59,7 +59,10 @@ public class MainActivity extends BaseActivity implements
     private static final String AUTH_URL_DURATION = "&duration=";
     private static final String AUTH_URL_SCOPE = "&scope=";
 
+    @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
+
+    @SuppressWarnings("WeakerAccess")
     @Inject ViewModelFactory viewModelFactory;
     
     private NoSurfViewModel viewModel;
@@ -288,7 +291,6 @@ public class MainActivity extends BaseActivity implements
             Uri uri = intent.getData();
             String error = uri.getQueryParameter("error");
             String code = uri.getQueryParameter("code");
-            String state = uri.getQueryParameter("state");
 
             if (error != null && error.equals("access_denied")) {
                 Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show();

@@ -9,7 +9,7 @@ public class ClickedPostId {
 
     @PrimaryKey //this field is its own primary key
     @NonNull
-    private String clickedPostId;
+    private final String clickedPostId;
 
     public ClickedPostId(@NonNull String clickedPostId) {
         this.clickedPostId = clickedPostId;

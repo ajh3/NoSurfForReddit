@@ -1,10 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.viewstate;
 
 public class LastClickedPostMetadata {
-    private int lastClickedPostPosition;
-    private String lastClickedPostId;
-    private boolean lastClickedPostIsSelf;
-    private boolean lastClickedPostIsSubscribed;
+    private final int lastClickedPostPosition;
+    private final String lastClickedPostId;
+    private final boolean lastClickedPostIsSelf;
+    private final boolean lastClickedPostIsSubscribed;
 
     public LastClickedPostMetadata(int lastClickedPostPosition,
                                    String lastClickedPostId,
