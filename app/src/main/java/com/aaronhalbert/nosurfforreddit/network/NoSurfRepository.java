@@ -70,7 +70,7 @@ public class NoSurfRepository {
 
     /* Called if the user hasn't logged in, so user can browse /r/all anonymously */
     /* Also called to refresh the anonymous app-only token when it expires */
-    private void fetchAppOnlyOAuthTokenSync(final String callback, final String id) {
+    private void fetchAppOnlyOAuthTokenSync(final NetworkCallbacks callback, final String id) {
         ri.fetchAppOnlyOAuthTokenSync(
                 OAUTH_BASE_URL,
                 APP_ONLY_GRANT_TYPE,
@@ -88,15 +88,16 @@ public class NoSurfRepository {
                         .putString(KEY_APP_ONLY_TOKEN, appOnlyOAuthTokenCache)
                         .apply();
 
-                //TODO: convert to enum
                 switch (callback) {
-                    case "fetchAllPostsSync":
+                    case FETCH_ALL_POSTS_SYNC:
                         fetchAllPostsSync();
                         break;
-                    case "fetchPostCommentsSync":
+                    case FETCH_POST_COMMENTS_SYNC:
                         fetchPostCommentsSync(id);
                         break;
-                    case "":
+                    case FETCH_SUBSCRIBED_POSTS_SYNC:
+                        break;
+                    default:
                         break;
                 }
             }
@@ -137,7 +138,7 @@ public class NoSurfRepository {
         });
     }
 
-    private void refreshExpiredUserOAuthTokenSync(final String callback, final String id) {
+    private void refreshExpiredUserOAuthTokenSync(final NetworkCallbacks callback, final String id) {
 
         ri.refreshExpiredUserOAuthTokenSync(
                 OAUTH_BASE_URL,
@@ -155,16 +156,17 @@ public class NoSurfRepository {
                         .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
                         .apply();
 
-                //TODO: convert to enum
                 switch (callback) {
-                    case "fetchAllPostsSync":
+                    case FETCH_ALL_POSTS_SYNC:
                         fetchAllPostsSync();
                         break;
-                    case "fetchSubscribedPostsSync":
+                    case FETCH_SUBSCRIBED_POSTS_SYNC:
                         fetchSubscribedPostsSync();
                         break;
-                    case "fetchPostCommentsSync":
+                    case FETCH_POST_COMMENTS_SYNC:
                         fetchPostCommentsSync(id);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -198,9 +200,9 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenSync("fetchAllPostsSync", null);
+                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
                 } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedInCache)) {
-                    fetchAppOnlyOAuthTokenSync("fetchAllPostsSync", null);
+                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -222,7 +224,7 @@ public class NoSurfRepository {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == RESPONSE_CODE_401) {
-                        refreshExpiredUserOAuthTokenSync("fetchSubscribedPostsSync", null);
+                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_SYNC, null);
                     } else {
                         subscribedPostsLiveData.setValue(response.body());
                     }
@@ -255,9 +257,9 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenSync("fetchPostCommentsSync", id);
+                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
                 } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedInCache)) {
-                    fetchAppOnlyOAuthTokenSync("fetchPostCommentsSync", id);
+                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
                 } else {
                     commentsLiveData.setValue(response.body());
                     dispatchCommentsLiveDataChangedEvent();
@@ -276,7 +278,6 @@ public class NoSurfRepository {
 
     // region init/de-init methods -----------------------------------------------------------------
 
-    //TODO: this doesn't really belong in repository (?)
     public void initializeTokensFromSharedPrefs() {
 
         userOAuthAccessTokenCache = preferences
@@ -383,4 +384,14 @@ public class NoSurfRepository {
     }
 
     // endregion room methods and classes ----------------------------------------------------------
+
+    // region enums
+
+    private enum NetworkCallbacks {
+        FETCH_ALL_POSTS_SYNC,
+        FETCH_POST_COMMENTS_SYNC,
+        FETCH_SUBSCRIBED_POSTS_SYNC
+    }
+
+    // endregion enums
 }
