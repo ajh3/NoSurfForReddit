@@ -9,7 +9,7 @@ import com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation.ViewMod
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
-public abstract class BaseFragment extends Fragment {
+abstract class BaseFragment extends Fragment {
     private boolean isInjectorUsed;
 
     @UiThread

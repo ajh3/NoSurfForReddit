@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.aaronhalbert.nosurfforreddit.fragments.AllPostsFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 
 public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {

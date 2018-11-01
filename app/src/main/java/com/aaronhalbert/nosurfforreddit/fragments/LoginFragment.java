@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class LoginFragment extends BaseFragment {
         return v;
     }
 
-    public void login() {
+    private void login() {
         if (loginFragmentInteractionListener != null) {
             loginFragmentInteractionListener.login();
         }

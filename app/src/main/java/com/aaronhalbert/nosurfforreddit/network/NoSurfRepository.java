@@ -200,7 +200,7 @@ public class NoSurfRepository {
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
                     refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
-                } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedInCache)) {
+                } else if (response.code() == RESPONSE_CODE_401) {
                     fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
                 } else {
                     allPostsLiveData.setValue(response.body());
@@ -217,6 +217,7 @@ public class NoSurfRepository {
     public void fetchSubscribedPostsSync() {
         String bearerAuth = BEARER + userOAuthAccessTokenCache;
 
+        //noinspection StatementWithEmptyBody
         if (isUserLoggedInCache) {
             ri.fetchSubscribedPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
 
@@ -257,7 +258,7 @@ public class NoSurfRepository {
             public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
                     refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
-                } else if ((response.code() == RESPONSE_CODE_401) && (!isUserLoggedInCache)) {
+                } else if (response.code() == RESPONSE_CODE_401) {
                     fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
                 } else {
                     commentsLiveData.setValue(response.body());

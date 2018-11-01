@@ -245,7 +245,7 @@ public class NoSurfViewModel extends ViewModel {
             postsLiveDataViewState = buildPostsViewState(true);
             postsViewStateCache = stitchedSubscribedPostsCache;
         } else {
-            postsLiveDataViewState = buildPostsViewState(false);;
+            postsLiveDataViewState = buildPostsViewState(false);
             postsViewStateCache = stitchedAllPostsCache;
         }
 

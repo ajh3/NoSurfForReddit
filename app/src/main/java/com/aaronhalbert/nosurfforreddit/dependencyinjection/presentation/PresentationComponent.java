@@ -1,8 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation;
 
 import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
-import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationModule;
-import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.NetworkingModule;
 import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.PostFragment;

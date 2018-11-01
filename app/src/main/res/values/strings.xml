@@ -9,7 +9,6 @@
     <string name="dark_mode">Dark mode</string>
     <string name="external_browser">Use external browser</string>
     <string name="external_browser_summary">Launch links using external browser instead of in-app browser</string>
-    <string name="num_comments">\u0020\u2022 %1$d comments</string>
     <string name="author">\nby u/%1$s</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>

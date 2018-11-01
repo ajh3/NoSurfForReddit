@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationComponent;
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationModule;

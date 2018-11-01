@@ -13,7 +13,7 @@ public class BaseActivity extends AppCompatActivity {
     private boolean isInjectorUsed;
 
     @UiThread
-    protected PresentationComponent getPresentationComponent() {
+    PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
             throw new RuntimeException("Injection already performed on this activity");
         }

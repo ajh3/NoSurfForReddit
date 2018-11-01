@@ -54,9 +54,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     // region helper methods -----------------------------------------------------------------------
 
     private void observePostsLiveDataViewState() {
-        postsLiveDataViewState.observe(this, listing -> {
-            cancelRefreshingAnimation();
-        });
+        postsLiveDataViewState.observe(this, listing -> cancelRefreshingAnimation());
     }
 
     private void cancelRefreshingAnimation() {

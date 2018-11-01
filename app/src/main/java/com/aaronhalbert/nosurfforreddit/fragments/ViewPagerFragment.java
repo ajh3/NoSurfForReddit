@@ -120,9 +120,7 @@ public class ViewPagerFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void observeIsUserLoggedInLiveData() {
-        viewModel.getIsUserLoggedInLiveData().observe(this, loggedInStatus -> {
-            isUserLoggedIn = loggedInStatus;
-        });
+        viewModel.getIsUserLoggedInLiveData().observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
     }
 
     private void login() {

@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.viewstate;
 
 import android.text.Spanned;
-import android.util.Log;
 
 public class CommentsViewState {
 

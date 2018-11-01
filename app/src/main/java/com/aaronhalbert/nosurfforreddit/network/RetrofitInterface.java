@@ -16,7 +16,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
 
-public interface RetrofitInterface {
+interface RetrofitInterface {
     String USER_AGENT = "User-Agent: android:com.aaronhalbert.nosurfforreddit:v0.01a (by /u/Suspicious_Advantage)";
 
     @Headers({USER_AGENT})
