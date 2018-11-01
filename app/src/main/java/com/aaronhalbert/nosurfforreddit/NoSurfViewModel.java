@@ -384,20 +384,16 @@ public class NoSurfViewModel extends ViewModel {
     private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
         String commentBodyHtml;
 
-        if (Build.VERSION.SDK_INT >= 24) {
-            commentBodyHtml = Html.fromHtml(input.get(1)
-                    .getData()
-                    .getChildren()
-                    .get(autoModOffset + i)
-                    .getData()
-                    .getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
+        Data_ data = input.get(1)
+                .getData()
+                .getChildren()
+                .get(autoModOffset + i)
+                .getData();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            commentBodyHtml = Html.fromHtml(data.getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
         } else {
-            commentBodyHtml = Html.fromHtml(input.get(1)
-                    .getData()
-                    .getChildren()
-                    .get(autoModOffset + i)
-                    .getData()
-                    .getBodyHtml()).toString();
+            commentBodyHtml = Html.fromHtml(data.getBodyHtml()).toString();
         }
         return commentBodyHtml;
     }
@@ -405,7 +401,7 @@ public class NoSurfViewModel extends ViewModel {
     private Spanned decodeHtml(String encoded) {
         Spanned decodedHtml;
 
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             decodedHtml = Html.fromHtml(encoded, FROM_HTML_MODE_LEGACY);
         } else {
             decodedHtml = Html.fromHtml(encoded);
