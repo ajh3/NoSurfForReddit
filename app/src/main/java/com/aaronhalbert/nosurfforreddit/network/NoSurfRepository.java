@@ -195,8 +195,7 @@ public class NoSurfRepository {
         bearerAuth = BEARER + accessToken;
 
         ri.fetchAllPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
-
-            // TODO: handle other http error codes?
+            
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
