@@ -60,6 +60,10 @@ public class MainActivity extends BaseActivity implements
     private static final String AUTH_URL_REDIRECT_URI = "&redirect_uri=";
     private static final String AUTH_URL_DURATION = "&duration=";
     private static final String AUTH_URL_SCOPE = "&scope=";
+    private static final String ERROR = "error";
+    private static final String CODE = "code";
+    private static final String ACCESS_DENIED = "access_denied";
+    private static final String LOGIN_FAILED = "Login failed!";
 
     @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
@@ -290,19 +294,20 @@ public class MainActivity extends BaseActivity implements
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN_FRAGMENT);
 
             if (loginFragment != null) {
                 fm.beginTransaction().remove(loginFragment).commit();
             }
 
+            //TODO: how handle the NPE warning on getQueryParameter?
             Uri uri = intent.getData();
-            String error = uri.getQueryParameter("error");
-            String code = uri.getQueryParameter("code");
+            String error = uri.getQueryParameter(ERROR);
+            String code = uri.getQueryParameter(CODE);
 
-            if (error != null && error.equals("access_denied")) {
-                Toast.makeText(this, "Login failed!", Toast.LENGTH_SHORT).show();
+            if (ACCESS_DENIED.equals(error)) {
+                Toast.makeText(this, LOGIN_FAILED, Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.fetchUserOAuthTokenSync(code);
             }
