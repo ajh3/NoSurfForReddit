@@ -38,7 +38,7 @@ public class ViewPagerFragment extends BaseFragment {
         Log.e(getClass().toString(), "ViewPagerFragment onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         observeIsUserLoggedInLiveData();
     }
 

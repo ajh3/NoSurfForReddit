@@ -35,7 +35,7 @@ public class ContainerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         fm = getChildFragmentManager();
 
         if (findLoginFragment() == null) {

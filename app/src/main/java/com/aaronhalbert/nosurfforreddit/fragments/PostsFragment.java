@@ -32,7 +32,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(getActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         postsAdapter = setPostsAdapter();
         setPostsLiveDataViewState();
         observePostsLiveDataViewState();
@@ -64,7 +64,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void setupRecyclerView(View v) {
-        Context context = getContext();
+        Context context = requireContext();
 
         RecyclerView rv = v.findViewById(R.id.posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(context));
