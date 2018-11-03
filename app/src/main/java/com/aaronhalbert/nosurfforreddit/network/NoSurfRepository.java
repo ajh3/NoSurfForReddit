@@ -417,7 +417,7 @@ public class NoSurfRepository {
 
     // endregion room methods and classes ----------------------------------------------------------
 
-    // region enums
+    // region enums --------------------------------------------------------------------------------
 
     private enum NetworkCallbacks {
         FETCH_ALL_POSTS_ASYNC,
@@ -425,5 +425,5 @@ public class NoSurfRepository {
         FETCH_SUBSCRIBED_POSTS_ASYNC
     }
 
-    // endregion enums
+    // endregion enums -----------------------------------------------------------------------------
 }
