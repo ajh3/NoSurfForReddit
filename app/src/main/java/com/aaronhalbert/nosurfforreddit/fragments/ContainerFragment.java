@@ -69,12 +69,7 @@ public class ContainerFragment extends BaseFragment {
     }
 
     private void observeIsUserLoggedInLiveData() {
-
-        viewModel.getIsUserLoggedInLiveData().observe(this, isUserLoggedIn -> {
-            refreshContainerChildFragment(isUserLoggedIn);
-
-            Log.e(getClass().toString(), "CF observer triggered" + isUserLoggedIn);
-        });
+        viewModel.getIsUserLoggedInLiveData().observe(this, this::refreshContainerChildFragment);
     }
     
     private void refreshContainerChildFragment(boolean isUserLoggedIn) {
