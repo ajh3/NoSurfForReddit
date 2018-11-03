@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -62,8 +61,9 @@ public class MainActivity extends BaseActivity implements
     private static final String AUTH_URL_SCOPE = "&scope=";
     private static final String ERROR = "error";
     private static final String CODE = "code";
-    private static final String ACCESS_DENIED = "access_denied";
-    private static final String LOGIN_FAILED = "Login failed!";
+    private static final String ACCESS_DENIED_ERROR_CODE = "access_denied";
+    private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
+    private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
 
     @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
@@ -301,13 +301,24 @@ public class MainActivity extends BaseActivity implements
                 fm.beginTransaction().remove(loginFragment).commit();
             }
 
-            //TODO: how handle the NPE warning on getQueryParameter?
             Uri uri = intent.getData();
-            String error = uri.getQueryParameter(ERROR);
-            String code = uri.getQueryParameter(CODE);
+            String error;
+            String code;
 
-            if (ACCESS_DENIED.equals(error)) {
-                Toast.makeText(this, LOGIN_FAILED, Toast.LENGTH_SHORT).show();
+            //TODO: is there a good way to avoid this null check?
+            //TODO: should this be using try/catch, or is it not "exceptional" enough? I think the latter
+            if (uri != null) {
+                error = uri.getQueryParameter(ERROR);
+                code = uri.getQueryParameter(CODE);
+            } else {
+                error = "";
+                code = "";
+            }
+
+            if (ACCESS_DENIED_ERROR_CODE.equals(error)) {
+                Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
+            } else if ("".equals(error)) {
+                Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.fetchUserOAuthTokenSync(code);
             }
