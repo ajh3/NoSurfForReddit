@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -76,7 +75,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(KEY_COMMENTS_ALREADY_LOADED, commentsAlreadyLoaded);
 
         super.onSaveInstanceState(outState);

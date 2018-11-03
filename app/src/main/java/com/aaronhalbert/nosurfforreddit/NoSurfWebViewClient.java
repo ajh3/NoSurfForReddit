@@ -10,9 +10,7 @@ import android.webkit.WebViewClient;
 import androidx.fragment.app.FragmentActivity;
 
 public class NoSurfWebViewClient extends WebViewClient {
-
     private static final String NOSURF_REDIRECT_URI = "nosurfforreddit://oauth";
-
     private final FragmentActivity hostFragmentActivity;
 
     public NoSurfWebViewClient(FragmentActivity hostFragmentActivity) {

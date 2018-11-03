@@ -7,7 +7,6 @@ import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.Applicat
 import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.DaggerApplicationComponent;
 
 public class NoSurfApplication extends Application {
-
     private ApplicationComponent applicationComponent;
 
     @Override

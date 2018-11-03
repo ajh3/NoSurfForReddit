@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.room;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -36,7 +35,7 @@ public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
     // called once, when the DB is first created
     private static final RoomDatabase.Callback clickedPostIdRoomDatabaseCallback = new RoomDatabase.Callback(){
         @Override
-        public void onCreate (@NonNull SupportSQLiteDatabase db){
+        public void onCreate (SupportSQLiteDatabase db){
             super.onCreate(db);
             //new InitDbAsyncTask(INSTANCE).execute();
         }

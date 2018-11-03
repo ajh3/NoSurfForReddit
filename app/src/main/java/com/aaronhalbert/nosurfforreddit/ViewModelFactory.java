@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit;
 
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -13,11 +12,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.noSurfRepository = noSurfRepository;
     }
 
-    // need to understand syntax here much better
-    @SuppressWarnings("unchecked") // ???
-    @NonNull
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+    public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass == NoSurfViewModel.class) {
             return (T) new NoSurfViewModel(noSurfRepository);
         } else {

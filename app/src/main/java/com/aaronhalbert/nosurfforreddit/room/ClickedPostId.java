@@ -11,7 +11,7 @@ public class ClickedPostId {
     @NonNull
     private final String clickedPostId;
 
-    public ClickedPostId(@NonNull String clickedPostId) {
+    public ClickedPostId(String clickedPostId) {
         this.clickedPostId = clickedPostId;
     }
 

@@ -5,7 +5,6 @@ import android.webkit.WebView;
 import androidx.fragment.app.FragmentActivity;
 
 public class NoSurfWebViewClientApiLevelBelow24 extends NoSurfWebViewClient {
-
     public NoSurfWebViewClientApiLevelBelow24(FragmentActivity hostFragmentActivity) {
         super(hostFragmentActivity);
     }
