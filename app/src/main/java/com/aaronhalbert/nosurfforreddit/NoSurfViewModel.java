@@ -81,14 +81,13 @@ public class NoSurfViewModel extends ViewModel {
     // region init/de-init methods -----------------------------------------------------------------
 
     public void initApp() {
-        repository.initializeTokensFromSharedPrefs();
-
+        repository.checkIfLoginCredentialsAlreadyExist();
         fetchAllPostsSync();
         fetchSubscribedPostsSync();
     }
 
     public void logUserOut() {
-        repository.logUserOut();
+        repository.setUserLoggedOut();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------

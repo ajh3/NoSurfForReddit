@@ -29,7 +29,6 @@ public class NoSurfRepository {
     private static final String OAUTH_BASE_URL = "https://www.reddit.com/api/v1/access_token";
     private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String CLIENT_ID = "jPF59UF5MbMkWg";
-    private static final String KEY_APP_ONLY_TOKEN = "appOnlyAccessToken";
     private static final String KEY_USER_OAUTH_ACCESS_TOKEN = "userAccessToken";
     private static final String KEY_USER_OAUTH_REFRESH_TOKEN = "userAccessRefreshToken";
     private static final String AUTH_HEADER = okhttp3.Credentials.basic(CLIENT_ID, "");
@@ -42,10 +41,11 @@ public class NoSurfRepository {
     private static final String BEARER = "Bearer ";
     private static final int RESPONSE_CODE_401 = 401;
 
-    private String userOAuthAccessTokenCache;
-    private String userOAuthRefreshTokenCache;
-    private String appOnlyOAuthTokenCache;
-    private boolean isUserLoggedInCache = false;
+    // caches let us keep working during asynchronous writes to SharedPrefs
+    private String userOAuthAccessTokenCache = "";
+    private String userOAuthRefreshTokenCache = "";
+    private String appOnlyOAuthToken = "";
+    private boolean isUserLoggedInCache;
 
     private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
     private final MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
@@ -59,7 +59,9 @@ public class NoSurfRepository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final SharedPreferences preferences;
 
-    public NoSurfRepository(Retrofit retrofit, SharedPreferences preferences, ClickedPostIdRoomDatabase db) {
+    public NoSurfRepository(Retrofit retrofit,
+                            SharedPreferences preferences,
+                            ClickedPostIdRoomDatabase db) {
         this.preferences = preferences;
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
@@ -68,8 +70,8 @@ public class NoSurfRepository {
 
     // region network auth calls -------------------------------------------------------------------
 
-    /* Called if the user hasn't logged in, so user can browse /r/all anonymously */
-    /* Also called to refresh the anonymous app-only token when it expires */
+    /* Called if the user hasn't logged in, so user can view /r/all anonymously
+       Also called to refresh the anonymous app-only token when it expires */
     private void fetchAppOnlyOAuthTokenSync(final NetworkCallbacks callback, final String id) {
         ri.fetchAppOnlyOAuthTokenSync(
                 OAUTH_BASE_URL,
@@ -81,12 +83,8 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call,
                                    Response<AppOnlyOAuthToken> response) {
-                appOnlyOAuthTokenCache = response.body().getAccessToken();
-
-                preferences
-                        .edit()
-                        .putString(KEY_APP_ONLY_TOKEN, appOnlyOAuthTokenCache)
-                        .apply();
+                appOnlyOAuthToken = response.body().getAccessToken();
+                // don't bother saving this ephemeral token into sharedprefs
 
                 switch (callback) {
                     case FETCH_ALL_POSTS_SYNC:
@@ -121,12 +119,16 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<UserOAuthToken> call,
                                    Response<UserOAuthToken> response) {
-
                 userOAuthAccessTokenCache = response.body().getAccessToken();
                 userOAuthRefreshTokenCache = response.body().getRefreshToken();
 
-                logUserIn();
+                preferences
+                        .edit()
+                        .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
+                        .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshTokenCache)
+                        .apply();
 
+                setUserLoggedIn();
                 fetchAllPostsSync();
                 fetchSubscribedPostsSync();
             }
@@ -139,7 +141,6 @@ public class NoSurfRepository {
     }
 
     private void refreshExpiredUserOAuthTokenSync(final NetworkCallbacks callback, final String id) {
-
         ri.refreshExpiredUserOAuthTokenSync(
                 OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
@@ -189,19 +190,27 @@ public class NoSurfRepository {
         if (isUserLoggedInCache) {
             accessToken = userOAuthAccessTokenCache;
         } else {
-            accessToken = appOnlyOAuthTokenCache;
+            if (!"".equals(appOnlyOAuthToken)) {
+                accessToken = appOnlyOAuthToken;
+            } else {
+                /* garbage value ensures the below call gets a 401 error and thus executes
+                   fetchAppOnlyOAuthTokenSync and its callback in the right order, instead
+                    of the call failing */
+                //TODO: fix this w/ RxJava
+                accessToken = "xyz";
+            }
         }
 
         bearerAuth = BEARER + accessToken;
 
         ri.fetchAllPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
-            
+
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
+                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, "");
                 } else if (response.code() == RESPONSE_CODE_401) {
-                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, null);
+                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, "");
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -224,7 +233,7 @@ public class NoSurfRepository {
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == RESPONSE_CODE_401) {
-                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_SYNC, null);
+                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_SYNC, "");
                     } else {
                         subscribedPostsLiveData.setValue(response.body());
                     }
@@ -241,84 +250,79 @@ public class NoSurfRepository {
     }
 
     public void fetchPostCommentsSync(final String id) {
-        String accessToken;
-        String bearerAuth;
 
-        if (isUserLoggedInCache) {
-            accessToken = userOAuthAccessTokenCache;
-        } else {
-            accessToken = appOnlyOAuthTokenCache;
-        }
+        //noinspection StatementWithEmptyBody
+        if (!"".equals(id)) {
+            String accessToken;
+            String bearerAuth;
 
-        bearerAuth = BEARER + accessToken;
+            if (isUserLoggedInCache) {
+                accessToken = userOAuthAccessTokenCache;
+            } else {
+                accessToken = appOnlyOAuthToken;
+            }
 
-        ri.fetchPostCommentsSync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+            bearerAuth = BEARER + accessToken;
 
-            @Override
-            public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
-                } else if (response.code() == RESPONSE_CODE_401) {
-                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
-                } else {
-                    commentsLiveData.setValue(response.body());
-                    dispatchCommentsLiveDataChangedEvent();
+            ri.fetchPostCommentsSync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+
+                @Override
+                public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
+                    if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
+                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
+                    } else if (response.code() == RESPONSE_CODE_401) {
+                        fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
+                    } else {
+                        commentsLiveData.setValue(response.body());
+                        dispatchCommentsLiveDataChangedEvent();
+                    }
                 }
 
-            }
-
-            @Override
-            public void onFailure(Call<List<Listing>> call, Throwable t) {
-                Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + t.toString());
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Listing>> call, Throwable t) {
+                    Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + t.toString());
+                }
+            });
+        } else {
+            // do nothing if blank id is passed
+        }
     }
 
     // endregion network data calls ----------------------------------------------------------------
 
     // region init/de-init methods -----------------------------------------------------------------
 
-    public void initializeTokensFromSharedPrefs() {
-
+    public void checkIfLoginCredentialsAlreadyExist() {
         userOAuthAccessTokenCache = preferences
-                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, null);
+                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, "");
 
         userOAuthRefreshTokenCache = preferences
-                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, null);
+                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, "");
 
-        if (userOAuthAccessTokenCache != null && !userOAuthAccessTokenCache.equals("")
-            && userOAuthRefreshTokenCache != null && !userOAuthRefreshTokenCache.equals("")) {
-            isUserLoggedInCache = true;
-            isUserLoggedInLiveData.setValue(true);
+        if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
+            setUserLoggedIn();
         } else {
-            isUserLoggedInCache = false;
-            isUserLoggedInLiveData.setValue(false);
+            setUserLoggedOut();
         }
     }
 
-    private void logUserIn() {
+    private void setUserLoggedIn() {
         isUserLoggedInCache = true;
         isUserLoggedInLiveData.setValue(true);
-
-        preferences
-                .edit()
-                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
-                .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshTokenCache)
-                .apply();
     }
 
-    public void logUserOut() {
+    public void setUserLoggedOut() {
         isUserLoggedInCache = false;
         isUserLoggedInLiveData.setValue(false);
+
+        userOAuthAccessTokenCache = "";
+        userOAuthRefreshTokenCache = "";
 
         preferences
                 .edit()
                 .putString(KEY_USER_OAUTH_ACCESS_TOKEN, "")
                 .putString(KEY_USER_OAUTH_REFRESH_TOKEN, "")
                 .apply();
-
-        userOAuthAccessTokenCache = "";
-        userOAuthRefreshTokenCache = "";
     }
 
     // endregion init/de-init methods --------------------------------------------------------------

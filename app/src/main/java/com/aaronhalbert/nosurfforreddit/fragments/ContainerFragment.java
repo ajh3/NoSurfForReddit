@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
@@ -69,11 +70,12 @@ public class ContainerFragment extends BaseFragment {
     }
 
     private void observeIsUserLoggedInLiveData() {
-        viewModel.getIsUserLoggedInLiveData().observe(this, this::refreshContainerChildFragment);
+        viewModel.getIsUserLoggedInLiveData().observe(this,
+                isUserLoggedIn -> refreshContainerChildFragment(isUserLoggedIn));
     }
     
     private void refreshContainerChildFragment(boolean isUserLoggedIn) {
-
+        Log.e(getClass().toString(), "isUserLoggedIn: " + isUserLoggedIn);
         FragmentTransaction ft = fm.beginTransaction();
 
         if (isUserLoggedIn) {

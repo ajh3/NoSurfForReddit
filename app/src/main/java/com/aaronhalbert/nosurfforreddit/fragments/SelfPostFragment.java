@@ -15,7 +15,7 @@ public class SelfPostFragment extends PostFragment {
 
             fragmentPostBinding.postFragmentSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
             fragmentPostBinding.postFragmentDividerUnderSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
-            
+
         }
     }
 }
