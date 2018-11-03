@@ -70,14 +70,7 @@ abstract public class PostFragment extends BaseFragment {
         setupBinding(container);
         findPostViews();
         setupPostViews();
-
-        if (!commentsAlreadyLoaded) {
-            observeCommentsFinishedLoadingLiveEvent();
-            viewModel.fetchPostCommentsSync(lastClickedPostId);
-            viewModel.insertClickedPostId(lastClickedPostId);
-        } else {
-            updateViewVisibilities();
-        }
+        setupComments();
 
         return fragmentPostBinding.getRoot();
     }
@@ -119,7 +112,7 @@ abstract public class PostFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void setupBinding(ViewGroup container) {
-        fragmentPostBinding = FragmentPostBinding.inflate(getActivity().getLayoutInflater(),
+        fragmentPostBinding = FragmentPostBinding.inflate(requireActivity().getLayoutInflater(),
                 container,
                 false);
         fragmentPostBinding.setViewModel(viewModel);
@@ -158,6 +151,16 @@ abstract public class PostFragment extends BaseFragment {
                 }
             }
         });
+    }
+
+    private void setupComments() {
+        if (!commentsAlreadyLoaded) {
+            observeCommentsFinishedLoadingLiveEvent();
+            viewModel.fetchPostCommentsSync(lastClickedPostId);
+            viewModel.insertClickedPostId(lastClickedPostId);
+        } else {
+            updateViewVisibilities();
+        }
     }
 
     private void updateViewVisibilities() {
