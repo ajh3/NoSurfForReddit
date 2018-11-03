@@ -52,6 +52,10 @@ public class NoSurfViewModel extends ViewModel {
         mergedAllPostsLiveDataViewState = mergeClickedPostIdsWithPostsViewState(false);
         mergedSubscribedPostsLiveDataViewState = mergeClickedPostIdsWithPostsViewState(true);
         commentsLiveDataViewState = buildCommentsViewState();
+
+        repository.checkIfLoginCredentialsAlreadyExist();
+        fetchAllPostsASync();
+        fetchSubscribedPostsASync();
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -79,12 +83,6 @@ public class NoSurfViewModel extends ViewModel {
     // endregion network data calls ----------------------------------------------------------------
 
     // region init/de-init methods -----------------------------------------------------------------
-
-    public void initApp() {
-        repository.checkIfLoginCredentialsAlreadyExist();
-        fetchAllPostsASync();
-        fetchSubscribedPostsASync();
-    }
 
     public void logUserOut() {
         repository.setUserLoggedOut();

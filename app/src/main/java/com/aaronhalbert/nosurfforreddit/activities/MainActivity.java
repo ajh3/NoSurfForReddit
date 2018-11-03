@@ -95,8 +95,6 @@ public class MainActivity extends BaseActivity implements
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
         if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
-            viewModel.initApp();
-
             fm.beginTransaction()
                     .add(R.id.main_activity_frame_layout,
                             ViewPagerFragment.newInstance(),
