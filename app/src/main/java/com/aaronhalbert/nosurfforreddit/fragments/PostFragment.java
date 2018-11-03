@@ -183,9 +183,9 @@ abstract public class PostFragment extends BaseFragment {
         lastClickedPostId = lastClickedPostMetadata.getLastClickedPostId();
 
         if (lastClickedPostMetadata.isLastClickedPostIsSubscribed()) {
-            postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getMergedSubscribedPostsLiveDataViewState();
         } else {
-            postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getMergedAllPostsLiveDataViewState();
         }
     }
 

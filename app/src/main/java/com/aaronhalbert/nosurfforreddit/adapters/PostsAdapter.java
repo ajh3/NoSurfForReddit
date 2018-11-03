@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,9 +34,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
         if (isSubscribedPostsAdapter) {
-            postsLiveDataViewState = viewModel.getStitchedSubscribedPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getMergedSubscribedPostsLiveDataViewState();
         } else {
-            postsLiveDataViewState = viewModel.getStitchedAllPostsLiveDataViewState();
+            postsLiveDataViewState = viewModel.getMergedAllPostsLiveDataViewState();
         }
     }
 

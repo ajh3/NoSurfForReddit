@@ -37,20 +37,20 @@ public class NoSurfViewModel extends ViewModel {
 
     private final NoSurfRepository repository;
 
-    private final LiveData<PostsViewState> stitchedAllPostsLiveDataViewState;
-    private final LiveData<PostsViewState> stitchedSubscribedPostsLiveDataViewState;
+    private final LiveData<PostsViewState> mergedAllPostsLiveDataViewState;
+    private final LiveData<PostsViewState> mergedSubscribedPostsLiveDataViewState;
     private final LiveData<CommentsViewState> commentsLiveDataViewState;
 
-    private final PostsViewState stitchedAllPostsCache = new PostsViewState();
-    private final PostsViewState stitchedSubscribedPostsCache = new PostsViewState();
+    private final PostsViewState mergedAllPostsCache = new PostsViewState();
+    private final PostsViewState mergedSubscribedPostsCache = new PostsViewState();
 
     private String[] clickedPostIdsCache = new String[25];
     private LastClickedPostMetadata lastClickedPostMetadata;
 
     public NoSurfViewModel(NoSurfRepository repository) {
         this.repository = repository;
-        stitchedAllPostsLiveDataViewState = stitchClickedPostIdsToPostsViewState(false);
-        stitchedSubscribedPostsLiveDataViewState = stitchClickedPostIdsToPostsViewState(true);
+        mergedAllPostsLiveDataViewState = mergeClickedPostIdsWithPostsViewState(false);
+        mergedSubscribedPostsLiveDataViewState = mergeClickedPostIdsWithPostsViewState(true);
         commentsLiveDataViewState = buildCommentsViewState();
     }
 
@@ -106,12 +106,12 @@ public class NoSurfViewModel extends ViewModel {
 
     // region getter methods -----------------------------------------------------------------------
 
-    public LiveData<PostsViewState> getStitchedAllPostsLiveDataViewState() {
-        return stitchedAllPostsLiveDataViewState;
+    public LiveData<PostsViewState> getMergedAllPostsLiveDataViewState() {
+        return mergedAllPostsLiveDataViewState;
     }
 
-    public LiveData<PostsViewState> getStitchedSubscribedPostsLiveDataViewState() {
-        return stitchedSubscribedPostsLiveDataViewState;
+    public LiveData<PostsViewState> getMergedSubscribedPostsLiveDataViewState() {
+        return mergedSubscribedPostsLiveDataViewState;
     }
 
     public LiveData<CommentsViewState> getCommentsLiveDataViewState() {
@@ -234,7 +234,7 @@ public class NoSurfViewModel extends ViewModel {
         });
     }
 
-    private LiveData<PostsViewState> stitchClickedPostIdsToPostsViewState(boolean isSubscribedPosts){
+    private LiveData<PostsViewState> mergeClickedPostIdsWithPostsViewState(boolean isSubscribedPosts){
         final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
 
         LiveData<PostsViewState> postsLiveDataViewState;
@@ -242,10 +242,10 @@ public class NoSurfViewModel extends ViewModel {
 
         if (isSubscribedPosts) {
             postsLiveDataViewState = buildPostsViewState(true);
-            postsViewStateCache = stitchedSubscribedPostsCache;
+            postsViewStateCache = mergedSubscribedPostsCache;
         } else {
             postsLiveDataViewState = buildPostsViewState(false);
-            postsViewStateCache = stitchedAllPostsCache;
+            postsViewStateCache = mergedAllPostsCache;
         }
 
         mediator.addSource(postsLiveDataViewState, postsViewState -> {
