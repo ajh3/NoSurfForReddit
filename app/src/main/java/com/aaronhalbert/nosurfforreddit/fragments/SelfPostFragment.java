@@ -11,9 +11,11 @@ public class SelfPostFragment extends PostFragment {
     void setupPostViews() {
         fragmentPostBinding.postFragmentDividerUnderDetailsForSelfPostsOnly.setVisibility(View.VISIBLE);
 
-        if (!(postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).selfTextHtml).equals("")) {
+        if (!"".equals(postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).selfTextHtml)) {
+
             fragmentPostBinding.postFragmentSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
             fragmentPostBinding.postFragmentDividerUnderSelftextForSelfPostsOnly.setVisibility(View.VISIBLE);
+            
         }
     }
 }
