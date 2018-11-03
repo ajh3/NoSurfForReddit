@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity implements
             } else if ("".equals(error)) {
                 Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
             } else {
-                viewModel.fetchUserOAuthTokenSync(code);
+                viewModel.fetchUserOAuthTokenASync(code);
             }
         }
     }

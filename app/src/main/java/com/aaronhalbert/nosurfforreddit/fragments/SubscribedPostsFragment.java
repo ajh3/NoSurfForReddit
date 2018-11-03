@@ -24,6 +24,6 @@ public class SubscribedPostsFragment extends PostsFragment {
 
     @Override
     public void onRefresh() {
-        viewModel.fetchSubscribedPostsSync();
+        viewModel.fetchSubscribedPostsASync();
     }
 }

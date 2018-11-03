@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,7 +154,7 @@ abstract public class PostFragment extends BaseFragment {
     private void setupComments() {
         if (!commentsAlreadyLoaded) {
             observeCommentsFinishedLoadingLiveEvent();
-            viewModel.fetchPostCommentsSync(lastClickedPostId);
+            viewModel.fetchPostCommentsASync(lastClickedPostId);
             viewModel.insertClickedPostId(lastClickedPostId);
         } else {
             updateViewVisibilities();

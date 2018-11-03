@@ -35,9 +35,9 @@ public class NoSurfRepository {
     private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
     private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
-    private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsSync call failed: ";
-    private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsSync call failed: ";
-    private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsSync call failed: ";
+    private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
+    private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
+    private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
     private static final int RESPONSE_CODE_401 = 401;
 
@@ -70,10 +70,13 @@ public class NoSurfRepository {
 
     // region network auth calls -------------------------------------------------------------------
 
-    /* Called if the user hasn't logged in, so user can view /r/all anonymously
-       Also called to refresh the anonymous app-only token when it expires */
-    private void fetchAppOnlyOAuthTokenSync(final NetworkCallbacks callback, final String id) {
-        ri.fetchAppOnlyOAuthTokenSync(
+    /* Logged-out (aka anonymous, aka app-only users require an anonymous token to interact with
+     * the Reddit API and view posts and comments from r/all. This token is provided by
+     * fetchAppOnlyOAuthTokenASync and requires no user credentials.
+     *
+     *  Also called to refresh this anonymous token when it expires */
+    private void fetchAppOnlyOAuthTokenASync(final NetworkCallbacks callback, final String id) {
+        ri.fetchAppOnlyOAuthTokenASync(
                 OAUTH_BASE_URL,
                 APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
@@ -87,13 +90,14 @@ public class NoSurfRepository {
                 // don't bother saving this ephemeral token into sharedprefs
 
                 switch (callback) {
-                    case FETCH_ALL_POSTS_SYNC:
-                        fetchAllPostsSync();
+                    case FETCH_ALL_POSTS_ASYNC:
+                        fetchAllPostsASync();
                         break;
-                    case FETCH_POST_COMMENTS_SYNC:
-                        fetchPostCommentsSync(id);
+                    case FETCH_POST_COMMENTS_ASYNC:
+                        fetchPostCommentsASync(id);
                         break;
-                    case FETCH_SUBSCRIBED_POSTS_SYNC:
+                    case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                        // do nothing, as an app-only token is for logged-out users only
                         break;
                     default:
                         break;
@@ -107,8 +111,13 @@ public class NoSurfRepository {
         });
     }
 
-    public void fetchUserOAuthTokenSync(String code) {
-        ri.fetchUserOAuthTokenSync(
+    /* Logged-in users can view posts from their subscribed subreddits in addition to r/all,
+      * but this use case requires a user OAuth token from fetchUserOAuthTokenASync.
+      *
+      * Note that after the user is logged in, their user token is additionally used for viewing
+      * r/all, instead of the previously-fetched anonymous token */
+    public void fetchUserOAuthTokenASync(String code) {
+        ri.fetchUserOAuthTokenASync(
                 OAUTH_BASE_URL,
                 USER_GRANT_TYPE,
                 code,
@@ -129,8 +138,8 @@ public class NoSurfRepository {
                         .apply();
 
                 setUserLoggedIn();
-                fetchAllPostsSync();
-                fetchSubscribedPostsSync();
+                fetchAllPostsASync();
+                fetchSubscribedPostsASync();
             }
 
             @Override
@@ -140,8 +149,8 @@ public class NoSurfRepository {
         });
     }
 
-    private void refreshExpiredUserOAuthTokenSync(final NetworkCallbacks callback, final String id) {
-        ri.refreshExpiredUserOAuthTokenSync(
+    private void refreshExpiredUserOAuthTokenASync(final NetworkCallbacks callback, final String id) {
+        ri.refreshExpiredUserOAuthTokenASync(
                 OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
@@ -158,14 +167,14 @@ public class NoSurfRepository {
                         .apply();
 
                 switch (callback) {
-                    case FETCH_ALL_POSTS_SYNC:
-                        fetchAllPostsSync();
+                    case FETCH_ALL_POSTS_ASYNC:
+                        fetchAllPostsASync();
                         break;
-                    case FETCH_SUBSCRIBED_POSTS_SYNC:
-                        fetchSubscribedPostsSync();
+                    case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                        fetchSubscribedPostsASync();
                         break;
-                    case FETCH_POST_COMMENTS_SYNC:
-                        fetchPostCommentsSync(id);
+                    case FETCH_POST_COMMENTS_ASYNC:
+                        fetchPostCommentsASync(id);
                         break;
                     default:
                         break;
@@ -183,7 +192,9 @@ public class NoSurfRepository {
 
     // region network data calls -------------------------------------------------------------------
 
-    public void fetchAllPostsSync() {
+    /* gets posts from r/all, using either a user or anonymous token based on the user's
+       login status. Works for both logged-in and logged-out users */
+    public void fetchAllPostsASync() {
         String accessToken;
         String bearerAuth;
 
@@ -194,8 +205,8 @@ public class NoSurfRepository {
                 accessToken = appOnlyOAuthToken;
             } else {
                 /* garbage value ensures the below call gets a 401 error and thus executes
-                   fetchAppOnlyOAuthTokenSync and its callback in the right order, instead
-                    of the call failing */
+                 * fetchAppOnlyOAuthTokenASync and its callback in the right order, instead
+                 * of the call failing */
                 //TODO: fix this w/ RxJava
                 accessToken = "xyz";
             }
@@ -203,14 +214,20 @@ public class NoSurfRepository {
 
         bearerAuth = BEARER + accessToken;
 
-        ri.fetchAllPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
+        ri.fetchAllPostsASync(bearerAuth).enqueue(new Callback<Listing>() {
 
+            /* conditional logic here fetches or refreshes expired tokens if there's a 401
+             * error, and passes itself as a callback to try fetching posts once again after the
+             * token has been refreshed
+             *
+             * I use callbacks this way to "react" to expired tokens instead of running some
+             * background "timer" task that refreshes them every X minutes */
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, "");
+                    refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                 } else if (response.code() == RESPONSE_CODE_401) {
-                    fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_ALL_POSTS_SYNC, "");
+                    fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                 } else {
                     allPostsLiveData.setValue(response.body());
                 }
@@ -223,17 +240,19 @@ public class NoSurfRepository {
         });
     }
 
-    public void fetchSubscribedPostsSync() {
+    /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
+    public void fetchSubscribedPostsASync() {
         String bearerAuth = BEARER + userOAuthAccessTokenCache;
 
         //noinspection StatementWithEmptyBody
         if (isUserLoggedInCache) {
-            ri.fetchSubscribedPostsSync(bearerAuth).enqueue(new Callback<Listing>() {
+            ri.fetchSubscribedPostsASync(bearerAuth).enqueue(new Callback<Listing>() {
 
+                // same callback logic as documented in fetchAllPostsASync()
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == RESPONSE_CODE_401) {
-                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_SYNC, "");
+                        refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
                     } else {
                         subscribedPostsLiveData.setValue(response.body());
                     }
@@ -245,11 +264,12 @@ public class NoSurfRepository {
                 }
             });
         } else {
-            // do nothing if user is logged out
+            // do nothing if user is logged out, as subscribed posts are only for logged-in users
         }
     }
 
-    public void fetchPostCommentsSync(final String id) {
+    /* get a post's comments; works for either logged-in or logged-out users */
+    public void fetchPostCommentsASync(final String id) {
 
         //noinspection StatementWithEmptyBody
         if (!"".equals(id)) {
@@ -264,14 +284,15 @@ public class NoSurfRepository {
 
             bearerAuth = BEARER + accessToken;
 
-            ri.fetchPostCommentsSync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+            ri.fetchPostCommentsASync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
 
+                // same callback logic as documented in fetchAllPostsASync()
                 @Override
                 public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
                     if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                        refreshExpiredUserOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
+                        refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else if (response.code() == RESPONSE_CODE_401) {
-                        fetchAppOnlyOAuthTokenSync(NetworkCallbacks.FETCH_POST_COMMENTS_SYNC, id);
+                        fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else {
                         commentsLiveData.setValue(response.body());
                         dispatchCommentsLiveDataChangedEvent();
@@ -292,6 +313,12 @@ public class NoSurfRepository {
 
     // region init/de-init methods -----------------------------------------------------------------
 
+    /* login credentials are stored in SharedPreferences to survive not only config changes,
+     *  but process termination and reboots, so user doesn't have to re-login every time the app
+     *  exits
+     *
+     *  This method should run on app initialization, to see if the user's credentials have been
+     *  previously saved */
     public void checkIfLoginCredentialsAlreadyExist() {
         userOAuthAccessTokenCache = preferences
                 .getString(KEY_USER_OAUTH_ACCESS_TOKEN, "");
@@ -302,6 +329,7 @@ public class NoSurfRepository {
         if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
             setUserLoggedIn();
         } else {
+            // need to explicitly call this so ContainerFragment knows how to set itself up
             setUserLoggedOut();
         }
     }
@@ -392,9 +420,9 @@ public class NoSurfRepository {
     // region enums
 
     private enum NetworkCallbacks {
-        FETCH_ALL_POSTS_SYNC,
-        FETCH_POST_COMMENTS_SYNC,
-        FETCH_SUBSCRIBED_POSTS_SYNC
+        FETCH_ALL_POSTS_ASYNC,
+        FETCH_POST_COMMENTS_ASYNC,
+        FETCH_SUBSCRIBED_POSTS_ASYNC
     }
 
     // endregion enums

@@ -82,9 +82,9 @@ public class ViewPagerFragment extends BaseFragment {
         switch(item.getItemId()) {
             case R.id.refresh:
                 if (pager.getCurrentItem() == 0) {
-                    viewModel.fetchAllPostsSync();
+                    viewModel.fetchAllPostsASync();
                 } else {
-                    viewModel.fetchSubscribedPostsSync();
+                    viewModel.fetchSubscribedPostsASync();
                 }
                 return true;
             case R.id.login:

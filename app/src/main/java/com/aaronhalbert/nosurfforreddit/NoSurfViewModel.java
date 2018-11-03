@@ -56,24 +56,24 @@ public class NoSurfViewModel extends ViewModel {
 
     // region network auth calls -------------------------------------------------------------------
 
-    public void fetchUserOAuthTokenSync(String code) {
-        repository.fetchUserOAuthTokenSync(code);
+    public void fetchUserOAuthTokenASync(String code) {
+        repository.fetchUserOAuthTokenASync(code);
     }
 
     // endregion network auth calls ----------------------------------------------------------------
 
     // region network data calls -------------------------------------------------------------------
 
-    public void fetchAllPostsSync() {
-        repository.fetchAllPostsSync();
+    public void fetchAllPostsASync() {
+        repository.fetchAllPostsASync();
     }
 
-    public void fetchSubscribedPostsSync() {
-        repository.fetchSubscribedPostsSync();
+    public void fetchSubscribedPostsASync() {
+        repository.fetchSubscribedPostsASync();
     }
 
-    public void fetchPostCommentsSync(String id) {
-        repository.fetchPostCommentsSync(id);
+    public void fetchPostCommentsASync(String id) {
+        repository.fetchPostCommentsASync(id);
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -82,8 +82,8 @@ public class NoSurfViewModel extends ViewModel {
 
     public void initApp() {
         repository.checkIfLoginCredentialsAlreadyExist();
-        fetchAllPostsSync();
-        fetchSubscribedPostsSync();
+        fetchAllPostsASync();
+        fetchSubscribedPostsASync();
     }
 
     public void logUserOut() {

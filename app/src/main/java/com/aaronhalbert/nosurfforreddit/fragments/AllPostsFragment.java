@@ -24,6 +24,6 @@ public class AllPostsFragment extends PostsFragment {
 
     @Override
     public void onRefresh() {
-        viewModel.fetchAllPostsSync();
+        viewModel.fetchAllPostsASync();
     }
 }
