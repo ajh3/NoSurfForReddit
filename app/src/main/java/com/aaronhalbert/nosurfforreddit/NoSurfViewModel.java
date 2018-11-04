@@ -247,7 +247,6 @@ public class NoSurfViewModel extends ViewModel {
         }
 
         mediator.addSource(postsLiveDataViewState, postsViewState -> {
-
             for (int i = 0; i < 25; i++) {
                 postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
 
@@ -258,7 +257,6 @@ public class NoSurfViewModel extends ViewModel {
         });
 
         mediator.addSource(getClickedPostIdsLiveData(), strings -> {
-
             clickedPostIdsCache = strings;
 
             for (int i = 0; i < 25; i++) {
@@ -379,20 +377,13 @@ public class NoSurfViewModel extends ViewModel {
     }
 
     private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
-        String commentBodyHtml;
-
         Data_ data = input.get(1)
                 .getData()
                 .getChildren()
                 .get(autoModOffset + i)
                 .getData();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            commentBodyHtml = Html.fromHtml(data.getBodyHtml(), FROM_HTML_MODE_LEGACY).toString();
-        } else {
-            commentBodyHtml = Html.fromHtml(data.getBodyHtml()).toString();
-        }
-        return commentBodyHtml;
+        return decodeHtml(data.getBodyHtml()).toString();
     }
 
     private Spanned decodeHtml(String encoded) {
