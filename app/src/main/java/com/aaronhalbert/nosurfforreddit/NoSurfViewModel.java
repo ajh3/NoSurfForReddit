@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit;
 
+import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
@@ -387,15 +388,7 @@ public class NoSurfViewModel extends ViewModel {
     }
 
     private Spanned decodeHtml(String encoded) {
-        Spanned decodedHtml;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            decodedHtml = Html.fromHtml(encoded, FROM_HTML_MODE_LEGACY);
-        } else {
-            decodedHtml = Html.fromHtml(encoded);
-        }
-
-        return decodedHtml;
+        return HtmlCompat.fromHtml(encoded, HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 
     private CharSequence trimTrailingWhitespace(CharSequence source) {
