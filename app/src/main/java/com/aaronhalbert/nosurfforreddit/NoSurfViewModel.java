@@ -278,8 +278,9 @@ public class NoSurfViewModel extends ViewModel {
         }
     }
 
+    // Reddit API provides twice-encoded HTML... ¯\_(ツ)_/¯
     private String formatSelfPostSelfTextHtml(String twiceEncodedSelfTextHtml) {
-        if ((twiceEncodedSelfTextHtml != null) && !(twiceEncodedSelfTextHtml.equals(""))) {
+        if ((twiceEncodedSelfTextHtml != null) && (!"".equals(twiceEncodedSelfTextHtml))) {
             String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
             String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
             return (String) trimTrailingWhitespace(decodedSelfTextHtml);
