@@ -4,11 +4,9 @@ import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
-import android.os.Build;
 
 import androidx.lifecycle.ViewModel;
 
-import android.text.Html;
 import android.text.Spanned;
 
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
@@ -21,8 +19,6 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 public class NoSurfViewModel extends ViewModel {
     private static final String USER_ABBREVIATION = "u/";
