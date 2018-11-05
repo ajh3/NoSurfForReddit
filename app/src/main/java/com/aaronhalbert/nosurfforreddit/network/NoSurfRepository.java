@@ -13,6 +13,7 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
 
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class NoSurfRepository {
     private final RetrofitInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
     private final SharedPreferences preferences;
+    private final InsertClickedPostIdThreadPoolExecutor executor;
 
     public NoSurfRepository(Retrofit retrofit,
                             SharedPreferences preferences,
@@ -66,6 +68,7 @@ public class NoSurfRepository {
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
         clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
+        executor = InsertClickedPostIdThreadPoolExecutor.getInstance(clickedPostIdDao);
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -398,21 +401,7 @@ public class NoSurfRepository {
     // region room methods and classes -------------------------------------------------------------
 
     public void insertClickedPostId(ClickedPostId id) {
-        new InsertAsyncTask(clickedPostIdDao).execute(id);
-    }
-
-    private static class InsertAsyncTask extends AsyncTask<ClickedPostId, Void, Void> {
-        private final ClickedPostIdDao asyncTaskDao;
-
-        InsertAsyncTask(ClickedPostIdDao dao) {
-            asyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final ClickedPostId... params) {
-            asyncTaskDao.insertClickedPostId(params[0]);
-            return null;
-        }
+        executor.insertClickedPostId(id);
     }
 
     // endregion room methods and classes ----------------------------------------------------------
