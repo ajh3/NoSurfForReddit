@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
+import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
+import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -25,8 +27,11 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    NoSurfRepository provideNoSurfRepository(Retrofit retrofit, @Named("oAuthSharedPrefs") SharedPreferences preferences, ClickedPostIdRoomDatabase db) {
-        return new NoSurfRepository(retrofit, preferences, db);
+    NoSurfRepository provideNoSurfRepository(Retrofit retrofit,
+                                             @Named("oAuthSharedPrefs") SharedPreferences preferences,
+                                             ClickedPostIdRoomDatabase db,
+                                             InsertClickedPostIdThreadPoolExecutor executor) {
+        return new NoSurfRepository(retrofit, preferences, db, executor);
     }
 
     @Singleton
@@ -51,7 +56,14 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    ClickedPostIdRoomDatabase provideReadPostIdRoomDatabase() {
+    ClickedPostIdRoomDatabase provideClickedPostIdRoomDatabase() {
         return ClickedPostIdRoomDatabase.getDatabase(application);
+    }
+
+    @Singleton
+    @Provides
+    InsertClickedPostIdThreadPoolExecutor provideInsertClickedPostIdThreadPoolExecutor() {
+         //TODO: should this class be converted to use a regular public constructor?
+        return InsertClickedPostIdThreadPoolExecutor.getInstance();
     }
 }

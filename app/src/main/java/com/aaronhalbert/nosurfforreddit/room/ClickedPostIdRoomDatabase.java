@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.room;
 
 import android.app.Application;
-import android.os.AsyncTask;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -24,7 +23,7 @@ public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
                             "clicked_post_id_database")
                             // Wipes and rebuilds instead of migrating if no Migration object.
                             .fallbackToDestructiveMigration()
-                            .addCallback(clickedPostIdRoomDatabaseCallback)
+                            //.addCallback(clickedPostIdRoomDatabaseCallback)
                             .build();
                 }
             }
@@ -32,28 +31,12 @@ public abstract class ClickedPostIdRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    // called once, when the DB is first created
+    // called once when the DB is first created, if addCallback is called above
     private static final RoomDatabase.Callback clickedPostIdRoomDatabaseCallback = new RoomDatabase.Callback(){
         @Override
         public void onCreate (SupportSQLiteDatabase db){
             super.onCreate(db);
-            //new InitDbAsyncTask(INSTANCE).execute();
+            //do work on background thread here
         }
     };
-
-    private static class InitDbAsyncTask extends AsyncTask<Void, Void, Void> {
-        private final ClickedPostIdDao dao;
-
-        InitDbAsyncTask(ClickedPostIdRoomDatabase db) {
-            dao = db.clickedPostIdDao();
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            // empty placeholder for now
-            // make calls here on the dao reference variable
-
-            return null;
-        }
-    }
 }

@@ -63,12 +63,13 @@ public class NoSurfRepository {
 
     public NoSurfRepository(Retrofit retrofit,
                             SharedPreferences preferences,
-                            ClickedPostIdRoomDatabase db) {
+                            ClickedPostIdRoomDatabase db,
+                            InsertClickedPostIdThreadPoolExecutor executor) {
         this.preferences = preferences;
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
         clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
-        executor = InsertClickedPostIdThreadPoolExecutor.getInstance(clickedPostIdDao);
+        this.executor = executor;
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -401,7 +402,7 @@ public class NoSurfRepository {
     // region room methods and classes -------------------------------------------------------------
 
     public void insertClickedPostId(ClickedPostId id) {
-        executor.insertClickedPostId(id);
+        executor.insertClickedPostId(clickedPostIdDao, id);
     }
 
     // endregion room methods and classes ----------------------------------------------------------
