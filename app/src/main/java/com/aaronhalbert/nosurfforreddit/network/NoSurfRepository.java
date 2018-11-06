@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.text.Spanned;
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
@@ -83,7 +82,6 @@ public class NoSurfRepository {
 
     // event feeds
     private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
-    private final SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvents = new SingleLiveEvent<>();
 
     private final RetrofitInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
@@ -339,7 +337,6 @@ public class NoSurfRepository {
                         fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else {
                         commentsRawLiveData.setValue(response.body());
-                        dispatchCommentsLiveDataChangedEvent();
                     }
                 }
 
@@ -429,6 +426,9 @@ public class NoSurfRepository {
             } else { //if zero comments
                 commentsViewState = new CommentsViewState(0);
             }
+
+            commentsViewState.id = getCommentId(input);
+
             return commentsViewState;
         });
     }
@@ -626,6 +626,16 @@ public class NoSurfRepository {
                 .getScore();
     }
 
+    private String getCommentId(List<Listing> input) {
+        return input
+                .get(0)
+                .getData()
+                .getChildren()
+                .get(0)
+                .getData()
+                .getId();
+    }
+
     private String formatCommentDetails(String commentAuthor, int commentScore) {
         return USER_ABBREVIATION
                 + commentAuthor
@@ -663,17 +673,7 @@ public class NoSurfRepository {
 
     // region event handling -----------------------------------------------------------------------
 
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvents() {
-        return commentsFinishedLoadingLiveEvents;
-    }
-
-    private void dispatchCommentsLiveDataChangedEvent() {
-        commentsFinishedLoadingLiveEvents.setValue(true);
-    }
-
-    public void consumeCommentsLiveDataChangedEvent() {
-        commentsFinishedLoadingLiveEvents.setValue(false);
-    }
+    // EMPTY
 
     //endregion event handling ---------------------------------------------------------------------
 

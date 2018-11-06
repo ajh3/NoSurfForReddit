@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,12 +9,14 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
@@ -100,7 +103,7 @@ abstract public class PostFragment extends BaseFragment {
 
     // region getter methods -----------------------------------------------------------------------
 
-    // for data binding class
+    // expose this for the data binding class
     public LiveData<PostsViewState> getPostsViewStateLiveData() {
         return postsViewStateLiveData;
     }
@@ -136,15 +139,12 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void observeCommentsFinishedLoadingLiveEvent() {
-
-        viewModel.getCommentsFinishedLoadingLiveEvents().observe(this, aBoolean -> {
-
-            if (aBoolean) {
-                if (viewModel.getCommentsViewStateLiveData().getValue() != null) {
-
+        viewModel.getCommentsViewStateLiveData().observe(this, new Observer<CommentsViewState>() {
+            @Override
+            public void onChanged(CommentsViewState commentsViewState) {
+                if (lastClickedPostId.equals(commentsViewState.id)) {
                     updateViewVisibilities();
 
-                    viewModel.consumeCommentsLiveDataChangedEvent();
                     commentsAlreadyLoaded = true;
                 }
             }

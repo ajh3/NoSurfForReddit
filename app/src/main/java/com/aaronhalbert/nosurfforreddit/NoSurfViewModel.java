@@ -64,13 +64,7 @@ public class NoSurfViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
-    public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvents() {
-        return repository.getCommentsFinishedLoadingLiveEvents();
-    }
-
-    public void consumeCommentsLiveDataChangedEvent() {
-        repository.consumeCommentsLiveDataChangedEvent();
-    }
+    // EMPTY
 
     // endregion event handling --------------------------------------------------------------------
 

@@ -7,6 +7,7 @@ public class CommentsViewState {
     public final int numComments;
     public final Spanned[] commentBodies;
     public final String[] commentDetails;
+    public String id = "";
 
     public CommentsViewState(int numComments) {
         this.numComments = numComments;
