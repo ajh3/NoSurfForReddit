@@ -34,14 +34,17 @@ public class NoSurfViewModel extends ViewModel {
 
     private final NoSurfRepository repository;
 
+    // these 3 LiveData feed the UI and have public getters
     private final LiveData<PostsViewState> mergedAllPostsLiveDataViewState;
     private final LiveData<PostsViewState> mergedSubscribedPostsLiveDataViewState;
     private final LiveData<CommentsViewState> commentsLiveDataViewState;
 
+    // helper fields used to construct the LiveData that feed the UI
     private final PostsViewState mergedAllPostsCache = new PostsViewState();
     private final PostsViewState mergedSubscribedPostsCache = new PostsViewState();
-
     private String[] clickedPostIdsCache = new String[25];
+
+    // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
 
     public NoSurfViewModel(NoSurfRepository repository) {
@@ -54,6 +57,9 @@ public class NoSurfViewModel extends ViewModel {
         fetchAllPostsASync();
         fetchSubscribedPostsASync();
     }
+
+    /* NOTE: refer to NoSurfRepository.java for documentation on all methods being called
+     * in the repository */
 
     // region network auth calls -------------------------------------------------------------------
 
@@ -81,6 +87,9 @@ public class NoSurfViewModel extends ViewModel {
 
     // region init/de-init methods -----------------------------------------------------------------
 
+    /* Application and ViewModel continue to function normally while user is logged out;
+     * but user is limited to viewing posts and comments from r/all. Functionality related
+     * to Subscribed posts is disabled */
     public void logUserOut() {
         repository.setUserLoggedOut();
     }
@@ -187,6 +196,12 @@ public class NoSurfViewModel extends ViewModel {
         });
     }
 
+    /* Cleans dirty/raw post data from the Reddit API
+     *
+     * Note that this is only "stage 1" - the resulting object is not fed directly to the UI.
+     * Instead the result here is piped into mergeClickedPostIdsWithPostsViewState, which is
+     * "stage 2" and creates a final UI-ready object that knows which posts have already been
+     *  clicked */
     private LiveData<PostsViewState> buildPostsViewState(boolean isSubscribedPosts) {
         LiveData<Listing> postsLiveData;
 
@@ -229,6 +244,10 @@ public class NoSurfViewModel extends ViewModel {
         });
     }
 
+    /* "Stage 2" of viewstate preparation, in which cleaned post data returned by
+     * buildPostsViewState is merged into a new object that also knows which posts have
+     * been clicked (accomplished by checking post IDs against post IDs that have already
+      * been written into the Room database */
     private LiveData<PostsViewState> mergeClickedPostIdsWithPostsViewState(boolean isSubscribedPosts){
         final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
 
@@ -267,6 +286,8 @@ public class NoSurfViewModel extends ViewModel {
     // endregion viewstate Transformations ---------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
+
+    /* These primarily exist to help the Transformation methods */
 
     private void updateCachedClickedPostIds(PostsViewState postsViewStateCache, int i) {
         if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {

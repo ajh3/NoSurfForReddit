@@ -3,7 +3,6 @@ package com.aaronhalbert.nosurfforreddit.network;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
@@ -75,8 +74,8 @@ public class NoSurfRepository {
     // region network auth calls -------------------------------------------------------------------
 
     /* Logged-out (aka anonymous, aka app-only users require an anonymous token to interact with
-     * the Reddit API and view posts and comments from r/all. This token is provided by
-     * fetchAppOnlyOAuthTokenASync and requires no user credentials.
+     * the Reddit API and view public posts and comments from r/all. This token is provided by
+     * fetchAppOnlyOAuthTokenASync() and does not require any user credentials.
      *
      *  Also called to refresh this anonymous token when it expires */
     private void fetchAppOnlyOAuthTokenASync(final NetworkCallbacks callback, final String id) {
@@ -116,10 +115,10 @@ public class NoSurfRepository {
     }
 
     /* Logged-in users can view posts from their subscribed subreddits in addition to r/all,
-      * but this use case requires a user OAuth token from fetchUserOAuthTokenASync.
-      *
-      * Note that after the user is logged in, their user token is additionally used for viewing
-      * r/all, instead of the previously-fetched anonymous token */
+     * but this requires a user OAuth token, which is provided by fetchUserOAuthTokenASync().
+     *
+     * Note that after the user is logged in, their user token is now also used for viewing
+     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
     public void fetchUserOAuthTokenASync(String code) {
         ri.fetchUserOAuthTokenASync(
                 OAUTH_BASE_URL,
@@ -208,9 +207,16 @@ public class NoSurfRepository {
             if (!"".equals(appOnlyOAuthToken)) {
                 accessToken = appOnlyOAuthToken;
             } else {
-                /* garbage value ensures the below call gets a 401 error and thus executes
-                 * fetchAppOnlyOAuthTokenASync and its callback in the right order, instead
-                 * of the call failing */
+                /* If user is logged out and there's no app only OAuth token in the cache,
+                 * we need to fetch one.
+                 *
+                 * However, if a blank accessToken is sent to the server, we get back a 200 (OK)
+                 * status code but with no data, which results in onFailure. To hack around this,
+                 * we assign a garbage value to accessToken which ensures the below call gets a 401
+                 * error instead of 200 and thus executes fetchAppOnlyOAuthTokenASync and its
+                 * callback in the right order, instead of the call failing
+                 *
+                 * Dirty hack but simplifies the logic in onResponse */
                 //TODO: fix this w/ RxJava
                 accessToken = "xyz";
             }
@@ -225,7 +231,7 @@ public class NoSurfRepository {
              * token has been refreshed
              *
              * I use callbacks this way to "react" to expired tokens instead of running some
-             * background "timer" task that refreshes them every X minutes */
+             * background timer task that refreshes them every X minutes */
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
                 if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
@@ -272,7 +278,7 @@ public class NoSurfRepository {
         }
     }
 
-    /* get a post's comments; works for either logged-in or logged-out users */
+    /* get a post's comments; works for both logged-in and logged-out users */
     public void fetchPostCommentsASync(final String id) {
 
         //noinspection StatementWithEmptyBody
@@ -333,7 +339,7 @@ public class NoSurfRepository {
         if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
             setUserLoggedIn();
         } else {
-            // need to explicitly call this so ContainerFragment knows how to set itself up
+            // need to explicitly call this here to help ContainerFragment set itself up
             setUserLoggedOut();
         }
     }
