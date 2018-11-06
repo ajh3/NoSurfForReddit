@@ -1,11 +1,15 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
+import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.content.SharedPreferences;
+import android.text.Spanned;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.SingleLiveEvent;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
@@ -13,9 +17,13 @@ import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
 import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
+import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
+import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import java.util.Arrays;
 import java.util.List;
 
+import androidx.lifecycle.Transformations;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,20 +47,42 @@ public class NoSurfRepository {
     private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
+    private static final String USER_ABBREVIATION = "u/";
+    private static final String BULLET_POINT = " \u2022 ";
+    private static final String AUTO_MODERATOR = "AutoModerator";
+    private static final String LINK_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
+    private static final String SELF_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
+    private static final String LINK_POST_NSFW_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
+    private static final String DEFAULT = "default";
+    private static final String SELF = "self";
+    private static final String NSFW = "nsfw";
+    private static final String IMAGE = "image";
     private static final int RESPONSE_CODE_401 = 401;
 
-    // caches let us keep working during asynchronous writes to SharedPrefs
+    // caches to let us keep working during asynchronous writes to SharedPrefs
     private String userOAuthAccessTokenCache = "";
     private String userOAuthRefreshTokenCache = "";
-    private String appOnlyOAuthToken = "";
+    private String appOnlyOAuthTokenCache = "";
     private boolean isUserLoggedInCache;
 
-    private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
-    private final MutableLiveData<Listing> allPostsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Listing> subscribedPostsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Listing>> commentsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+    // these 3 "raw" LiveData come straight from the Reddit API; only used internally in repo
+    private final MutableLiveData<Listing> allPostsRawLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Listing> subscribedPostsRawLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Listing>> commentsRawLiveData = new MutableLiveData<>();
 
+    // helper fields used to transform raw live LiveData into clean viewstates that feed the UI
+    private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
+    private final PostsViewState mergedAllPostsCache = new PostsViewState();
+    private final PostsViewState mergedSubscribedPostsCache = new PostsViewState();
+    private String[] clickedPostIdsCache = new String[25];
+
+    // these 3 "cleaned" LiveData feed the UI and have public getters
+    private final LiveData<PostsViewState> allPostsViewStateLiveData;
+    private final LiveData<PostsViewState> subscribedPostsViewStateLiveData;
+    private final LiveData<CommentsViewState> commentsViewStateLiveData;
+
+    // event feeds
+    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
     private final SingleLiveEvent<Boolean> commentsFinishedLoadingLiveEvents = new SingleLiveEvent<>();
 
     private final RetrofitInterface ri;
@@ -69,6 +99,10 @@ public class NoSurfRepository {
         clickedPostIdDao = db.clickedPostIdDao();
         clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
         this.executor = executor;
+
+        allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
+        subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
+        commentsViewStateLiveData = cleanCommentsRawLiveData();
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -89,7 +123,7 @@ public class NoSurfRepository {
             @Override
             public void onResponse(Call<AppOnlyOAuthToken> call,
                                    Response<AppOnlyOAuthToken> response) {
-                appOnlyOAuthToken = response.body().getAccessToken();
+                appOnlyOAuthTokenCache = response.body().getAccessToken();
                 // don't bother saving this ephemeral token into sharedprefs
 
                 switch (callback) {
@@ -204,8 +238,8 @@ public class NoSurfRepository {
         if (isUserLoggedInCache) {
             accessToken = userOAuthAccessTokenCache;
         } else {
-            if (!"".equals(appOnlyOAuthToken)) {
-                accessToken = appOnlyOAuthToken;
+            if (!"".equals(appOnlyOAuthTokenCache)) {
+                accessToken = appOnlyOAuthTokenCache;
             } else {
                 /* If user is logged out and there's no app only OAuth token in the cache,
                  * we need to fetch one.
@@ -239,7 +273,7 @@ public class NoSurfRepository {
                 } else if (response.code() == RESPONSE_CODE_401) {
                     fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                 } else {
-                    allPostsLiveData.setValue(response.body());
+                    allPostsRawLiveData.setValue(response.body());
                 }
             }
 
@@ -264,7 +298,7 @@ public class NoSurfRepository {
                     if (response.code() == RESPONSE_CODE_401) {
                         refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
                     } else {
-                        subscribedPostsLiveData.setValue(response.body());
+                        subscribedPostsRawLiveData.setValue(response.body());
                     }
                 }
 
@@ -289,7 +323,7 @@ public class NoSurfRepository {
             if (isUserLoggedInCache) {
                 accessToken = userOAuthAccessTokenCache;
             } else {
-                accessToken = appOnlyOAuthToken;
+                accessToken = appOnlyOAuthTokenCache;
             }
 
             bearerAuth = BEARER + accessToken;
@@ -304,7 +338,7 @@ public class NoSurfRepository {
                     } else if (response.code() == RESPONSE_CODE_401) {
                         fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else {
-                        commentsLiveData.setValue(response.body());
+                        commentsRawLiveData.setValue(response.body());
                         dispatchCommentsLiveDataChangedEvent();
                     }
                 }
@@ -365,6 +399,268 @@ public class NoSurfRepository {
 
     // endregion init/de-init methods --------------------------------------------------------------
 
+    // region viewstate Transformations ------------------------------------------------------------
+
+    private LiveData<CommentsViewState> cleanCommentsRawLiveData() {
+        return Transformations.map(commentsRawLiveData, input -> {
+            CommentsViewState commentsViewState;
+            int autoModOffset;
+
+            //check if there is at least 1 comment
+            if (getNumTopLevelComments(input) > 0) {
+
+                //calculate the number of valid comments after checking for & excluding AutoMod
+                autoModOffset = calculateAutoModOffset(input);
+                int numComments = getNumTopLevelComments(input) - autoModOffset;
+
+                // only display first 3 top-level comments
+                if (numComments > 3) numComments = 3;
+
+                commentsViewState = new CommentsViewState(numComments);
+
+                // construct the viewstate object
+                for (int i = 0; i < numComments; i++) {
+                    String commentAuthor = getCommentAuthor(input, autoModOffset + i);
+                    int commentScore = getCommentScore(input, autoModOffset, i);
+
+                    commentsViewState.commentBodies[i] = formatCommentBodyHtml(input, autoModOffset, i);
+                    commentsViewState.commentDetails[i] = formatCommentDetails(commentAuthor, commentScore);
+                }
+            } else { //if zero comments
+                commentsViewState = new CommentsViewState(0);
+            }
+            return commentsViewState;
+        });
+    }
+
+    /* Cleans dirty/raw post data from the Reddit API
+     *
+     * Note that this is only "stage 1" - the resulting object is not ready for the UI.
+     * Instead the result here is piped into mergeClickedPostIdsWithCleanedPostsRawLiveData, which
+     * is"stage 2" and creates a UI-ready object that knows which posts have already been
+     *  clicked */
+    private LiveData<PostsViewState> cleanPostsRawLiveData(boolean isSubscribedPosts) {
+        LiveData<Listing> postsLiveData;
+
+        if (isSubscribedPosts) {
+            postsLiveData = subscribedPostsRawLiveData;
+        } else {
+            postsLiveData = allPostsRawLiveData;
+        }
+
+        return Transformations.map(postsLiveData, input -> {
+            PostsViewState postsViewState = new PostsViewState();
+
+            for (int i = 0; i < 25; i++) {
+                PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+
+                Data_ data = input.getData().getChildren().get(i).getData();
+
+                // both link posts and self posts share these attributes
+                postDatum.isSelf = data.isIsSelf();
+                postDatum.id = data.getId();
+                postDatum.title = (decodeHtml(data.getTitle()).toString()); // some titles contain HTML special entities
+                postDatum.author = data.getAuthor();
+                postDatum.subreddit = data.getSubreddit();
+                postDatum.score = data.getScore();
+                postDatum.numComments = data.getNumComments();
+                postDatum.thumbnailUrl = pickThumbnailUrl(data.getThumbnail());
+
+                // assign link- and self-post specific attributes
+                if (postDatum.isSelf) {
+                    postDatum.selfTextHtml = formatSelfPostSelfTextHtml(data.getSelfTextHtml());
+                } else {
+                    postDatum.url = decodeHtml(data.getUrl()).toString();
+                    postDatum.imageUrl = pickImageUrl(input, i);
+                }
+
+                postsViewState.postData.set(i, postDatum);
+            }
+
+            return postsViewState;
+        });
+    }
+
+    /* "Stage 2" of viewstate preparation, in which cleaned post data returned by
+     * cleanPostsRawLiveData is merged into a new object that also knows which posts have
+     * been clicked (accomplished by checking post IDs against post IDs that have already
+     * been written into the Room database */
+    private LiveData<PostsViewState> mergeClickedPostIdsWithCleanedPostsRawLiveData(boolean isSubscribedPosts){
+        final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
+
+        LiveData<PostsViewState> postsLiveDataViewState;
+        PostsViewState postsViewStateCache;
+
+        if (isSubscribedPosts) {
+            postsLiveDataViewState = cleanPostsRawLiveData(true);
+            postsViewStateCache = mergedSubscribedPostsCache;
+        } else {
+            postsLiveDataViewState = cleanPostsRawLiveData(false);
+            postsViewStateCache = mergedAllPostsCache;
+        }
+
+        mediator.addSource(postsLiveDataViewState, postsViewState -> {
+            for (int i = 0; i < 25; i++) {
+                postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
+
+                updateCachedClickedPostIds(postsViewStateCache, i);
+            }
+
+            mediator.setValue(postsViewStateCache);
+        });
+
+        mediator.addSource(getClickedPostIdsLiveData(), strings -> {
+            clickedPostIdsCache = strings;
+
+            for (int i = 0; i < 25; i++) {
+                updateCachedClickedPostIds(postsViewStateCache, i);
+            }
+        });
+
+        return mediator;
+    }
+
+    // endregion viewstate Transformations ---------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
+
+    /* These are mostly data cleaning routines that get applied against the raw data from
+     * the Reddit API */
+
+    private void updateCachedClickedPostIds(PostsViewState postsViewStateCache, int i) {
+        if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {
+            postsViewStateCache.hasBeenClicked[i] = true;
+        }
+    }
+
+    // Reddit API provides twice-encoded HTML... ¯\_(ツ)_/¯
+    private String formatSelfPostSelfTextHtml(String twiceEncodedSelfTextHtml) {
+        if ((twiceEncodedSelfTextHtml != null) && (!"".equals(twiceEncodedSelfTextHtml))) {
+            String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
+            String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
+            return (String) trimTrailingWhitespace(decodedSelfTextHtml);
+        } else {
+            return "";
+        }
+    }
+
+    private Spanned formatCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
+        String unescaped = getCommentBodyHtml(input, autoModOffset, i);
+        Spanned escaped = decodeHtml(unescaped);
+
+        return (Spanned) trimTrailingWhitespace(escaped);
+    }
+
+    private String pickImageUrl(Listing input, int i) {
+        Data_ data = input.getData().getChildren().get(i).getData();
+
+        if (data.getPreview() == null) {
+            return LINK_POST_DEFAULT_THUMBNAIL;
+        } else {
+            String encodedImageUrl = data
+                    .getPreview()
+                    .getImages()
+                    .get(0)
+                    .getSource()
+                    .getUrl();
+            return decodeHtml(encodedImageUrl).toString();
+        }
+    }
+
+    private String pickThumbnailUrl(String encodedThumbnailUrl) {
+        String thumbnailUrl;
+
+        switch (encodedThumbnailUrl) {
+            case DEFAULT:
+                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                break;
+            case SELF:
+                thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
+                break;
+            case NSFW:
+                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                break;
+            case IMAGE:
+                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                break;
+            default:
+                thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
+                break;
+        }
+        return thumbnailUrl;
+    }
+
+    private int getNumTopLevelComments(List<Listing> input) {
+        return input.get(1).getData().getChildren().size();
+    }
+
+    private boolean isFirstCommentByAutoMod(List<Listing> input) {
+        return (getCommentAuthor(input, 0)).equals(AUTO_MODERATOR);
+    }
+
+    private int calculateAutoModOffset(List<Listing> input) {
+        if (isFirstCommentByAutoMod(input)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private String getCommentAuthor(List<Listing> input, int i) {
+        return input
+                .get(1)
+                .getData()
+                .getChildren()
+                .get(i)
+                .getData()
+                .getAuthor();
+    }
+
+    private int getCommentScore(List<Listing> input, int autoModOffset, int i) {
+        return input
+                .get(1)
+                .getData()
+                .getChildren()
+                .get(autoModOffset + i)
+                .getData()
+                .getScore();
+    }
+
+    private String formatCommentDetails(String commentAuthor, int commentScore) {
+        return USER_ABBREVIATION
+                + commentAuthor
+                + BULLET_POINT
+                + Integer.toString(commentScore);
+    }
+
+    private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
+        Data_ data = input.get(1)
+                .getData()
+                .getChildren()
+                .get(autoModOffset + i)
+                .getData();
+
+        return decodeHtml(data.getBodyHtml()).toString();
+    }
+
+    private Spanned decodeHtml(String encoded) {
+        return HtmlCompat.fromHtml(encoded, HtmlCompat.FROM_HTML_MODE_LEGACY);
+    }
+
+    private CharSequence trimTrailingWhitespace(CharSequence source) {
+        if (source == null) return "";
+
+        int i = source.length();
+
+        //decrement i and check if that character is whitespace
+        do { --i; } while (i >= 0 && Character.isWhitespace(source.charAt(i)));
+
+        //tick i up by 1 to return the full non-whitespace sequence
+        return source.subSequence(0, i+1);
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
+
     // region event handling -----------------------------------------------------------------------
 
     public SingleLiveEvent<Boolean> getCommentsFinishedLoadingLiveEvents() {
@@ -383,24 +679,20 @@ public class NoSurfRepository {
 
     // region getter methods -----------------------------------------------------------------------
 
-    public LiveData<Listing> getAllPostsLiveData() {
-        return allPostsLiveData;
-    }
-
-    public LiveData<Listing> getSubscribedPostsLiveData() {
-        return subscribedPostsLiveData;
-    }
-
-    public LiveData<List<Listing>> getCommentsLiveData() {
-        return commentsLiveData;
-    }
-
     public LiveData<Boolean> getIsUserLoggedInLiveData() {
         return isUserLoggedInLiveData;
     }
 
-    public LiveData<List<ClickedPostId>> getClickedPostIdsLiveData() {
-        return clickedPostIdsLiveData;
+    public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
+        return allPostsViewStateLiveData;
+    }
+
+    public LiveData<PostsViewState> getSubscribedPostsViewStateLiveData() {
+        return subscribedPostsViewStateLiveData;
+    }
+
+    public LiveData<CommentsViewState> getCommentsViewStateLiveData() {
+        return commentsViewStateLiveData;
     }
 
     // endregion getter methods --------------------------------------------------------------------
@@ -409,6 +701,21 @@ public class NoSurfRepository {
 
     public void insertClickedPostId(ClickedPostId id) {
         executor.insertClickedPostId(clickedPostIdDao, id);
+    }
+
+    // returns the list of clicked post IDs stored in the Room database
+    private LiveData<String[]> getClickedPostIdsLiveData() {
+        return Transformations.map(clickedPostIdsLiveData, input -> {
+            int size = input.size();
+
+            String[] clickedPostIds = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                clickedPostIds[i] = input.get(i).getClickedPostId();
+            }
+
+            return clickedPostIds;
+        });
     }
 
     // endregion room methods and classes ----------------------------------------------------------

@@ -36,7 +36,7 @@ abstract public class PostFragment extends BaseFragment {
     private boolean commentsAlreadyLoaded;
     private PostFragmentInteractionListener postFragmentInteractionListener;
     private NoSurfViewModel viewModel;
-    LiveData<PostsViewState> postsLiveDataViewState;
+    LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
     @SuppressWarnings("WeakerAccess")
@@ -85,7 +85,7 @@ abstract public class PostFragment extends BaseFragment {
     // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
-        String url = postsLiveDataViewState.getValue().postData.get(lastClickedPostPosition).url;
+        String url = postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition).url;
 
         if (postFragmentInteractionListener != null) {
             if (externalBrowser) {
@@ -101,8 +101,8 @@ abstract public class PostFragment extends BaseFragment {
     // region getter methods -----------------------------------------------------------------------
 
     // for data binding class
-    public LiveData<PostsViewState> getPostsLiveDataViewState() {
-        return postsLiveDataViewState;
+    public LiveData<PostsViewState> getPostsViewStateLiveData() {
+        return postsViewStateLiveData;
     }
 
     // endregion getter methods --------------------------------------------------------------------
@@ -140,7 +140,7 @@ abstract public class PostFragment extends BaseFragment {
         viewModel.getCommentsFinishedLoadingLiveEvents().observe(this, aBoolean -> {
 
             if (aBoolean) {
-                if (viewModel.getCommentsLiveDataViewState().getValue() != null) {
+                if (viewModel.getCommentsViewStateLiveData().getValue() != null) {
 
                     updateViewVisibilities();
 
@@ -162,7 +162,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void updateViewVisibilities() {
-        int numComments = viewModel.getCommentsLiveDataViewState().getValue().numComments;
+        int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
 
         for (int i = 0; i < numComments; i++) {
             comments[i].setVisibility(View.VISIBLE);
@@ -183,9 +183,9 @@ abstract public class PostFragment extends BaseFragment {
         lastClickedPostId = lastClickedPostMetadata.getLastClickedPostId();
 
         if (lastClickedPostMetadata.isLastClickedPostIsSubscribed()) {
-            postsLiveDataViewState = viewModel.getMergedSubscribedPostsLiveDataViewState();
+            postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
         } else {
-            postsLiveDataViewState = viewModel.getMergedAllPostsLiveDataViewState();
+            postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
         }
     }
 

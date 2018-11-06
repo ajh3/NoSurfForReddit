@@ -19,7 +19,7 @@ public class AllPostsFragment extends PostsFragment {
 
     @Override
     void setPostsLiveDataViewState() {
-        postsLiveDataViewState = viewModel.getMergedAllPostsLiveDataViewState();
+        postsLiveDataViewState = viewModel.getAllPostsViewStateLiveData();
     }
 
     @Override

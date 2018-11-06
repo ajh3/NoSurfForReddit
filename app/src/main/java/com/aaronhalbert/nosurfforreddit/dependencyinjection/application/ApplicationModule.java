@@ -63,7 +63,6 @@ public class ApplicationModule {
     @Singleton
     @Provides
     InsertClickedPostIdThreadPoolExecutor provideInsertClickedPostIdThreadPoolExecutor() {
-         //TODO: should this class be converted to use a regular public constructor?
-        return InsertClickedPostIdThreadPoolExecutor.getInstance();
+        return new InsertClickedPostIdThreadPoolExecutor();
     }
 }

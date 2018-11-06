@@ -15,9 +15,7 @@ public class InsertClickedPostIdThreadPoolExecutor {
     private static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
     private final ThreadPoolExecutor threadPoolExecutor;
 
-    private static InsertClickedPostIdThreadPoolExecutor instance;
-
-    private InsertClickedPostIdThreadPoolExecutor() {
+    public InsertClickedPostIdThreadPoolExecutor() {
         threadPoolExecutor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE,
                 MAXIMUM_POOL_SIZE,
@@ -30,13 +28,5 @@ public class InsertClickedPostIdThreadPoolExecutor {
         Runnable runnable = () -> clickedPostIdDao.insertClickedPostId(id);
 
         threadPoolExecutor.execute(runnable);
-    }
-
-    public static InsertClickedPostIdThreadPoolExecutor getInstance() {
-        if (instance == null) {
-            instance = new InsertClickedPostIdThreadPoolExecutor();
-        }
-
-        return instance;
     }
 }
