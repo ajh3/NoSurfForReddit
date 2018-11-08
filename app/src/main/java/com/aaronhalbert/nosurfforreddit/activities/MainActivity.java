@@ -2,8 +2,10 @@ package com.aaronhalbert.nosurfforreddit.activities;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,6 +21,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
@@ -31,6 +34,7 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
 import java.util.UUID;
 
@@ -64,6 +68,7 @@ public class MainActivity extends BaseActivity implements
     private static final String ACCESS_DENIED_ERROR_CODE = "access_denied";
     private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
+    private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
     @SuppressWarnings("WeakerAccess")
     @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
@@ -101,6 +106,8 @@ public class MainActivity extends BaseActivity implements
                             TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
+
+        subscribeToNetworkErrors();
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -202,6 +209,16 @@ public class MainActivity extends BaseActivity implements
     // endregion app navigation --------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
+
+    private void subscribeToNetworkErrors() {
+        viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
+            NoSurfRepository.NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
+
+            if (n != null) {
+                Toast.makeText(getApplicationContext(), NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     private String generateRandomAlphaNumericString() {
         return UUID.randomUUID().toString();

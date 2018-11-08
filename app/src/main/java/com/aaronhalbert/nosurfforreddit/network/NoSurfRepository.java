@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.text.Spanned;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
@@ -27,6 +28,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.USER_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
 
 public class NoSurfRepository {
     private static final String APP_ONLY_GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
@@ -80,8 +89,11 @@ public class NoSurfRepository {
     private final LiveData<PostsViewState> subscribedPostsViewStateLiveData;
     private final LiveData<CommentsViewState> commentsViewStateLiveData;
 
-    // event feeds
+    // user login status
     private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+
+    // event feeds
+    private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
 
     private final RetrofitInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
@@ -142,6 +154,7 @@ public class NoSurfRepository {
             @Override
             public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
                 Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
+                setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
             }
         });
     }
@@ -180,6 +193,7 @@ public class NoSurfRepository {
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
                 Log.e(getClass().toString(), USER_AUTH_CALL_FAILED);
+                setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
             }
         });
     }
@@ -219,6 +233,7 @@ public class NoSurfRepository {
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
                 Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
+                setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
             }
         });
     }
@@ -278,6 +293,7 @@ public class NoSurfRepository {
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
                 Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + t.toString());
+                setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
             }
         });
     }
@@ -303,6 +319,7 @@ public class NoSurfRepository {
                 @Override
                 public void onFailure(Call<Listing> call, Throwable t) {
                     Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED + t.toString());
+                    setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
                 }
             });
         } else {
@@ -343,6 +360,7 @@ public class NoSurfRepository {
                 @Override
                 public void onFailure(Call<List<Listing>> call, Throwable t) {
                     Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + t.toString());
+                    setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
                 }
             });
         } else {
@@ -673,7 +691,13 @@ public class NoSurfRepository {
 
     // region event handling -----------------------------------------------------------------------
 
-    // EMPTY
+    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
+        networkErrorsLiveData.setValue(n);
+    }
+
+    public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
+        return networkErrorsLiveData;
+    }
 
     //endregion event handling ---------------------------------------------------------------------
 
@@ -726,6 +750,15 @@ public class NoSurfRepository {
         FETCH_ALL_POSTS_ASYNC,
         FETCH_POST_COMMENTS_ASYNC,
         FETCH_SUBSCRIBED_POSTS_ASYNC
+    }
+
+    public enum NetworkErrors {
+        FETCH_ALL_POSTS_ERROR,
+        FETCH_POST_COMMENTS_ERROR,
+        FETCH_SUBSCRIBED_POSTS_ERROR,
+        APP_ONLY_AUTH_CALL_ERROR,
+        USER_AUTH_CALL_ERROR,
+        REFRESH_AUTH_CALL_ERROR
     }
 
     // endregion enums -----------------------------------------------------------------------------

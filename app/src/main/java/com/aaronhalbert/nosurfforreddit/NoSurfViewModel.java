@@ -64,7 +64,9 @@ public class NoSurfViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
-    // EMPTY
+    public LiveData<Event<NoSurfRepository.NetworkErrors>> getNetworkErrorsLiveData() {
+        return repository.getNetworkErrorsLiveData();
+    }
 
     // endregion event handling --------------------------------------------------------------------
 
