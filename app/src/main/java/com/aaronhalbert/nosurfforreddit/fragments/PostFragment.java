@@ -45,7 +45,11 @@ abstract public class PostFragment extends BaseFragment {
         setHasOptionsMenu(true);
         lookupPostMetadata();
 
-        // avoid additional comments network call on config change
+        /* avoid additional comments network call on config change
+         *
+         * Could wrap the comments in an Event wrapper and handle it like navigation events,
+         * but I'm not using saved instance state for much else, so let's use the Bundle here
+         * just to mix things up */
         if (savedInstanceState != null) {
             commentsAlreadyLoaded = savedInstanceState.getBoolean(KEY_COMMENTS_ALREADY_LOADED, false);
         }
