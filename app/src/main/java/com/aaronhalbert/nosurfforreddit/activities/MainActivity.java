@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -180,9 +181,9 @@ public class MainActivity extends BaseActivity implements
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         if (amoledNightMode) {
-            getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorAmoledNightBg));
+            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg));
         } else {
-            getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorNightBg));
+            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.colorNightBg));
         }
     }
 
