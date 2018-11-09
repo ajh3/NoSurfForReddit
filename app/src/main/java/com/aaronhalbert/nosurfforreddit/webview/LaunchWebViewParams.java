@@ -1,9 +1,9 @@
 package com.aaronhalbert.nosurfforreddit.webview;
 
 public class LaunchWebViewParams {
-    private String url;
-    private String tag;
-    private boolean doAnimation;
+    private final String url;
+    private final String tag;
+    private final boolean doAnimation;
 
     public LaunchWebViewParams(String url, String tag, boolean doAnimation) {
         this.url = url;

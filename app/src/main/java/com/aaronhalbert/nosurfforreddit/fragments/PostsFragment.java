@@ -19,7 +19,7 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;

@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
@@ -124,14 +122,11 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void observeCommentsFinishedLoadingLiveEvent() {
-        viewModel.getCommentsViewStateLiveData().observe(this, new Observer<CommentsViewState>() {
-            @Override
-            public void onChanged(CommentsViewState commentsViewState) {
-                if (lastClickedPostId.equals(commentsViewState.id)) {
-                    updateViewVisibilities();
+        viewModel.getCommentsViewStateLiveData().observe(this, commentsViewState -> {
+            if (lastClickedPostId.equals(commentsViewState.id)) {
+                updateViewVisibilities();
 
-                    commentsAlreadyLoaded = true;
-                }
+                commentsAlreadyLoaded = true;
             }
         });
     }

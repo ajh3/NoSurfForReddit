@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity implements
 
     // region login/logout -------------------------------------------------------------------------
 
-    public void login() {
+    private void login() {
         final String authUrl
                 = AUTH_URL_BASE
                 + CLIENT_ID
@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity implements
         launchWebView(new LaunchWebViewParams(authUrl, TAG_WEBVIEW_LOGIN_FRAGMENT, true));
     }
 
-    public void logout() {
+    private void logout() {
         clearCookies();
         viewModel.logUserOut();
     }
@@ -331,7 +331,7 @@ public class MainActivity extends BaseActivity implements
 
     // region app navigation -----------------------------------------------------------------------
 
-    public void launchWebView(LaunchWebViewParams launchWebViewParams) {
+    private void launchWebView(LaunchWebViewParams launchWebViewParams) {
         String url = launchWebViewParams.getUrl();
         String tag = launchWebViewParams.getTag();
         boolean doAnimation = launchWebViewParams.isDoAnimation();
@@ -351,12 +351,12 @@ public class MainActivity extends BaseActivity implements
                 .commit();
     }
 
-    public void launchExternalBrowser(Uri uri) {
+    private void launchExternalBrowser(Uri uri) {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
 
-    public void launchPost() {
+    private void launchPost() {
         Fragment f;
 
         if (viewModel.getLastClickedPostMetadata().isLastClickedPostIsSelf()) {
@@ -376,7 +376,7 @@ public class MainActivity extends BaseActivity implements
                 .commit();
     }
 
-    public void launchPreferencesScreen() {
+    private void launchPreferencesScreen() {
         fm.beginTransaction()
                 .setCustomAnimations(
                         R.anim.push_up_in,
@@ -388,7 +388,7 @@ public class MainActivity extends BaseActivity implements
                 .commit();
     }
 
-    public void launchAboutScreen() {
+    private void launchAboutScreen() {
         fm.beginTransaction()
                 .setCustomAnimations(
                         R.anim.push_up_in,

@@ -2,7 +2,7 @@ package com.aaronhalbert.nosurfforreddit;
 
 public class Event<T> {
     private boolean hasBeenHandled;
-    private T content;
+    private final T content;
 
     public Event(T content) {
         this.content = content;
