@@ -91,6 +91,7 @@ public class MainActivity extends BaseActivity implements
         // the factory
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
 
+        // LiveData event subscriptions
         subscribeToNetworkErrors();
         subscribeToPostsFragmentClicks();
         subscribeToPostFragmentClicks();
@@ -173,9 +174,9 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    // calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
-    // activity to be recreated after onCreate() finishes
-    // unclear if it's expected behavior or a bug
+    /* calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
+     * activity to be recreated after onCreate() finishes
+     * unclear if it's expected behavior or a bug */
     private void nightModeOn() {
         new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -210,6 +211,10 @@ public class MainActivity extends BaseActivity implements
     // endregion helper methods --------------------------------------------------------------------
 
     // region observers/listeners ------------------------------------------------------------------
+
+    /* MainActivity is the central place for all navigation. It uses the listeners below
+     * to listen to nav events propagated via LiveData through the ViewModel, and launches fragments
+     * accordingly */
 
     private void subscribeToNetworkErrors() {
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
@@ -291,7 +296,8 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    // captures result from Reddit login page
+    // captures result from Reddit login page using custom redirect URI: nosurfforreddit://oauth
+    // intent filter is configured in manifest
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
