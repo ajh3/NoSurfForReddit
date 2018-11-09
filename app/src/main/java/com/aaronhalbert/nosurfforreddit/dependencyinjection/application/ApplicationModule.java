@@ -7,7 +7,10 @@ import android.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
-import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,7 +32,7 @@ public class ApplicationModule {
     Repository provideNoSurfRepository(Retrofit retrofit,
                                        @Named("oAuthSharedPrefs") SharedPreferences preferences,
                                        ClickedPostIdRoomDatabase db,
-                                       InsertClickedPostIdThreadPoolExecutor executor) {
+                                       ExecutorService executor) {
         return new Repository(retrofit, preferences, db, executor);
     }
 
@@ -61,7 +64,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    InsertClickedPostIdThreadPoolExecutor provideInsertClickedPostIdThreadPoolExecutor() {
-        return new InsertClickedPostIdThreadPoolExecutor();
+    ExecutorService provideExecutorService() {
+        return Executors.newSingleThreadExecutor();
     }
 }

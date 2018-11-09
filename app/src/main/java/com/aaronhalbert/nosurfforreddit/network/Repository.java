@@ -14,12 +14,12 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
-import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import androidx.lifecycle.Transformations;
 import retrofit2.Call;
@@ -86,12 +86,12 @@ public class Repository {
     private final RetrofitInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
     private final SharedPreferences preferences;
-    private final InsertClickedPostIdThreadPoolExecutor executor;
+    private final ExecutorService executor;
 
     public Repository(Retrofit retrofit,
                       SharedPreferences preferences,
                       ClickedPostIdRoomDatabase db,
-                      InsertClickedPostIdThreadPoolExecutor executor) {
+                      ExecutorService executor) {
         this.preferences = preferences;
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
@@ -573,7 +573,9 @@ public class Repository {
     // region room methods and classes -------------------------------------------------------------
 
     public void insertClickedPostId(ClickedPostId id) {
-        executor.insertClickedPostId(clickedPostIdDao, id);
+        Runnable runnable = () -> clickedPostIdDao.insertClickedPostId(id);
+
+        executor.execute(runnable);
     }
 
     // returns the list of clicked post IDs stored in the Room database
