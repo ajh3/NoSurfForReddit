@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
@@ -30,7 +31,6 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
-import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 
 import java.util.UUID;
 
@@ -213,7 +213,7 @@ public class MainActivity extends BaseActivity implements
 
     private void subscribeToNetworkErrors() {
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
-            NoSurfRepository.NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
+            Repository.NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
 
             if (n != null) {
                 Toast.makeText(getApplicationContext(), NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();

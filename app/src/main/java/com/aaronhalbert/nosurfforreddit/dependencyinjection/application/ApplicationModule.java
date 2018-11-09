@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
-import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
+import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.room.InsertClickedPostIdThreadPoolExecutor;
 
@@ -27,11 +26,11 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    NoSurfRepository provideNoSurfRepository(Retrofit retrofit,
-                                             @Named("oAuthSharedPrefs") SharedPreferences preferences,
-                                             ClickedPostIdRoomDatabase db,
-                                             InsertClickedPostIdThreadPoolExecutor executor) {
-        return new NoSurfRepository(retrofit, preferences, db, executor);
+    Repository provideNoSurfRepository(Retrofit retrofit,
+                                       @Named("oAuthSharedPrefs") SharedPreferences preferences,
+                                       ClickedPostIdRoomDatabase db,
+                                       InsertClickedPostIdThreadPoolExecutor executor) {
+        return new Repository(retrofit, preferences, db, executor);
     }
 
     @Singleton

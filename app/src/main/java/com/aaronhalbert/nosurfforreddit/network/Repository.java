@@ -30,14 +30,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.USER_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfRepository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.USER_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
 
-public class NoSurfRepository {
+public class Repository {
     private static final String APP_ONLY_GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static final String USER_GRANT_TYPE = "authorization_code";
     private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
@@ -100,10 +100,10 @@ public class NoSurfRepository {
     private final SharedPreferences preferences;
     private final InsertClickedPostIdThreadPoolExecutor executor;
 
-    public NoSurfRepository(Retrofit retrofit,
-                            SharedPreferences preferences,
-                            ClickedPostIdRoomDatabase db,
-                            InsertClickedPostIdThreadPoolExecutor executor) {
+    public Repository(Retrofit retrofit,
+                      SharedPreferences preferences,
+                      ClickedPostIdRoomDatabase db,
+                      InsertClickedPostIdThreadPoolExecutor executor) {
         this.preferences = preferences;
         ri = retrofit.create(RetrofitInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();

@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel;
 
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
-import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 public class NoSurfViewModel extends ViewModel {
-    private final NoSurfRepository repository;
+    private final Repository repository;
 
     private MutableLiveData<Event<Boolean>> postsFragmentClickEventsLiveData = new MutableLiveData<>();
     private MutableLiveData<Event<LaunchWebViewParams>> postFragmentClickEventsLiveData = new MutableLiveData<>();
@@ -25,7 +25,7 @@ public class NoSurfViewModel extends ViewModel {
     // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
 
-    public NoSurfViewModel(NoSurfRepository repository) {
+    public NoSurfViewModel(Repository repository) {
         this.repository = repository;
 
         repository.checkIfLoginCredentialsAlreadyExist();
@@ -33,7 +33,7 @@ public class NoSurfViewModel extends ViewModel {
         fetchSubscribedPostsASync();
     }
 
-    /* NOTE: refer to NoSurfRepository.java for documentation on all methods being called
+    /* NOTE: refer to Repository.java for documentation on all methods being called
      * through to the repo */
 
     // region network auth calls -------------------------------------------------------------------
@@ -73,7 +73,7 @@ public class NoSurfViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
-    public LiveData<Event<NoSurfRepository.NetworkErrors>> getNetworkErrorsLiveData() {
+    public LiveData<Event<Repository.NetworkErrors>> getNetworkErrorsLiveData() {
         return repository.getNetworkErrorsLiveData();
     }
     // no setter for network errors; they are set in repository
