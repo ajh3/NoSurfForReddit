@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
@@ -17,18 +16,15 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private static final int ITEM_COUNT = 25;
 
-    private final PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener;
     private final NoSurfViewModel viewModel;
     private final Fragment hostFragment;
     private final boolean isSubscribedPostsAdapter;
     private final LiveData<PostsViewState> postsLiveDataViewState;
 
-    public PostsAdapter(PostsFragment.PostsFragmentInteractionListener postsFragmentInteractionListener,
-                        NoSurfViewModel viewModel,
+    public PostsAdapter(NoSurfViewModel viewModel,
                         Fragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 
-        this.postsFragmentInteractionListener = postsFragmentInteractionListener;
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
@@ -90,7 +86,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                     postsLiveDataViewState.getValue().postData.get(position).isSelf,
                     isSubscribedPostsAdapter));
 
-            postsFragmentInteractionListener.launchPost();
+            viewModel.setPostsFragmentClickEventsLiveData(true);
         }
     }
 

@@ -3,29 +3,22 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.LaunchPostLinkEvent;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 abstract public class PostFragment extends BaseFragment {
-    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
 
     private final TextView[] comments = new TextView[3];
@@ -35,15 +28,10 @@ abstract public class PostFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess")
     public int lastClickedPostPosition;
     private String lastClickedPostId;
-    private boolean externalBrowser;
     private boolean commentsAlreadyLoaded;
-    private PostFragmentInteractionListener postFragmentInteractionListener;
     private NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
-
-    @SuppressWarnings("WeakerAccess")
-    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -55,7 +43,6 @@ abstract public class PostFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
 
         setHasOptionsMenu(true);
-        loadPrefs();
         lookupPostMetadata();
 
         // avoid additional comments network call on config change
@@ -90,13 +77,7 @@ abstract public class PostFragment extends BaseFragment {
     public void onImageClick(View view) {
         String url = postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition).url;
 
-        if (postFragmentInteractionListener != null) {
-            if (externalBrowser) {
-                postFragmentInteractionListener.launchExternalBrowser(Uri.parse(url));
-            } else {
-                postFragmentInteractionListener.launchWebView(url, null, false);
-            }
-        }
+        viewModel.setPostFragmentClickEventsLiveData(new LaunchPostLinkEvent(url, null, false));
     }
 
     // endregion listeners -------------------------------------------------------------------------
@@ -189,10 +170,6 @@ abstract public class PostFragment extends BaseFragment {
         }
     }
 
-    private void loadPrefs() {
-        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
-    }
-
     // endregion helper methods --------------------------------------------------------------------
 
     // region abstract methods ---------------------------------------------------------------------
@@ -200,30 +177,4 @@ abstract public class PostFragment extends BaseFragment {
     abstract void setupPostViews();
 
     // endregion abstract methods ------------------------------------------------------------------
-
-    // region interfaces ---------------------------------------------------------------------------
-
-    public interface PostFragmentInteractionListener {
-        void launchWebView(String url, String tag, boolean doAnimation);
-        void launchExternalBrowser(Uri uri);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof PostFragmentInteractionListener) {
-            postFragmentInteractionListener = (PostFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement PostFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        postFragmentInteractionListener = null;
-    }
-
-    // endregion interfaces ------------------------------------------------------------------------
 }

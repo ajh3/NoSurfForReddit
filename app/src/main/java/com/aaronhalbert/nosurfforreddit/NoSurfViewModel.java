@@ -2,8 +2,10 @@ package com.aaronhalbert.nosurfforreddit;
 
 import androidx.lifecycle.LiveData;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
@@ -12,6 +14,11 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 public class NoSurfViewModel extends ViewModel {
     private final NoSurfRepository repository;
+
+    private MutableLiveData<Event<Boolean>> postsFragmentClickEventsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<LaunchPostLinkEvent>> postFragmentClickEventsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<Boolean>> loginFragmentClickEventsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<ViewPagerFragment.ViewPagerFragmentNavigationEvents>> viewPagerFragmentClickEventsLiveData = new MutableLiveData<>();
 
     // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
@@ -66,6 +73,39 @@ public class NoSurfViewModel extends ViewModel {
 
     public LiveData<Event<NoSurfRepository.NetworkErrors>> getNetworkErrorsLiveData() {
         return repository.getNetworkErrorsLiveData();
+    }
+    // no setter for network errors; they are set in repository
+
+    public LiveData<Event<Boolean>> getPostsFragmentClickEventsLiveData() {
+        return postsFragmentClickEventsLiveData;
+    }
+
+    public void setPostsFragmentClickEventsLiveData(Boolean b) {
+        postsFragmentClickEventsLiveData.setValue(new Event<>(b));
+    }
+
+    public LiveData<Event<LaunchPostLinkEvent>> getPostFragmentClickEventsLiveData() {
+        return postFragmentClickEventsLiveData;
+    }
+
+    public void setPostFragmentClickEventsLiveData(LaunchPostLinkEvent l) {
+        postFragmentClickEventsLiveData.setValue(new Event<>(l));
+    }
+
+    public LiveData<Event<Boolean>> getLoginFragmentClickEventsLiveData() {
+        return loginFragmentClickEventsLiveData;
+    }
+
+    public void setLoginFragmentClickEventsLiveData(Boolean b) {
+        loginFragmentClickEventsLiveData.setValue(new Event<>(b));
+    }
+
+    public LiveData<Event<ViewPagerFragment.ViewPagerFragmentNavigationEvents>> getViewPagerFragmentClickEventsLiveData() {
+        return viewPagerFragmentClickEventsLiveData;
+    }
+
+    public void setViewPagerFragmentClickEventsLiveData(ViewPagerFragment.ViewPagerFragmentNavigationEvents v) {
+        viewPagerFragmentClickEventsLiveData.setValue(new Event<>(v));
     }
 
     // endregion event handling --------------------------------------------------------------------

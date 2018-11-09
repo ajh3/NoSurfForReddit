@@ -11,7 +11,6 @@ public class AllPostsFragment extends PostsFragment {
     @Override
     PostsAdapter setPostsAdapter() {
         return new PostsAdapter(
-                postsFragmentInteractionListener,
                 viewModel,
                 this,
                 false);

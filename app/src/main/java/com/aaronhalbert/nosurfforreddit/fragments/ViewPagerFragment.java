@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
@@ -19,11 +18,15 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 
+import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT;
+import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT;
+import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGIN_EVENT;
+import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGOUT_EVENT;
+
 public class ViewPagerFragment extends BaseFragment {
     private ViewPager pager;
     private NoSurfViewModel viewModel;
     private boolean isUserLoggedIn = false;
-    private ViewPagerFragmentInteractionListener viewPagerFragmentInteractionListener;
     private MenuItem loginMenuItem;
     private MenuItem logoutMenuItem;
 
@@ -124,56 +127,31 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void login() {
-        if (viewPagerFragmentInteractionListener != null) {
-            viewPagerFragmentInteractionListener.login();
-        }
+        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
     }
 
     private void logout() {
-        if (viewPagerFragmentInteractionListener != null) {
-            viewPagerFragmentInteractionListener.logout();
-        }
+        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
     }
 
     private void launchPreferencesScreen() {
-        if (viewPagerFragmentInteractionListener != null) {
-            viewPagerFragmentInteractionListener.launchPreferencesScreen();
-        }
+        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
     }
 
     private void launchAboutScreen() {
-        if (viewPagerFragmentInteractionListener != null) {
-            viewPagerFragmentInteractionListener.launchAboutScreen();
-        }
+        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
     }
 
     // endregion helper methods --------------------------------------------------------------------
 
-    // region interfaces ---------------------------------------------------------------------------
+    // region enums --------------------------------------------------------------------------------
 
-    public interface ViewPagerFragmentInteractionListener {
-        void login();
-        void logout();
-        void launchPreferencesScreen();
-        void launchAboutScreen();
+    public enum ViewPagerFragmentNavigationEvents {
+        VIEW_PAGER_FRAGMENT_LOGIN_EVENT,
+        VIEW_PAGER_FRAGMENT_LOGOUT_EVENT,
+        VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT,
+        VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ViewPagerFragmentInteractionListener) {
-            viewPagerFragmentInteractionListener = (ViewPagerFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement ViewPagerFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        viewPagerFragmentInteractionListener = null;
-    }
-
-    // endregion interfaces ------------------------------------------------------------------------
+    // endregion enums -----------------------------------------------------------------------------
 }

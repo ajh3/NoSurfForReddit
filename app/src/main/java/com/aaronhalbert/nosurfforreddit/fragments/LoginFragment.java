@@ -1,19 +1,28 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 
+import androidx.lifecycle.ViewModelProviders;
+
 public class LoginFragment extends BaseFragment {
-    private LoginFragmentInteractionListener loginFragmentInteractionListener;
+    private NoSurfViewModel viewModel;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
     }
 
     @Override
@@ -28,33 +37,6 @@ public class LoginFragment extends BaseFragment {
     }
 
     private void login() {
-        if (loginFragmentInteractionListener != null) {
-            loginFragmentInteractionListener.login();
-        }
+        viewModel.setLoginFragmentClickEventsLiveData(true);
     }
-
-    // region interfaces ---------------------------------------------------------------------------
-
-    public interface LoginFragmentInteractionListener {
-        void login();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof LoginFragmentInteractionListener) {
-            loginFragmentInteractionListener = (LoginFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement LoginFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        loginFragmentInteractionListener = null;
-    }
-
-    // endregion interfaces ------------------------------------------------------------------------
 }

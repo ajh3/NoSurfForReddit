@@ -11,7 +11,6 @@ public class SubscribedPostsFragment extends PostsFragment {
     @Override
     PostsAdapter setPostsAdapter() {
         return new PostsAdapter(
-                postsFragmentInteractionListener,
                 viewModel,
                 this,
                 true);
