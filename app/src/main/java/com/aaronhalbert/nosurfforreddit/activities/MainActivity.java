@@ -20,7 +20,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.LaunchWebViewEvent;
+import com.aaronhalbert.nosurfforreddit.LaunchWebViewParams;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity implements
                 + AUTH_URL_SCOPE
                 + SCOPE;
 
-        launchWebView(new LaunchWebViewEvent(authUrl, TAG_WEBVIEW_LOGIN_FRAGMENT, true));
+        launchWebView(new LaunchWebViewParams(authUrl, TAG_WEBVIEW_LOGIN_FRAGMENT, true));
     }
 
     public void logout() {
@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity implements
 
     private void subscribeToPostFragmentClicks() {
         viewModel.getPostFragmentClickEventsLiveData().observe(this, clickEvent -> {
-            LaunchWebViewEvent l = clickEvent.getContentIfNotHandled();
+            LaunchWebViewParams l = clickEvent.getContentIfNotHandled();
 
             if (l != null) {
                 if (externalBrowser) {
@@ -331,10 +331,10 @@ public class MainActivity extends BaseActivity implements
 
     // region app navigation -----------------------------------------------------------------------
 
-    public void launchWebView(LaunchWebViewEvent launchWebViewEvent) {
-        String url = launchWebViewEvent.getUrl();
-        String tag = launchWebViewEvent.getTag();
-        boolean doAnimation = launchWebViewEvent.isDoAnimation();
+    public void launchWebView(LaunchWebViewParams launchWebViewParams) {
+        String url = launchWebViewParams.getUrl();
+        String tag = launchWebViewParams.getTag();
+        boolean doAnimation = launchWebViewParams.isDoAnimation();
 
         FragmentTransaction ft = fm.beginTransaction();
 

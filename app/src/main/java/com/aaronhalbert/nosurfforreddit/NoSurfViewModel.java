@@ -16,7 +16,7 @@ public class NoSurfViewModel extends ViewModel {
     private final NoSurfRepository repository;
 
     private MutableLiveData<Event<Boolean>> postsFragmentClickEventsLiveData = new MutableLiveData<>();
-    private MutableLiveData<Event<LaunchWebViewEvent>> postFragmentClickEventsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<LaunchWebViewParams>> postFragmentClickEventsLiveData = new MutableLiveData<>();
     private MutableLiveData<Event<Boolean>> loginFragmentClickEventsLiveData = new MutableLiveData<>();
     private MutableLiveData<Event<ViewPagerFragment.ViewPagerFragmentNavigationEvents>> viewPagerFragmentClickEventsLiveData = new MutableLiveData<>();
 
@@ -84,11 +84,11 @@ public class NoSurfViewModel extends ViewModel {
         postsFragmentClickEventsLiveData.setValue(new Event<>(b));
     }
 
-    public LiveData<Event<LaunchWebViewEvent>> getPostFragmentClickEventsLiveData() {
+    public LiveData<Event<LaunchWebViewParams>> getPostFragmentClickEventsLiveData() {
         return postFragmentClickEventsLiveData;
     }
 
-    public void setPostFragmentClickEventsLiveData(LaunchWebViewEvent l) {
+    public void setPostFragmentClickEventsLiveData(LaunchWebViewParams l) {
         postFragmentClickEventsLiveData.setValue(new Event<>(l));
     }
 

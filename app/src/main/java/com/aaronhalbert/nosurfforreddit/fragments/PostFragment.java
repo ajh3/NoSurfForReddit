@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aaronhalbert.nosurfforreddit.LaunchWebViewEvent;
+import com.aaronhalbert.nosurfforreddit.LaunchWebViewParams;
 import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
@@ -77,7 +77,7 @@ abstract public class PostFragment extends BaseFragment {
     public void onImageClick(View view) {
         String url = postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition).url;
 
-        viewModel.setPostFragmentClickEventsLiveData(new LaunchWebViewEvent(url, null, false));
+        viewModel.setPostFragmentClickEventsLiveData(new LaunchWebViewParams(url, null, false));
     }
 
     // endregion listeners -------------------------------------------------------------------------
