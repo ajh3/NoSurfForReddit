@@ -1,11 +1,9 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
-import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.content.SharedPreferences;
-import android.text.Spanned;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.Event;
@@ -28,7 +26,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
 
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
@@ -55,16 +52,6 @@ public class Repository {
     private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
-    private static final String USER_ABBREVIATION = "u/";
-    private static final String BULLET_POINT = " \u2022 ";
-    private static final String AUTO_MODERATOR = "AutoModerator";
-    private static final String LINK_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-    private static final String SELF_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
-    private static final String LINK_POST_NSFW_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
-    private static final String DEFAULT = "default";
-    private static final String SELF = "self";
-    private static final String NSFW = "nsfw";
-    private static final String IMAGE = "image";
     private static final int RESPONSE_CODE_401 = 401;
 
     // caches to let us keep working during asynchronous writes to SharedPrefs
@@ -95,6 +82,7 @@ public class Repository {
     // event feeds
     private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
 
+    // other
     private final RetrofitInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
     private final SharedPreferences preferences;
@@ -422,11 +410,11 @@ public class Repository {
             int autoModOffset;
 
             //check if there is at least 1 comment
-            if (getNumTopLevelComments(input) > 0) {
+            if (input.get(1).getNumTopLevelComments() > 0) {
 
                 //calculate the number of valid comments after checking for & excluding AutoMod
-                autoModOffset = calculateAutoModOffset(input);
-                int numComments = getNumTopLevelComments(input) - autoModOffset;
+                autoModOffset = input.get(0).calculateAutoModOffset();
+                int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
 
                 // only display first 3 top-level comments
                 if (numComments > 3) numComments = 3;
@@ -435,17 +423,17 @@ public class Repository {
 
                 // construct the viewstate object
                 for (int i = 0; i < numComments; i++) {
-                    String commentAuthor = getCommentAuthor(input, autoModOffset + i);
-                    int commentScore = getCommentScore(input, autoModOffset, i);
+                    String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
+                    int commentScore = input.get(1).getCommentScore(autoModOffset, i);
 
-                    commentsViewState.commentBodies[i] = formatCommentBodyHtml(input, autoModOffset, i);
-                    commentsViewState.commentDetails[i] = formatCommentDetails(commentAuthor, commentScore);
+                    commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
+                    commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
                 }
             } else { //if zero comments
                 commentsViewState = new CommentsViewState(0);
             }
 
-            commentsViewState.id = getCommentId(input);
+            commentsViewState.id = input.get(0).getCommentId();
 
             return commentsViewState;
         });
@@ -477,19 +465,19 @@ public class Repository {
                 // both link posts and self posts share these attributes
                 postDatum.isSelf = data.isIsSelf();
                 postDatum.id = data.getId();
-                postDatum.title = (decodeHtml(data.getTitle()).toString()); // some titles contain HTML special entities
+                postDatum.title = input.decodeHtml(data.getTitle()).toString(); // some titles contain HTML special entities
                 postDatum.author = data.getAuthor();
                 postDatum.subreddit = data.getSubreddit();
                 postDatum.score = data.getScore();
                 postDatum.numComments = data.getNumComments();
-                postDatum.thumbnailUrl = pickThumbnailUrl(data.getThumbnail());
+                postDatum.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
 
                 // assign link- and self-post specific attributes
                 if (postDatum.isSelf) {
-                    postDatum.selfTextHtml = formatSelfPostSelfTextHtml(data.getSelfTextHtml());
+                    postDatum.selfTextHtml = input.formatSelfPostSelfTextHtml(data.getSelfTextHtml());
                 } else {
-                    postDatum.url = decodeHtml(data.getUrl()).toString();
-                    postDatum.imageUrl = pickImageUrl(input, i);
+                    postDatum.url = input.decodeHtml(data.getUrl()).toString();
+                    postDatum.imageUrl = input.decodeHtml(input.pickImageUrl(i)).toString();
                 }
 
                 postsViewState.postData.set(i, postDatum);
@@ -542,149 +530,10 @@ public class Repository {
 
     // region helper methods -----------------------------------------------------------------------
 
-    /* These are mostly data cleaning routines that get applied against the raw data from
-     * the Reddit API */
-
     private void updateCachedClickedPostIds(PostsViewState postsViewStateCache, int i) {
         if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {
             postsViewStateCache.hasBeenClicked[i] = true;
         }
-    }
-
-    // Reddit API provides twice-encoded HTML... ¯\_(ツ)_/¯
-    private String formatSelfPostSelfTextHtml(String twiceEncodedSelfTextHtml) {
-        if ((twiceEncodedSelfTextHtml != null) && (!"".equals(twiceEncodedSelfTextHtml))) {
-            String onceEncodedSelfTextHtml = decodeHtml(twiceEncodedSelfTextHtml).toString();
-            String decodedSelfTextHtml = decodeHtml(onceEncodedSelfTextHtml).toString();
-            return (String) trimTrailingWhitespace(decodedSelfTextHtml);
-        } else {
-            return "";
-        }
-    }
-
-    private Spanned formatCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
-        String unescaped = getCommentBodyHtml(input, autoModOffset, i);
-        Spanned escaped = decodeHtml(unescaped);
-
-        return (Spanned) trimTrailingWhitespace(escaped);
-    }
-
-    private String pickImageUrl(Listing input, int i) {
-        Data_ data = input.getData().getChildren().get(i).getData();
-
-        if (data.getPreview() == null) {
-            return LINK_POST_DEFAULT_THUMBNAIL;
-        } else {
-            String encodedImageUrl = data
-                    .getPreview()
-                    .getImages()
-                    .get(0)
-                    .getSource()
-                    .getUrl();
-            return decodeHtml(encodedImageUrl).toString();
-        }
-    }
-
-    private String pickThumbnailUrl(String encodedThumbnailUrl) {
-        String thumbnailUrl;
-
-        switch (encodedThumbnailUrl) {
-            case DEFAULT:
-                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
-                break;
-            case SELF:
-                thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
-                break;
-            case NSFW:
-                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
-                break;
-            case IMAGE:
-                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
-                break;
-            default:
-                thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
-                break;
-        }
-        return thumbnailUrl;
-    }
-
-    private int getNumTopLevelComments(List<Listing> input) {
-        return input.get(1).getData().getChildren().size();
-    }
-
-    private boolean isFirstCommentByAutoMod(List<Listing> input) {
-        return (getCommentAuthor(input, 0)).equals(AUTO_MODERATOR);
-    }
-
-    private int calculateAutoModOffset(List<Listing> input) {
-        if (isFirstCommentByAutoMod(input)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    private String getCommentAuthor(List<Listing> input, int i) {
-        return input
-                .get(1)
-                .getData()
-                .getChildren()
-                .get(i)
-                .getData()
-                .getAuthor();
-    }
-
-    private int getCommentScore(List<Listing> input, int autoModOffset, int i) {
-        return input
-                .get(1)
-                .getData()
-                .getChildren()
-                .get(autoModOffset + i)
-                .getData()
-                .getScore();
-    }
-
-    private String getCommentId(List<Listing> input) {
-        return input
-                .get(0)
-                .getData()
-                .getChildren()
-                .get(0)
-                .getData()
-                .getId();
-    }
-
-    private String formatCommentDetails(String commentAuthor, int commentScore) {
-        return USER_ABBREVIATION
-                + commentAuthor
-                + BULLET_POINT
-                + Integer.toString(commentScore);
-    }
-
-    private String getCommentBodyHtml(List<Listing> input, int autoModOffset, int i) {
-        Data_ data = input.get(1)
-                .getData()
-                .getChildren()
-                .get(autoModOffset + i)
-                .getData();
-
-        return decodeHtml(data.getBodyHtml()).toString();
-    }
-
-    private Spanned decodeHtml(String encoded) {
-        return HtmlCompat.fromHtml(encoded, HtmlCompat.FROM_HTML_MODE_LEGACY);
-    }
-
-    private CharSequence trimTrailingWhitespace(CharSequence source) {
-        if (source == null) return "";
-
-        int i = source.length();
-
-        //decrement i and check if that character is whitespace
-        do { --i; } while (i >= 0 && Character.isWhitespace(source.charAt(i)));
-
-        //tick i up by 1 to return the full non-whitespace sequence
-        return source.subSequence(0, i+1);
     }
 
     // endregion helper methods --------------------------------------------------------------------
