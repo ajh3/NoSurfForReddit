@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="com.aaronhalbert.nosurfforreddit.NoSurfViewModel"/>
+            type="com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel"/>
     </data>
 
     <ScrollView

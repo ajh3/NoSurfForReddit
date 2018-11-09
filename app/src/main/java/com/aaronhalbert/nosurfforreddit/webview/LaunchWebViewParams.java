@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.webview;
 
 public class LaunchWebViewParams {
     private String url;

@@ -2,8 +2,8 @@ package com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation;
 
 import android.os.Build;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
-import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClientApiLevelBelow24;
+import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
+import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClientApiLevelBelow24;
 
 import androidx.fragment.app.FragmentActivity;
 import dagger.Module;

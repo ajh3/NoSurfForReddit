@@ -4,7 +4,7 @@ import android.os.Bundle;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import android.util.Log;

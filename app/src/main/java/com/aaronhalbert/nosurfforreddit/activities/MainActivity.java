@@ -20,10 +20,10 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.LaunchWebViewParams;
-import com.aaronhalbert.nosurfforreddit.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
+import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.ViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;

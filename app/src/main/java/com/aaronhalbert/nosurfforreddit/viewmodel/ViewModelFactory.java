@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit;
+package com.aaronhalbert.nosurfforreddit.viewmodel;
 
 import com.aaronhalbert.nosurfforreddit.network.NoSurfRepository;
 

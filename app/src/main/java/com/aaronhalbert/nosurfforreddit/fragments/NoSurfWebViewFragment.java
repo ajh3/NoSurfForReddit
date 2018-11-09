@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfWebViewClient;
+import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
 import com.aaronhalbert.nosurfforreddit.R;
 
 import javax.inject.Inject;
