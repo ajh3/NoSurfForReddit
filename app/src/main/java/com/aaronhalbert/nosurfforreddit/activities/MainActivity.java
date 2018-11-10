@@ -79,6 +79,8 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // initialization
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setupStrictMode();
@@ -89,7 +91,9 @@ public class MainActivity extends BaseActivity implements
         // only necessary to specify the factory the first time here, subsequent calls to
         // ViewModelProviders.of for this activity will get the right vm without specifying
         // the factory
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders
+                .of(this, viewModelFactory)
+                .get(NoSurfViewModel.class);
 
         // LiveData event subscriptions
         subscribeToNetworkErrors();
@@ -107,6 +111,20 @@ public class MainActivity extends BaseActivity implements
                             TAG_VIEW_PAGER_FRAGMENT)
                     .commit();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        preferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -128,7 +146,13 @@ public class MainActivity extends BaseActivity implements
                 + AUTH_URL_SCOPE
                 + SCOPE;
 
-        launchWebView(new LaunchWebViewParams(authUrl, TAG_WEBVIEW_LOGIN_FRAGMENT, true));
+        launchWebView(new LaunchWebViewParams(
+                authUrl,
+                TAG_WEBVIEW_LOGIN_FRAGMENT,
+                true));
+
+        /* there is no viewModel.logUserIn() method, see Repository.fetchUserOAuthTokenASync()
+         * for the login routine */
     }
 
     private void logout() {
@@ -160,7 +184,6 @@ public class MainActivity extends BaseActivity implements
 
     private void initPrefs() {
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
-        preferences.registerOnSharedPreferenceChangeListener(this);
         nightMode = preferences.getBoolean(KEY_NIGHT_MODE, true);
         amoledNightMode = preferences.getBoolean(KEY_AMOLED_NIGHT_MODE, false);
         externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
@@ -213,8 +236,7 @@ public class MainActivity extends BaseActivity implements
     // region observers/listeners ------------------------------------------------------------------
 
     /* MainActivity is the central place for all navigation. It uses the listeners below
-     * to listen to nav events propagated via LiveData through the ViewModel, and launches fragments
-     * accordingly */
+     * to listen to nav events propagated via LiveData through the ViewModel */
 
     private void subscribeToNetworkErrors() {
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
@@ -287,6 +309,8 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        nightMode = sharedPreferences.getBoolean(KEY_NIGHT_MODE, true);
+
         if (nightMode) {
             nightModeOn();
             recreate();
@@ -296,7 +320,7 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    // captures result from Reddit login page using custom redirect URI: nosurfforreddit://oauth
+    // captures result from Reddit login page using custom redirect URI nosurfforreddit://oauth
     // intent filter is configured in manifest
     @Override
     protected void onNewIntent(Intent intent) {
@@ -314,7 +338,6 @@ public class MainActivity extends BaseActivity implements
             String code;
 
             //TODO: is there a good way to avoid this null check?
-            //TODO: should this be using try/catch, or is it not "exceptional" enough? I think the latter
             if (uri != null) {
                 error = uri.getQueryParameter(ERROR);
                 code = uri.getQueryParameter(CODE);
