@@ -97,10 +97,10 @@ public class MainActivity extends BaseActivity implements
 
         // LiveData event subscriptions
         subscribeToNetworkErrors();
-        subscribeToPostsFragmentClicks();
-        subscribeToPostFragmentClicks();
-        subscribeToLoginFragmentClicks();
-        subscribeToViewPagerFragmentClicks();
+        subscribeToRecyclerViewClickEvents();
+        subscribeToPostFragmentClickEvents();
+        subscribeToLoginFragmentClickEvents();
+        subscribeToViewPagerFragmentClickEvents();
 
         fm = getSupportFragmentManager();
 
@@ -248,8 +248,8 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void subscribeToPostsFragmentClicks() {
-        viewModel.getPostsFragmentClickEventsLiveData().observe(this, clickEvent -> {
+    private void subscribeToRecyclerViewClickEvents() {
+        viewModel.getRecyclerViewClickEventsLiveData().observe(this, clickEvent -> {
             Boolean b = clickEvent.getContentIfNotHandled();
 
             if (b != null) {
@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void subscribeToPostFragmentClicks() {
+    private void subscribeToPostFragmentClickEvents() {
         viewModel.getPostFragmentClickEventsLiveData().observe(this, clickEvent -> {
             LaunchWebViewParams l = clickEvent.getContentIfNotHandled();
 
@@ -272,7 +272,7 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void subscribeToLoginFragmentClicks() {
+    private void subscribeToLoginFragmentClickEvents() {
         viewModel.getLoginFragmentClickEventsLiveData().observe(this, clickEvent -> {
             Boolean b = clickEvent.getContentIfNotHandled();
 
@@ -282,7 +282,7 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void subscribeToViewPagerFragmentClicks() {
+    private void subscribeToViewPagerFragmentClickEvents() {
         viewModel.getViewPagerFragmentClickEventsLiveData().observe(this, clickEvent -> {
             ViewPagerFragment.ViewPagerFragmentNavigationEvents v = clickEvent.getContentIfNotHandled();
 

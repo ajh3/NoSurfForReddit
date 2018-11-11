@@ -17,7 +17,7 @@ import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 public class NoSurfViewModel extends ViewModel {
     private final Repository repository;
 
-    private final MutableLiveData<Event<Boolean>> postsFragmentClickEventsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> recyclerViewClickEventsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<LaunchWebViewParams>> postFragmentClickEventsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> loginFragmentClickEventsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<ViewPagerFragment.ViewPagerFragmentNavigationEvents>> viewPagerFragmentClickEventsLiveData = new MutableLiveData<>();
@@ -78,12 +78,12 @@ public class NoSurfViewModel extends ViewModel {
     }
     // no setter for network errors; they are set in repository
 
-    public LiveData<Event<Boolean>> getPostsFragmentClickEventsLiveData() {
-        return postsFragmentClickEventsLiveData;
+    public LiveData<Event<Boolean>> getRecyclerViewClickEventsLiveData() {
+        return recyclerViewClickEventsLiveData;
     }
 
-    public void setPostsFragmentClickEventsLiveData(Boolean b) {
-        postsFragmentClickEventsLiveData.setValue(new Event<>(b));
+    public void setRecyclerViewClickEventsLiveData(Boolean b) {
+        recyclerViewClickEventsLiveData.setValue(new Event<>(b));
     }
 
     public LiveData<Event<LaunchWebViewParams>> getPostFragmentClickEventsLiveData() {
