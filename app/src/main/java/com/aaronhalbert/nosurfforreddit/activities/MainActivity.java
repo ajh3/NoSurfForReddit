@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -239,11 +240,13 @@ public class MainActivity extends BaseActivity implements
      * to listen/react to nav events propagated via LiveData through the ViewModel */
 
     private void subscribeToNetworkErrors() {
+        Context context = this;
+
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
             Repository.NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
 
             if (n != null) {
-                Toast.makeText(getApplicationContext(), NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             }
         });
     }
