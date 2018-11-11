@@ -12,10 +12,14 @@ import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
 
 @SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {
+
+    /* these methods are called by the binding framework any time it finds a view with one
+     * of the synthetic properties specified in the annotation arguments */
+
     //binding framework calls this any time it finds an ImageView with an imageUrl synthetic property
+
     @BindingAdapter("imageUrl")
     public static void bindImage(ImageView iv, String url) {
-
         GlideApp.with(iv.getContext())
                 .load(url)
                 .centerCrop()
@@ -26,10 +30,12 @@ public class DataBindingHandlers {
     public static void strikethru(TextView tv, boolean hasBeenClicked) {
         if (hasBeenClicked) {
             tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            tv.setTextColor(ContextCompat.getColor(tv.getContext(), R.color.colorRecyclerViewTextClicked));
+            tv.setTextColor(ContextCompat
+                    .getColor(tv.getContext(), R.color.colorRecyclerViewTextClicked));
         } else {
             tv.setPaintFlags(tv.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            tv.setTextColor(ContextCompat.getColor(tv.getContext(), R.color.colorRecyclerViewText));
+            tv.setTextColor(ContextCompat
+                    .getColor(tv.getContext(), R.color.colorRecyclerViewText));
         }
     }
 
