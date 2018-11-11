@@ -17,6 +17,10 @@ import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
+/* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
+ *
+ * PostsFragment contains the master view */
+
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
 

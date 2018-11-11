@@ -19,6 +19,10 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+/* base fragment for the master view of posts in a RecyclerView
+ *
+ * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
+
 abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private PostsAdapter postsAdapter;
@@ -30,7 +34,6 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         postsAdapter = setPostsAdapter();
         setPostsViewStateLiveData();
