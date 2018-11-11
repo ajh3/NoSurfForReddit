@@ -3,7 +3,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 
 public class AllPostsFragment extends PostsFragment {
-
     public static AllPostsFragment newInstance() {
         return new AllPostsFragment();
     }

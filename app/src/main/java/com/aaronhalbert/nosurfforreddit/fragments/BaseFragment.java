@@ -17,10 +17,11 @@ abstract class BaseFragment extends Fragment {
         if (isInjectorUsed) {
             throw new RuntimeException("Injection already performed on this fragment");
         }
+
         isInjectorUsed = true;
+
         return getApplicationComponent()
                 .newPresentationComponent(new PresentationModule(getActivity()), new ViewModelModule());
-
     }
 
     private ApplicationComponent getApplicationComponent() {
