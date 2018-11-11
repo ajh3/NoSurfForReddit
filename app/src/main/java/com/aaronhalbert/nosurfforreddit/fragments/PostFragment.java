@@ -40,7 +40,6 @@ abstract public class PostFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);

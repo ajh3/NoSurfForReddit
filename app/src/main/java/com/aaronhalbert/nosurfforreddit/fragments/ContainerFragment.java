@@ -13,9 +13,6 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
-
-import javax.inject.Inject;
 
 /* This fragment is necessary only because it's difficult to directly swap pages inside a
  * FragmentPagerAdapter.
@@ -28,7 +25,6 @@ public class ContainerFragment extends BaseFragment {
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
 
-    @Inject ViewModelFactory viewModelFactory;
     private NoSurfViewModel viewModel;
     private FragmentManager fm;
 
@@ -40,7 +36,6 @@ public class ContainerFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);

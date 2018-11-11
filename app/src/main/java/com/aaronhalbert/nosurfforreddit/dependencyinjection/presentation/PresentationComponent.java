@@ -10,7 +10,5 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {PresentationModule.class, ViewModelModule.class})
 public interface PresentationComponent {
     void inject(MainActivity mainActivity);
-    void inject(ContainerFragment containerFragment);
     void inject(NoSurfWebViewFragment noSurfWebViewFragment);
-    void inject(PostFragment postFragment);
 }
