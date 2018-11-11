@@ -17,6 +17,13 @@ import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
+/* This fragment is necessary only because it's difficult to directly swap pages inside a
+ * FragmentPagerAdapter.
+ *
+ * When the user is logged out, it displays a LoginFragment to
+ * prompt the user to log in, and when the user is logged in, it displays the user's
+ * subscribed posts. */
+
 public class ContainerFragment extends BaseFragment {
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
@@ -39,6 +46,7 @@ public class ContainerFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         fm = getChildFragmentManager();
 
+        // we add both fragments and simply show/hide them as needed
         if (findLoginFragment() == null) {
             fm
                     .beginTransaction()
@@ -74,18 +82,15 @@ public class ContainerFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void observeIsUserLoggedInLiveData() {
-        viewModel.getIsUserLoggedInLiveData().observe(this,
-                isUserLoggedIn -> refreshContainerChildFragment(isUserLoggedIn));
-    }
-    
-    private void refreshContainerChildFragment(boolean isUserLoggedIn) {
-        FragmentTransaction ft = fm.beginTransaction();
+        viewModel.getIsUserLoggedInLiveData().observe(this, isUserLoggedIn -> {
+            FragmentTransaction ft = fm.beginTransaction();
 
-        if (isUserLoggedIn) {
-            ft.hide(findLoginFragment()).show(findSubscribedPostsFragment()).commit();
-        } else {
-            ft.show(findLoginFragment()).hide(findSubscribedPostsFragment()).commit();
-        }
+            if (isUserLoggedIn) {
+                ft.hide(findLoginFragment()).show(findSubscribedPostsFragment()).commit();
+            } else {
+                ft.show(findLoginFragment()).hide(findSubscribedPostsFragment()).commit();
+            }
+        });
     }
 
     private Fragment findLoginFragment() {
