@@ -23,7 +23,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     private SwipeRefreshLayout swipeRefreshLayout;
     private PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
-    LiveData<PostsViewState> postsLiveDataViewState;
+    LiveData<PostsViewState> postsViewStateLiveData;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -33,8 +33,8 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
 
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
         postsAdapter = setPostsAdapter();
-        setPostsLiveDataViewState();
-        observePostsLiveDataViewState();
+        setPostsViewStateLiveData();
+        observePostsViewStateLiveData();
     }
 
     @Override
@@ -52,8 +52,8 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void observePostsLiveDataViewState() {
-        postsLiveDataViewState.observe(this, listing -> cancelRefreshingAnimation());
+    private void observePostsViewStateLiveData() {
+        postsViewStateLiveData.observe(this, listing -> cancelRefreshingAnimation());
     }
 
     private void cancelRefreshingAnimation() {
@@ -82,7 +82,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     // region abstract methods ---------------------------------------------------------------------
 
     abstract PostsAdapter setPostsAdapter();
-    abstract void setPostsLiveDataViewState();
+    abstract void setPostsViewStateLiveData();
 
     // endregion abstract methods ------------------------------------------------------------------
 }

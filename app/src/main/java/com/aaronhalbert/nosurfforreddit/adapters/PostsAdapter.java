@@ -19,7 +19,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private final NoSurfViewModel viewModel;
     private final Fragment hostFragment;
     private final boolean isSubscribedPostsAdapter;
-    private final LiveData<PostsViewState> postsLiveDataViewState;
+    private final LiveData<PostsViewState> postsViewStateLiveData;
 
     public PostsAdapter(NoSurfViewModel viewModel,
                         Fragment hostFragment,
@@ -30,9 +30,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
         if (isSubscribedPostsAdapter) {
-            postsLiveDataViewState = viewModel.getSubscribedPostsViewStateLiveData();
+            postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
         } else {
-            postsLiveDataViewState = viewModel.getAllPostsViewStateLiveData();
+            postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
         }
     }
 
@@ -72,8 +72,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         //placed here so data binding class can access it
-        public LiveData<PostsViewState> getPostsLiveDataViewState() {
-            return postsLiveDataViewState;
+        public LiveData<PostsViewState> getPostsViewStateLiveData() {
+            return postsViewStateLiveData;
         }
 
         @Override
@@ -82,8 +82,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
             viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
                     position,
-                    postsLiveDataViewState.getValue().postData.get(position).id,
-                    postsLiveDataViewState.getValue().postData.get(position).isSelf,
+                    postsViewStateLiveData.getValue().postData.get(position).id,
+                    postsViewStateLiveData.getValue().postData.get(position).isSelf,
                     isSubscribedPostsAdapter));
 
             viewModel.setPostsFragmentClickEventsLiveData(true);

@@ -494,18 +494,18 @@ public class Repository {
     private LiveData<PostsViewState> mergeClickedPostIdsWithCleanedPostsRawLiveData(boolean isSubscribedPosts){
         final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
 
-        LiveData<PostsViewState> postsLiveDataViewState;
+        LiveData<PostsViewState> postsViewStateLiveData;
         PostsViewState postsViewStateCache;
 
         if (isSubscribedPosts) {
-            postsLiveDataViewState = cleanPostsRawLiveData(true);
+            postsViewStateLiveData = cleanPostsRawLiveData(true);
             postsViewStateCache = mergedSubscribedPostsCache;
         } else {
-            postsLiveDataViewState = cleanPostsRawLiveData(false);
+            postsViewStateLiveData = cleanPostsRawLiveData(false);
             postsViewStateCache = mergedAllPostsCache;
         }
 
-        mediator.addSource(postsLiveDataViewState, postsViewState -> {
+        mediator.addSource(postsViewStateLiveData, postsViewState -> {
             for (int i = 0; i < 25; i++) {
                 postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
 
