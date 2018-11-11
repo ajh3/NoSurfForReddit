@@ -388,7 +388,7 @@ public class MainActivity extends BaseActivity implements
     private void launchPost() {
         Fragment f;
 
-        if (viewModel.getLastClickedPostMetadata().isLastClickedPostIsSelf()) {
+        if (viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf) {
             f = SelfPostFragment.newInstance();
         } else {
             f = LinkPostFragment.newInstance();

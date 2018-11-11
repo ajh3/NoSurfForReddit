@@ -177,10 +177,10 @@ abstract public class PostFragment extends BaseFragment {
     private void lookupPostMetadata() {
         LastClickedPostMetadata lastClickedPostMetadata = viewModel.getLastClickedPostMetadata();
 
-        lastClickedPostPosition = lastClickedPostMetadata.getLastClickedPostPosition();
-        lastClickedPostId = lastClickedPostMetadata.getLastClickedPostId();
+        lastClickedPostPosition = lastClickedPostMetadata.lastClickedPostPosition;
+        lastClickedPostId = lastClickedPostMetadata.lastClickedPostId;
 
-        if (lastClickedPostMetadata.isLastClickedPostIsSubscribed()) {
+        if (lastClickedPostMetadata.lastClickedPostIsSubscribed) {
             postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
         } else {
             postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();

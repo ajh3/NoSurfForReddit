@@ -2,8 +2,9 @@ package com.aaronhalbert.nosurfforreddit.viewstate;
 
 import java.util.ArrayList;
 
-public class PostsViewState {
+/* data structure to hold cleaned/transformed post data from the Reddit API */
 
+public class PostsViewState {
     private static final int INITIAL_CAPACITY = 25;
     public final ArrayList<PostDatum> postData;
     public final boolean[] hasBeenClicked;

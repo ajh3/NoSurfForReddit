@@ -1,10 +1,12 @@
 package com.aaronhalbert.nosurfforreddit.viewstate;
 
+/* data structure to hold info on the most-recently clicked post in a RecyclerView */
+
 public class LastClickedPostMetadata {
-    private final int lastClickedPostPosition;
-    private final String lastClickedPostId;
-    private final boolean lastClickedPostIsSelf;
-    private final boolean lastClickedPostIsSubscribed;
+    public final int lastClickedPostPosition;
+    public final String lastClickedPostId;
+    public final boolean lastClickedPostIsSelf;
+    public final boolean lastClickedPostIsSubscribed;
 
     public LastClickedPostMetadata(int lastClickedPostPosition,
                                    String lastClickedPostId,
@@ -15,21 +17,5 @@ public class LastClickedPostMetadata {
         this.lastClickedPostId = lastClickedPostId;
         this.lastClickedPostIsSelf = lastClickedPostIsSelf;
         this.lastClickedPostIsSubscribed = lastClickedPostIsSubscribed;
-    }
-
-    public int getLastClickedPostPosition() {
-        return lastClickedPostPosition;
-    }
-
-    public String getLastClickedPostId() {
-        return lastClickedPostId;
-    }
-
-    public boolean isLastClickedPostIsSelf() {
-        return lastClickedPostIsSelf;
-    }
-
-    public boolean isLastClickedPostIsSubscribed() {
-        return lastClickedPostIsSubscribed;
     }
 }

@@ -419,7 +419,7 @@ public class Repository {
                 // only display first 3 top-level comments
                 if (numComments > 3) numComments = 3;
 
-                commentsViewState = new CommentsViewState(numComments);
+                commentsViewState = new CommentsViewState(numComments, input.get(0).getCommentId());
 
                 // construct the viewstate object
                 for (int i = 0; i < numComments; i++) {
@@ -430,10 +430,8 @@ public class Repository {
                     commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
                 }
             } else { //if zero comments
-                commentsViewState = new CommentsViewState(0);
+                commentsViewState = new CommentsViewState(0, "");
             }
-
-            commentsViewState.id = input.get(0).getCommentId();
 
             return commentsViewState;
         });
