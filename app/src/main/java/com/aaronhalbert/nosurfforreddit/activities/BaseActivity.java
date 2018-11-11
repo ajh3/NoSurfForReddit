@@ -17,10 +17,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (isInjectorUsed) {
             throw new RuntimeException("Injection already performed on this activity");
         }
+
         isInjectorUsed = true;
+        
         return getApplicationComponent()
                 .newPresentationComponent(new PresentationModule(this), new ViewModelModule());
-
     }
 
     private ApplicationComponent getApplicationComponent() {
