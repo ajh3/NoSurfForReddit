@@ -10,7 +10,6 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

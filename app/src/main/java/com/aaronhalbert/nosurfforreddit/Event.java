@@ -20,11 +20,11 @@ public class Event<T> {
         }
     }
 
-    public T peekContent() {
-        return content;
-    }
+    //public T peekContent() {
+    //    return content;
+    //}
 
-    public boolean getHasBeenHandled() {
-        return hasBeenHandled;
-    }
+    //public boolean getHasBeenHandled() {
+    //    return hasBeenHandled;
+    //}
 }
