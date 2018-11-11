@@ -264,7 +264,7 @@ public class MainActivity extends BaseActivity implements
 
             if (l != null) {
                 if (externalBrowser) {
-                    launchExternalBrowser(Uri.parse(l.getUrl()));
+                    launchExternalBrowser(Uri.parse(l.url));
                 } else {
                     launchWebView(l);
                 }
@@ -361,9 +361,9 @@ public class MainActivity extends BaseActivity implements
     // region app navigation -----------------------------------------------------------------------
 
     private void launchWebView(LaunchWebViewParams launchWebViewParams) {
-        String url = launchWebViewParams.getUrl();
-        String tag = launchWebViewParams.getTag();
-        boolean doAnimation = launchWebViewParams.isDoAnimation();
+        String url = launchWebViewParams.url;
+        String tag = launchWebViewParams.tag;
+        boolean doAnimation = launchWebViewParams.doAnimation;
 
         FragmentTransaction ft = fm.beginTransaction();
 

@@ -9,6 +9,8 @@ import android.webkit.WebViewClient;
 
 import androidx.fragment.app.FragmentActivity;
 
+// also see NoSurfWebViewClientApiLevelBelow24; Dagger injects correct version based on API level
+
 public class NoSurfWebViewClient extends WebViewClient {
     private static final String NOSURF_REDIRECT_URI = "nosurfforreddit://oauth";
     private final FragmentActivity hostFragmentActivity;
@@ -17,8 +19,10 @@ public class NoSurfWebViewClient extends WebViewClient {
         this.hostFragmentActivity = hostFragmentActivity;
     }
 
+    // hook into link clicks to check if the activity should capture a click as an intent
+    // currently only used during user login
     @Override
-    @TargetApi(23)
+    @TargetApi(24)
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
 
