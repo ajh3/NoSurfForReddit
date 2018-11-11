@@ -23,6 +23,8 @@ import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewP
 import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGIN_EVENT;
 import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGOUT_EVENT;
 
+/* the main content fragment which holds all others, at the root of the activity's view */
+
 public class ViewPagerFragment extends BaseFragment {
     private ViewPager pager;
     private NoSurfViewModel viewModel;
@@ -58,7 +60,8 @@ public class ViewPagerFragment extends BaseFragment {
 
         pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
-        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter = new NoSurfFragmentPagerAdapter(getChildFragmentManager());
+        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
+                new NoSurfFragmentPagerAdapter(getChildFragmentManager());
 
         pager.setAdapter(noSurfFragmentPagerAdapter);
         tabs.setupWithViewPager(pager);
@@ -81,7 +84,6 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch(item.getItemId()) {
             case R.id.refresh:
                 if (pager.getCurrentItem() == 0) {
@@ -91,16 +93,16 @@ public class ViewPagerFragment extends BaseFragment {
                 }
                 return true;
             case R.id.login:
-                login();
+                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
                 return true;
             case R.id.logout:
-                logout();
+                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
                 return true;
             case R.id.settings:
-                launchPreferencesScreen();
+                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
                 return true;
             case R.id.about:
-                launchAboutScreen();
+                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
                 return true;
         }
 
@@ -123,23 +125,8 @@ public class ViewPagerFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void observeIsUserLoggedInLiveData() {
-        viewModel.getIsUserLoggedInLiveData().observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
-    }
-
-    private void login() {
-        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
-    }
-
-    private void logout() {
-        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
-    }
-
-    private void launchPreferencesScreen() {
-        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
-    }
-
-    private void launchAboutScreen() {
-        viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
+        viewModel.getIsUserLoggedInLiveData()
+                .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
     }
 
     // endregion helper methods --------------------------------------------------------------------
