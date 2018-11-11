@@ -68,12 +68,12 @@ public class MainActivity extends BaseActivity implements
 
     @SuppressWarnings("WeakerAccess")
     @Inject ViewModelFactory viewModelFactory;
-    
     private NoSurfViewModel viewModel;
+    private FragmentManager fm;
+
     private boolean nightMode;
     private boolean amoledNightMode;
     private boolean externalBrowser;
-    private FragmentManager fm;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
 
         // only necessary to specify the factory the first time here, subsequent calls to
-        // ViewModelProviders.of for this activity will get the right vm without specifying
+        // ViewModelProviders.of for this activity will get the right ViewModel without specifying
         // the factory
         viewModel = ViewModelProviders
                 .of(this, viewModelFactory)
@@ -150,10 +150,10 @@ public class MainActivity extends BaseActivity implements
                 authUrl,
                 TAG_WEBVIEW_LOGIN_FRAGMENT,
                 true));
-
-        /* there is no viewModel.logUserIn() method, see Repository.fetchUserOAuthTokenASync()
-         * for the login routine */
     }
+
+    /* there is no viewModel.logUserIn() method, see Repository.fetchUserOAuthTokenASync()
+     * for the login routine */
 
     private void logout() {
         clearCookies();
@@ -197,7 +197,7 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    /* calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
+    /* TODO: calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
      * activity to be recreated after onCreate() finishes
      * unclear if it's expected behavior or a bug */
     private void nightModeOn() {
@@ -235,8 +235,8 @@ public class MainActivity extends BaseActivity implements
 
     // region observers/listeners ------------------------------------------------------------------
 
-    /* MainActivity is the central place for all navigation. It uses the listeners below
-     * to listen to nav events propagated via LiveData through the ViewModel */
+    /* MainActivity is in charge of all navigation. It uses the listeners below
+     * to listen/react to nav events propagated via LiveData through the ViewModel */
 
     private void subscribeToNetworkErrors() {
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
