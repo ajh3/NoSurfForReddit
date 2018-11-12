@@ -18,8 +18,8 @@ public class SubscribedPostsFragment extends PostsFragment {
     }
 
     @Override
-    PostsAdapter setPostsAdapter() {
-        return new PostsAdapter(
+    void setPostsAdapter() {
+        postsAdapter = new PostsAdapter(
                 viewModel,
                 this,
                 true);

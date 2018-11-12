@@ -25,7 +25,7 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
-    private PostsAdapter postsAdapter;
+    PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -35,7 +35,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
-        postsAdapter = setPostsAdapter();
+        setPostsAdapter();
         setPostsViewStateLiveData();
         observePostsViewStateLiveData();
     }
@@ -84,7 +84,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
 
     // region abstract methods ---------------------------------------------------------------------
 
-    abstract PostsAdapter setPostsAdapter();
+    abstract void setPostsAdapter();
     abstract void setPostsViewStateLiveData();
 
     // endregion abstract methods ------------------------------------------------------------------
