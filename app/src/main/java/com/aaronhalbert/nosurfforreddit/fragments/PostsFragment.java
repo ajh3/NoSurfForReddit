@@ -35,8 +35,8 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
-        setPostsAdapter();
-        setPostsViewStateLiveData();
+        createPostsAdapter();
+        selectPostsViewStateLiveData();
         observePostsViewStateLiveData();
     }
 
@@ -84,8 +84,8 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
 
     // region abstract methods ---------------------------------------------------------------------
 
-    abstract void setPostsAdapter();
-    abstract void setPostsViewStateLiveData();
+    abstract void createPostsAdapter();
+    abstract void selectPostsViewStateLiveData();
 
     // endregion abstract methods ------------------------------------------------------------------
 }

@@ -18,7 +18,7 @@ public class SubscribedPostsFragment extends PostsFragment {
     }
 
     @Override
-    void setPostsAdapter() {
+    void createPostsAdapter() {
         postsAdapter = new PostsAdapter(
                 viewModel,
                 this,
@@ -26,7 +26,7 @@ public class SubscribedPostsFragment extends PostsFragment {
     }
 
     @Override
-    void setPostsViewStateLiveData() {
+    void selectPostsViewStateLiveData() {
         postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
     }
 
