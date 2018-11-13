@@ -142,7 +142,7 @@ public class Repository {
 
             @Override
             public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
+                Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED, t);
                 setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
             }
         });
@@ -181,7 +181,7 @@ public class Repository {
 
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), USER_AUTH_CALL_FAILED);
+                Log.e(getClass().toString(), USER_AUTH_CALL_FAILED, t);
                 setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
             }
         });
@@ -221,7 +221,7 @@ public class Repository {
 
             @Override
             public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
+                Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED, t);
                 setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
             }
         });
@@ -281,7 +281,7 @@ public class Repository {
 
             @Override
             public void onFailure(Call<Listing> call, Throwable t) {
-                Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + t.toString());
+                Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED, t);
                 setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
             }
         });
@@ -307,7 +307,7 @@ public class Repository {
 
                 @Override
                 public void onFailure(Call<Listing> call, Throwable t) {
-                    Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED + t.toString());
+                    Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED, t);
                     setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
                 }
             });
@@ -348,7 +348,7 @@ public class Repository {
 
                 @Override
                 public void onFailure(Call<List<Listing>> call, Throwable t) {
-                    Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + t.toString());
+                    Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED, t);
                     setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
                 }
             });
