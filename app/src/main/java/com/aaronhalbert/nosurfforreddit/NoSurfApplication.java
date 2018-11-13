@@ -14,7 +14,7 @@ public class NoSurfApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        initLeakCanary();
+        //initLeakCanary();
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
