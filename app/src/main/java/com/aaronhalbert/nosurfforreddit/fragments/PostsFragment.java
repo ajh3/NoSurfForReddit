@@ -19,7 +19,7 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-/* base fragment for the master view of posts in a RecyclerView
+/* base fragment containing the master view of posts, in a RecyclerView
  *
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
@@ -46,6 +46,22 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
         setupSwipeRefreshLayout(v);
 
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        /* if we don't remove the adapter in onDestroyView(), we end up leaking a view to the
+         * data binding class. This happens because the binding class references
+         * PostsAdapter.RowHolder as its controller, and the adapter references this fragment
+         * to provide the data binding class access to a LifecycleOwner. Thus, when PostsFragment
+         * is replace()'d (detached but not destroyed), the adapter stays alive on the backstack
+         * due to the data binding class's reference to it, which in turn keeps a reference back to
+         * the fragment's view hierarchy, having prevented it from being properly destroyed in
+         * onDestroyView(). */
+        RecyclerView rv = getView().findViewById(R.id.posts_fragment_recyclerview);
+        rv.setAdapter(null);
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
