@@ -24,7 +24,6 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
 abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -34,7 +33,6 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
-        createPostsAdapter();
         selectPostsViewStateLiveData();
         observePostsViewStateLiveData();
     }
@@ -72,7 +70,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
         RecyclerView rv = v.findViewById(R.id.posts_fragment_recyclerview);
         rv.setLayoutManager(new LinearLayoutManager(context));
         rv.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
-        rv.setAdapter(postsAdapter);
+        rv.setAdapter(createPostsAdapter());
         rv.setHasFixedSize(true);
     }
 
@@ -85,7 +83,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
 
     // region abstract methods ---------------------------------------------------------------------
 
-    abstract void createPostsAdapter();
+    abstract PostsAdapter createPostsAdapter();
     abstract void selectPostsViewStateLiveData();
 
     // endregion abstract methods ------------------------------------------------------------------
