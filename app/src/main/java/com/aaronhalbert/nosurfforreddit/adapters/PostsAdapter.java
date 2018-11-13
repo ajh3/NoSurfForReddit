@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
-import com.aaronhalbert.nosurfforreddit.databinding.RowSinglePostBinding;
+import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
@@ -56,11 +56,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     @Override
     public RowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RowSinglePostBinding rowSinglePostBinding = RowSinglePostBinding
+        RowBinding rowBinding = RowBinding
                 .inflate(hostFragment.getLayoutInflater(), parent, false);
-        rowSinglePostBinding.setLifecycleOwner(hostFragment);
+        rowBinding.setLifecycleOwner(hostFragment);
 
-        return new RowHolder(rowSinglePostBinding);
+        return new RowHolder(rowBinding);
     }
 
     @Override
@@ -71,17 +71,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // region helper classes -----------------------------------------------------------------------
 
     public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final RowSinglePostBinding rowSinglePostBinding;
+        private final RowBinding rowBinding;
 
-        RowHolder(RowSinglePostBinding rowSinglePostBinding) {
-            super(rowSinglePostBinding.getRoot());
-            this.rowSinglePostBinding = rowSinglePostBinding;
+        RowHolder(RowBinding rowBinding) {
+            super(rowBinding.getRoot());
+            this.rowBinding = rowBinding;
             itemView.setOnClickListener(this);
         }
 
         void bindModel() {
-            rowSinglePostBinding.setController(this);
-            rowSinglePostBinding.executePendingBindings();
+            rowBinding.setController(this);
+            rowBinding.executePendingBindings();
         }
 
         //placed here so data binding class can access it
