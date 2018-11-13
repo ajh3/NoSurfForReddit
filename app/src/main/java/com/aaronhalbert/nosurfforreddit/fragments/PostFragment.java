@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
+    private static final String ZERO = "zero";
 
     private final TextView[] comments = new TextView[3];
     private final TextView[] commentsDetails = new TextView[3];
@@ -134,7 +136,7 @@ abstract public class PostFragment extends BaseFragment {
 
     private void observeCommentsFinishedLoadingLiveEvent() {
         viewModel.getCommentsViewStateLiveData().observe(this, commentsViewState -> {
-            if (lastClickedPostId.equals(commentsViewState.id)) {
+            if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
                 updateViewVisibilities();
 
                 commentsAlreadyLoaded = true;

@@ -52,6 +52,7 @@ public class Repository {
     private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
+    private static final String ZERO = "zero";
     private static final int RESPONSE_CODE_401 = 401;
 
     // caches to let us keep working during asynchronous writes to SharedPrefs
@@ -430,7 +431,7 @@ public class Repository {
                     commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
                 }
             } else { //if zero comments
-                commentsViewState = new CommentsViewState(0, "");
+                commentsViewState = new CommentsViewState(0, ZERO);
             }
 
             return commentsViewState;
