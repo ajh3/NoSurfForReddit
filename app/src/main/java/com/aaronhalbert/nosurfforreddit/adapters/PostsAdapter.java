@@ -58,7 +58,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     public RowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RowBinding rowBinding = RowBinding
                 .inflate(hostFragment.getLayoutInflater(), parent, false);
-        rowBinding.setLifecycleOwner(hostFragment);
+
+        /* follow the view hierarchy lifecycle of hostFragment instead of its fragment lifecycle.
+         * If we follow the fragment lifecycle, the row.xml data binding class does not correctly
+         * release its reference to its row controller (RowHolder) when PostsFragment is
+         * detached upon being replace()'d. This results in a PostAdapter being leaked on each
+         * RecyclerView click, which in turn leads to numerous DTO and Glide objects also
+         * being leaked */
+        rowBinding.setLifecycleOwner(hostFragment.getViewLifecycleOwner());
 
         return new RowHolder(rowBinding);
     }
