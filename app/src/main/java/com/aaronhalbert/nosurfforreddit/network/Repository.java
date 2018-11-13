@@ -413,7 +413,7 @@ public class Repository {
             if (input.get(1).getNumTopLevelComments() > 0) {
 
                 //calculate the number of valid comments after checking for & excluding AutoMod
-                autoModOffset = input.get(0).calculateAutoModOffset();
+                autoModOffset = input.get(1).calculateAutoModOffset();
                 int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
 
                 // only display first 3 top-level comments
