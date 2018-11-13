@@ -26,7 +26,6 @@ import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewP
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
-    private ViewPager pager;
     private NoSurfViewModel viewModel;
     private boolean isUserLoggedIn = false;
     private MenuItem loginMenuItem;
@@ -58,7 +57,7 @@ public class ViewPagerFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        pager = view.findViewById(R.id.view_pager_fragment_pager);
+        ViewPager pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
         NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
                 new NoSurfFragmentPagerAdapter(getChildFragmentManager());
@@ -84,6 +83,8 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        ViewPager pager = getView().findViewById(R.id.view_pager_fragment_pager);
+
         switch(item.getItemId()) {
             case R.id.refresh:
                 if (pager.getCurrentItem() == 0) {
