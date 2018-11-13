@@ -374,9 +374,11 @@ public class MainActivity extends BaseActivity implements
             try {
                 code = extractCodeFromIntent(intent);
             } catch (NoSurfAccessDeniedLoginException e) {
+                Log.e(getClass().toString(), ACCESS_DENIED_ERROR_MESSAGE, e);
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
                 return;
             } catch (NoSurfLoginException e) {
+                Log.e(getClass().toString(), LOGIN_FAILED_ERROR_MESSAGE, e);
                 Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
                 return;
             }
