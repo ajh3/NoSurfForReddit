@@ -15,12 +15,15 @@ import android.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
+import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
@@ -232,6 +235,37 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    private String extractCodeFromIntent(Intent i) throws NoSurfLoginException {
+        Uri uri;
+        String error;
+        String code;
+
+        if (i.getData() != null) {
+            uri = i.getData();
+        } else {
+            throw new NoSurfLoginException();
+        }
+
+        if (uri != null) {
+            error = uri.getQueryParameter(ERROR);
+            code = uri.getQueryParameter(CODE);
+        } else {
+            throw new NoSurfLoginException();
+        }
+
+        if (ACCESS_DENIED_ERROR_CODE.equals(error)) {
+            throw new NoSurfAccessDeniedLoginException();
+        } else if ("".equals(error)) {
+            throw new NoSurfLoginException();
+        }
+
+        if (code != null && !"".equals(code)) {
+            return code;
+        } else {
+            throw new NoSurfLoginException();
+        }
+    }
+
     // endregion helper methods --------------------------------------------------------------------
 
     // region observers/listeners ------------------------------------------------------------------
@@ -330,32 +364,24 @@ public class MainActivity extends BaseActivity implements
         super.onNewIntent(intent);
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String code;
             Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN_FRAGMENT);
 
             if (loginFragment != null) {
                 fm.beginTransaction().remove(loginFragment).commit();
             }
 
-            Uri uri = intent.getData();
-            String error;
-            String code;
-
-            //TODO: is there a good way to avoid this null check?
-            if (uri != null) {
-                error = uri.getQueryParameter(ERROR);
-                code = uri.getQueryParameter(CODE);
-            } else {
-                error = "";
-                code = "";
+            try {
+                code = extractCodeFromIntent(intent);
+            } catch (NoSurfAccessDeniedLoginException e) {
+                Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                return;
+            } catch (NoSurfLoginException e) {
+                Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                return;
             }
 
-            if (ACCESS_DENIED_ERROR_CODE.equals(error)) {
-                Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
-            } else if ("".equals(error)) {
-                Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_SHORT).show();
-            } else {
-                viewModel.fetchUserOAuthTokenASync(code);
-            }
+            viewModel.fetchUserOAuthTokenASync(code);
         }
     }
 
