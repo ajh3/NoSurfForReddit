@@ -24,7 +24,6 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
 abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    private SwipeRefreshLayout swipeRefreshLayout;
     PostsAdapter postsAdapter;
     NoSurfViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
@@ -60,8 +59,10 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void cancelRefreshingAnimation() {
-        if (swipeRefreshLayout.isRefreshing()) {
-            swipeRefreshLayout.setRefreshing(false);
+        SwipeRefreshLayout s = getView().findViewById(R.id.posts_fragment_swipe_refresh_layout);
+
+        if (s.isRefreshing()) {
+            s.setRefreshing(false);
         }
     }
 
@@ -76,8 +77,8 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     private void setupSwipeRefreshLayout(View v) {
-        swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_to_refresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
+        SwipeRefreshLayout s = v.findViewById(R.id.posts_fragment_swipe_refresh_layout);
+        s.setOnRefreshListener(this);
     }
 
     // endregion helper methods --------------------------------------------------------------------
