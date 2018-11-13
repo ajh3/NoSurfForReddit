@@ -34,8 +34,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="000000" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/Desktop/yinyang2.png" />
+                                      <entry key="backgroundColor" value="2b2b2b" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/Desktop/yinyang2-gray.png" />
                                       <entry key="legacyIconShape" value="CIRCLE" />
                                       <entry key="webIconShape" value="CIRCLE" />
                                     </map>
