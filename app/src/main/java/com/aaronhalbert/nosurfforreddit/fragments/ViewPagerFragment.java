@@ -28,8 +28,6 @@ import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewP
 public class ViewPagerFragment extends BaseFragment {
     private NoSurfViewModel viewModel;
     private boolean isUserLoggedIn = false;
-    private MenuItem loginMenuItem;
-    private MenuItem logoutMenuItem;
 
     public static ViewPagerFragment newInstance() {
         return new ViewPagerFragment();
@@ -75,9 +73,6 @@ public class ViewPagerFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_view_pager_fragment, menu);
 
-        loginMenuItem = menu.findItem(R.id.login);
-        logoutMenuItem = menu.findItem(R.id.logout);
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -112,6 +107,9 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem loginMenuItem = menu.findItem(R.id.login);
+        MenuItem logoutMenuItem = menu.findItem(R.id.logout);
+
         if (isUserLoggedIn) {
             loginMenuItem.setVisible(false);
             logoutMenuItem.setVisible(true);
