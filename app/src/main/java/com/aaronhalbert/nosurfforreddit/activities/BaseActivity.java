@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -20,11 +21,13 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
-    private static final String FILENAME_EXTENSION = ".txt";
+    private static final String FILENAME_EXTENSION = "message/rfc822";
     private static final String FAILED_TO_WRITE_LOGS_TO_FILE = "Failed to write logs to file";
     private static final String DEV_EMAIL = "aaron.james.halbert@gmail.com";
     private static final String EMAIL_SUBJECT = "NoSurf for reddit crash log";
     private static final String PROMPT = "Unexpected error: Send bug report?";
+    private static final String INTENT_TYPE = "text/plain";
+    private static final String FAILED_TO_START_SEND_LOGCAT_MAIL_ACTIVITY = "Failed to start sendLogcatMail activity";
     private boolean isInjectorUsed;
 
     @Override
@@ -62,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return ((NoSurfApplication) getApplication()).getApplicationComponent();
     }
 
-    void sendLogcatMail() {
+    private void sendLogcatMail() {
         File outputFile = new File(Environment.getExternalStorageDirectory(),
                 generateRandomAlphaNumericString() + FILENAME_EXTENSION);
         try {
@@ -72,12 +75,20 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.e(getClass().toString(), FAILED_TO_WRITE_LOGS_TO_FILE);
         }
 
-        Intent i = new Intent(Intent.ACTION_SENDTO);
         String to[] = {DEV_EMAIL};
+        Uri uri = Uri.fromFile(outputFile);
+
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType(INTENT_TYPE);
         i.putExtra(Intent.EXTRA_EMAIL, to);
-        i.putExtra(Intent.EXTRA_STREAM, outputFile.getAbsolutePath());
         i.putExtra(Intent.EXTRA_SUBJECT, EMAIL_SUBJECT);
-        startActivity(Intent.createChooser(i , PROMPT));
+        i.putExtra(Intent.EXTRA_STREAM, uri);
+
+        try {
+            startActivity(Intent.createChooser(i , PROMPT));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Log.e(getClass().toString(), FAILED_TO_START_SEND_LOGCAT_MAIL_ACTIVITY);
+        }
     }
 
     String generateRandomAlphaNumericString() {
