@@ -1,5 +1,5 @@
 # NoSurf for reddit
-"NoSurf for reddit" is the world's first non-addictive Reddit client.
+"NoSurf for reddit" is the world's first **non-addictive** Reddit client.
 
 NoSurf for reddit lets you access:
 
@@ -9,15 +9,11 @@ NoSurf for reddit lets you access:
 
 ...and nothing else. Plus, it X's out posts you've already read, so you won't click them again.
 
-No more endless scrolling. 
-No more brain hijacking.
-No more mindless surfing.
-
-Take control now by deleting your current Reddit app and installing NoSurf for reddit. Do it now.
+No more endless scrolling. No more brain hijacking. No more mindless surfing. Take control now by deleting your current Reddit app and installing NoSurf for reddit. Do it now.
 
 Includes Night Mode and AMOLED Night Mode. No special permissions required. 
 
-NoSurf for reddit is free, ad-free, libre, and privacy-centric, and always will be. reddit is a registered trademark owned by reddit, Inc.
+NoSurf for reddit is **free, ad-free, libre, and privacy-centric**, and always will be. reddit is a registered trademark owned by reddit, Inc.
 
 https://play.google.com/store/apps/details?id=com.aaronhalbert.nosurfforreddit
 
