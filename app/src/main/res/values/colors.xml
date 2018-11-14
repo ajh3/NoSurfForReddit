@@ -3,8 +3,10 @@
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#00796b</color>
     <color name="colorAccent">#607D8B</color>
+    <!--TODO: some of these values are copied and hardcoded from the day/night theme defaults - not the right way to do it -->
     <color name="colorRecyclerViewText">#8A000000</color>
     <color name="colorRecyclerViewTextClicked">#8ABFBFBF</color>
+    <!--TODO: without specifying these night values in the default colors.xml, app doesn't compile - figure out how to avoid having to include?-->
     <color name="colorNightBg">@color/background_material_dark</color>
     <color name="colorAmoledNightBg">#FF000000</color>
 </resources>

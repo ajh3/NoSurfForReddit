@@ -258,6 +258,7 @@ public class MainActivity extends BaseActivity implements
     /* MainActivity is in charge of all navigation. It uses the listeners below
      * to listen/react to nav events propagated via LiveData through the ViewModel */
 
+    //TODO: consider scrapping this and propagate Exceptions up to MainActivity instead (?)
     private void subscribeToNetworkErrors() {
         Context context = this;
 
