@@ -36,8 +36,6 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 
-import java.util.UUID;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -167,10 +165,6 @@ public class MainActivity extends BaseActivity implements
     // endregion login/logout ----------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
-
-    private String generateRandomAlphaNumericString() {
-        return UUID.randomUUID().toString();
-    }
 
     //detects all violations on main thread, logs to Logcat, and flashes red border if DEBUG build
     private void setupStrictMode() {
