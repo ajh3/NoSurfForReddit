@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.animation.TimeInterpolator;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,11 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
@@ -162,8 +156,8 @@ public class ViewPagerFragment extends BaseFragment {
 
     // region observers ----------------------------------------------------------------------------
 
-    /* Observe both viewstates, as the refresh button may refresh either data stream depending
-     * on which page in the ViewPager is currently selected. */
+    /* We need to observe both viewstates, as the refresh button may refresh either data stream
+     * depending on which ViewPager page is currently selected. */
     private void observeBothPostsViewStateLiveData() {
         viewModel.getAllPostsViewStateLiveData().observe(this, listing -> refreshDrawableAnimator.end());
         viewModel.getSubscribedPostsViewStateLiveData().observe(this, listing -> refreshDrawableAnimator.end());
