@@ -501,21 +501,34 @@ public class Repository {
             postsViewStateCache = mergedAllPostsCache;
         }
 
+        /* whenever a new PostsViewState object arrives, cache it, update the cache with
+         * the latest list of clicked post IDs, and emit the result. Note that when a new
+         * PostsViewState object arrives, it is because the list of posts in the app has
+         * been reloaded. Thus, we emit a result every time the list is reloaded, and it
+         * always is checked against the most recent list of clicked post IDs, which
+         * is kept up to date by the other source LiveData. */
         mediator.addSource(postsViewStateLiveData, postsViewState -> {
             for (int i = 0; i < 25; i++) {
                 postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
 
-                updateCachedClickedPostIds(postsViewStateCache, i);
+                updatePostsViewStateCacheWithLatestClickedPostIds(postsViewStateCache, i);
             }
 
             mediator.setValue(postsViewStateCache);
         });
 
+        /* whenever a new list of clicked post IDs arrives, cache it and update the latest
+         * PostsViewState cache, so it is ready to be emitted the next time a PostsViewState
+         * object arrives to the other source LiveData. Here we do NOT set a result on the
+         * mediator, as we never want to emit a result that has clicked post IDs but no
+         * PostsViewState. In other words, whatever arrives here is prepared and stashed in
+         * postsViewStateCache, and there it sits until the next PostsViewState arrives to the
+         * other source LiveData, and then the whole bundle is emitted. */
         mediator.addSource(getClickedPostIdsLiveData(), strings -> {
             clickedPostIdsCache = strings;
 
             for (int i = 0; i < 25; i++) {
-                updateCachedClickedPostIds(postsViewStateCache, i);
+                updatePostsViewStateCacheWithLatestClickedPostIds(postsViewStateCache, i);
             }
         });
 
@@ -526,7 +539,7 @@ public class Repository {
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void updateCachedClickedPostIds(PostsViewState postsViewStateCache, int i) {
+    private void updatePostsViewStateCacheWithLatestClickedPostIds(PostsViewState postsViewStateCache, int i) {
         if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {
             postsViewStateCache.hasBeenClicked[i] = true;
         }
