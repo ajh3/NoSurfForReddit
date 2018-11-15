@@ -24,6 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         setupStrictMode();
 
+        /*
         // catch all uncaught exceptions and log them
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
@@ -31,6 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Log.e(getClass().toString(), "Uncaught exception: ", e);
             }
         });
+        */
     }
 
     @UiThread
