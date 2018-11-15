@@ -20,6 +20,7 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
@@ -47,12 +48,9 @@ public class MainActivity extends BaseActivity implements
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
-    private static final String CLIENT_ID = "jPF59UF5MbMkWg";
     private static final String RESPONSE_TYPE = "code";
-    private static final String REDIRECT_URI = "nosurfforreddit://oauth";
     private static final String DURATION = "permanent";
     private static final String SCOPE = "identity mysubreddits read";
-    private static final String AUTH_URL_BASE = "https://www.reddit.com/api/v1/authorize.compact?client_id=";
     private static final String AUTH_URL_RESPONSE_TYPE = "&response_type=";
     private static final String AUTH_URL_STATE = "&state=";
     private static final String AUTH_URL_REDIRECT_URI = "&redirect_uri=";
@@ -134,14 +132,14 @@ public class MainActivity extends BaseActivity implements
 
     private void login() {
         final String authUrl
-                = AUTH_URL_BASE
-                + CLIENT_ID
+                = BuildConfig.AUTH_URL_BASE
+                + BuildConfig.CLIENT_ID
                 + AUTH_URL_RESPONSE_TYPE
                 + RESPONSE_TYPE
                 + AUTH_URL_STATE
                 + generateRandomAlphaNumericString()
                 + AUTH_URL_REDIRECT_URI
-                + REDIRECT_URI
+                + BuildConfig.REDIRECT_URI
                 + AUTH_URL_DURATION
                 + DURATION
                 + AUTH_URL_SCOPE

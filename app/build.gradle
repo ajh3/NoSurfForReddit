@@ -16,6 +16,10 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        buildConfigField "String", "AUTH_URL_BASE", '"https://www.reddit.com/api/v1/authorize.compact?client_id="'
+        buildConfigField "String", "CLIENT_ID", '"jPF59UF5MbMkWg"'
+        buildConfigField "String", "REDIRECT_URI", '"nosurfforreddit://oauth"'
     }
 
     buildTypes {
