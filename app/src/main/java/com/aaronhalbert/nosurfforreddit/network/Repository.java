@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
@@ -35,16 +36,12 @@ import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
 
 public class Repository {
-    private static final String APP_ONLY_GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static final String USER_GRANT_TYPE = "authorization_code";
     private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
-    private static final String OAUTH_BASE_URL = "https://www.reddit.com/api/v1/access_token";
-    private static final String REDIRECT_URI = "nosurfforreddit://oauth";
-    private static final String CLIENT_ID = "jPF59UF5MbMkWg";
     private static final String KEY_USER_OAUTH_ACCESS_TOKEN = "userAccessToken";
     private static final String KEY_USER_OAUTH_REFRESH_TOKEN = "userAccessRefreshToken";
-    private static final String AUTH_HEADER = okhttp3.Credentials.basic(CLIENT_ID, "");
+    private static final String AUTH_HEADER = okhttp3.Credentials.basic(BuildConfig.CLIENT_ID, "");
     private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
     private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
@@ -113,8 +110,8 @@ public class Repository {
      *  Also called to refresh this anonymous token when it expires */
     private void fetchAppOnlyOAuthTokenASync(final NetworkCallbacks callback, final String id) {
         ri.fetchAppOnlyOAuthTokenASync(
-                OAUTH_BASE_URL,
-                APP_ONLY_GRANT_TYPE,
+                BuildConfig.OAUTH_BASE_URL,
+                BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
                 .enqueue(new Callback<AppOnlyOAuthToken>() {
@@ -155,10 +152,10 @@ public class Repository {
      * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
     public void fetchUserOAuthTokenASync(String code) {
         ri.fetchUserOAuthTokenASync(
-                OAUTH_BASE_URL,
+                BuildConfig.OAUTH_BASE_URL,
                 USER_GRANT_TYPE,
                 code,
-                REDIRECT_URI,
+                BuildConfig.REDIRECT_URI,
                 AUTH_HEADER)
                 .enqueue(new Callback<UserOAuthToken>() {
 
@@ -189,7 +186,7 @@ public class Repository {
 
     private void refreshExpiredUserOAuthTokenASync(final NetworkCallbacks callback, final String id) {
         ri.refreshExpiredUserOAuthTokenASync(
-                OAUTH_BASE_URL,
+                BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
