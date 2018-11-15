@@ -540,9 +540,8 @@ public class Repository {
     // region helper methods -----------------------------------------------------------------------
 
     private void updatePostsViewStateCacheWithLatestClickedPostIds(PostsViewState postsViewStateCache, int i) {
-        if (Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id)) {
-            postsViewStateCache.hasBeenClicked[i] = true;
-        }
+        postsViewStateCache.hasBeenClicked[i] =
+                Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id);
     }
 
     // endregion helper methods --------------------------------------------------------------------
