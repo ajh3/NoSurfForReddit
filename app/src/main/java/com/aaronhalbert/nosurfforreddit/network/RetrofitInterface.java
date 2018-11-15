@@ -18,7 +18,7 @@ import retrofit2.http.Url;
 
 interface RetrofitInterface {
     //TODO: update version here on each release
-    String USER_AGENT = "User-Agent: android:com.aaronhalbert.nosurfforreddit:v1 (by /u/Suspicious_Advantage)";
+    String USER_AGENT = "User-Agent: android:com.aaronhalbert.nosurfforreddit:v2 (by /u/Suspicious_Advantage)";
 
     @Headers({USER_AGENT})
     @FormUrlEncoded
