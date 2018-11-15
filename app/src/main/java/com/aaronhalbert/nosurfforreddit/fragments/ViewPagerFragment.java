@@ -71,14 +71,6 @@ public class ViewPagerFragment extends BaseFragment {
         tabs.setTabMode(TabLayout.MODE_FIXED);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // avoid leaking Context when ViewPagerFragment gets replace()'d and goes on backstack
-        refreshDrawableAnimator = null;
-    }
-
     // endregion lifecycle methods -----------------------------------------------------------------
 
     // region menu ---------------------------------------------------------------------------------
@@ -132,13 +124,13 @@ public class ViewPagerFragment extends BaseFragment {
      * actionViewClass attribute to assign a drawable, so that we can treat it as an ImageView
      * and more easily animate it when clicked. */
     private void setupRefreshIconAnimation(Menu menu) {
-        ViewPager pager = getView().findViewById(R.id.view_pager_fragment_pager);
         ImageView iv = (ImageView) menu.findItem(R.id.refresh).getActionView();
         iv.setImageResource(R.drawable.ic_refresh_24dp);
         refreshDrawableAnimator.setTarget(iv);
         refreshDrawableAnimator.setInterpolator(new OvershootInterpolator());
         iv.setOnClickListener(v -> {
             refreshDrawableAnimator.start();
+            ViewPager pager = getView().findViewById(R.id.view_pager_fragment_pager);
 
             if (pager.getCurrentItem() == 0) {
                 viewModel.fetchAllPostsASync();
