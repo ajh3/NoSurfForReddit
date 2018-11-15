@@ -23,16 +23,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setupStrictMode();
-
-        /*
-        // catch all uncaught exceptions and log them
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                Log.e(getClass().toString(), "Uncaught exception: ", e);
-            }
-        });
-        */
+        //setupCustomUncaughtExceptionHandler();
     }
 
     @UiThread
@@ -62,5 +53,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         StrictMode.setThreadPolicy(builder.build());
+    }
+
+    //TODO: for when ACRA is implemented
+    private void setupCustomUncaughtExceptionHandler() {
+        // catch all uncaught exceptions and log them
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                Log.e(getClass().toString(), "Uncaught exception: ", e);
+            }
+        });
     }
 }
