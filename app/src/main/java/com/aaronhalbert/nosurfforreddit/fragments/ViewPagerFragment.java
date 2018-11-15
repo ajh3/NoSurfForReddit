@@ -149,7 +149,11 @@ public class ViewPagerFragment extends BaseFragment {
             if (pager.getCurrentItem() == 0) {
                 viewModel.fetchAllPostsASync();
             } else {
-                viewModel.fetchSubscribedPostsASync();
+                if (isUserLoggedIn) {
+                    viewModel.fetchSubscribedPostsASync();
+                } else {
+                    refreshDrawableAnimator.end();
+                }
             }
         });
     }
