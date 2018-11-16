@@ -79,11 +79,9 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // initialization
         getPresentationComponent().inject(this);
         initPrefs();
-        initNightMode();
+        initNightMode(); // call before super to avoid MainActivity recreating itself
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -180,9 +178,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    /* TODO: calling nightModeOn() or nightModeOff() in onCreate() seems to cause the
-     * activity to be recreated after onCreate() finishes
-     * unclear if it's expected behavior or a bug */
     private void nightModeOn() {
         new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
