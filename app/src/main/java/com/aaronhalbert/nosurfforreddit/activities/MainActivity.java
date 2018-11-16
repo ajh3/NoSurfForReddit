@@ -165,7 +165,8 @@ public class MainActivity extends BaseActivity implements
     /* MainActivity is in charge of all navigation. It uses the listeners below
      * to listen/react to nav events propagated via LiveData through the ViewModel */
 
-    //TODO: consider scrapping this and propagate Exceptions up to MainActivity instead (?)
+    //TODO: is there a way to cleanly throw exceptions from the Repository up to the view layer
+    // and show Toasts that way, so we don't need this observer?
     private void subscribeToNetworkErrors() {
         Context context = this;
 
