@@ -22,9 +22,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupStrictMode();
+        //setupStrictMode();
         //setupCustomUncaughtExceptionHandler();
     }
+
+    // region dagger -------------------------------------------------------------------------------
 
     @UiThread
     PresentationComponent getPresentationComponent() {
@@ -42,6 +44,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return ((NoSurfApplication) getApplication()).getApplicationComponent();
     }
 
+    // endregion dagger ----------------------------------------------------------------------------
+
+    //detects all violations on main thread, logs to Logcat, and flashes red border if DEBUG build
     private void setupStrictMode() {
         StrictMode.ThreadPolicy.Builder builder=
                 new StrictMode.ThreadPolicy.Builder()
@@ -54,6 +59,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         StrictMode.setThreadPolicy(builder.build());
     }
+
 
     //TODO: for when ACRA is implemented
     private void setupCustomUncaughtExceptionHandler() {

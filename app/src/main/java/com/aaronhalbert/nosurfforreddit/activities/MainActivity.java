@@ -1,73 +1,54 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
-import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.network.Repository;
-import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
-
-import java.util.UUID;
+import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
+
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
-
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
     private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
-    private static final String RESPONSE_TYPE = "code";
-    private static final String DURATION = "permanent";
-    private static final String SCOPE = "identity mysubreddits read";
-    private static final String AUTH_URL_RESPONSE_TYPE = "&response_type=";
-    private static final String AUTH_URL_STATE = "&state=";
-    private static final String AUTH_URL_REDIRECT_URI = "&redirect_uri=";
-    private static final String AUTH_URL_DURATION = "&duration=";
-    private static final String AUTH_URL_SCOPE = "&scope=";
-    private static final String ERROR = "error";
-    private static final String CODE = "code";
-    private static final String ACCESS_DENIED_ERROR_CODE = "access_denied";
     private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
-    @SuppressWarnings("WeakerAccess")
-    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
-
-    @SuppressWarnings("WeakerAccess")
-    @Inject ViewModelFactory viewModelFactory;
+    @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    @SuppressWarnings("WeakerAccess") @Inject NoSurfAuthenticator noSurfAuthenticator;
     private NoSurfViewModel viewModel;
     private FragmentManager fm;
 
@@ -128,23 +109,9 @@ public class MainActivity extends BaseActivity implements
 
     // region login/logout -------------------------------------------------------------------------
 
-    private void login() {
-        final String authUrl
-                = BuildConfig.AUTH_URL_BASE
-                + BuildConfig.CLIENT_ID
-                + AUTH_URL_RESPONSE_TYPE
-                + RESPONSE_TYPE
-                + AUTH_URL_STATE
-                + generateRandomAlphaNumericString()
-                + AUTH_URL_REDIRECT_URI
-                + BuildConfig.REDIRECT_URI
-                + AUTH_URL_DURATION
-                + DURATION
-                + AUTH_URL_SCOPE
-                + SCOPE;
-
+    public void login() {
         launchWebView(new LaunchWebViewParams(
-                authUrl,
+                noSurfAuthenticator.buildAuthUrl(),
                 TAG_WEBVIEW_LOGIN_FRAGMENT,
                 true));
     }
@@ -152,16 +119,14 @@ public class MainActivity extends BaseActivity implements
     /* there is no viewModel.logUserIn() method, see Repository.fetchUserOAuthTokenASync()
      * for the login routine */
 
-    private void logout() {
-        clearCookies();
+    public void logout() {
+        noSurfAuthenticator.clearCookies();
         viewModel.logUserOut();
     }
 
     // endregion login/logout ----------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
-
-    //detects all violations on main thread, logs to Logcat, and flashes red border if DEBUG build
 
     private void initPrefs() {
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
@@ -191,57 +156,6 @@ public class MainActivity extends BaseActivity implements
 
     private void nightModeOff() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-    }
-
-    // clears cookies in the app's WebView
-    private void clearCookies() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            CookieManager.getInstance().removeAllCookies(null);
-            CookieManager.getInstance().flush();
-        } else {
-            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(getApplication());
-            cookieSyncManager.startSync();
-            CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.removeAllCookie();
-            cookieManager.removeSessionCookie();
-            cookieSyncManager.stopSync();
-            cookieSyncManager.sync();
-        }
-    }
-
-    private String extractCodeFromIntent(Intent i) throws NoSurfLoginException {
-        Uri uri;
-        String error;
-        String code;
-
-        if (i.getData() != null) {
-            uri = i.getData();
-        } else {
-            throw new NoSurfLoginException();
-        }
-
-        if (uri != null) {
-            error = uri.getQueryParameter(ERROR);
-            code = uri.getQueryParameter(CODE);
-        } else {
-            throw new NoSurfLoginException();
-        }
-
-        if (ACCESS_DENIED_ERROR_CODE.equals(error)) {
-            throw new NoSurfAccessDeniedLoginException();
-        } else if ("".equals(error)) {
-            throw new NoSurfLoginException();
-        }
-
-        if (code != null && !"".equals(code)) {
-            return code;
-        } else {
-            throw new NoSurfLoginException();
-        }
-    }
-
-    String generateRandomAlphaNumericString() {
-        return UUID.randomUUID().toString();
     }
 
     // endregion helper methods --------------------------------------------------------------------
@@ -351,7 +265,7 @@ public class MainActivity extends BaseActivity implements
             }
 
             try {
-                code = extractCodeFromIntent(intent);
+                code = noSurfAuthenticator.extractCodeFromIntent(intent);
             } catch (NoSurfAccessDeniedLoginException e) {
                 Log.e(getClass().toString(), ACCESS_DENIED_ERROR_MESSAGE, e);
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
@@ -370,7 +284,7 @@ public class MainActivity extends BaseActivity implements
 
     // region app navigation -----------------------------------------------------------------------
 
-    private void launchWebView(LaunchWebViewParams launchWebViewParams) {
+    public void launchWebView(LaunchWebViewParams launchWebViewParams) {
         String url = launchWebViewParams.url;
         String tag = launchWebViewParams.tag;
         boolean doAnimation = launchWebViewParams.doAnimation;
