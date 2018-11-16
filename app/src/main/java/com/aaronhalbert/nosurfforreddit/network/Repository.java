@@ -1,20 +1,13 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
+import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -22,6 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,20 +27,8 @@ import retrofit2.Retrofit;
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.USER_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
 
 public class Repository {
-    private static final String USER_GRANT_TYPE = "authorization_code";
-    private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
-    private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
-    private static final String KEY_USER_OAUTH_ACCESS_TOKEN = "userAccessToken";
-    private static final String KEY_USER_OAUTH_REFRESH_TOKEN = "userAccessRefreshToken";
-    private static final String AUTH_HEADER = okhttp3.Credentials.basic(BuildConfig.CLIENT_ID, "");
-    private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
-    private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
-    private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
     private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
@@ -52,50 +36,45 @@ public class Repository {
     private static final String ZERO = "zero";
     private static final int RESPONSE_CODE_401 = 401;
 
-    // caches to let us keep working during asynchronous writes to SharedPrefs
-    private String userOAuthAccessTokenCache = "";
-    private String userOAuthRefreshTokenCache = "";
-    private String appOnlyOAuthTokenCache = "";
-    private boolean isUserLoggedInCache;
-
     // these 3 "raw" LiveData come straight from the Reddit API; only used internally in repo
     private final MutableLiveData<Listing> allPostsRawLiveData = new MutableLiveData<>();
     private final MutableLiveData<Listing> subscribedPostsRawLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Listing>> commentsRawLiveData = new MutableLiveData<>();
 
-    // helper fields used to transform raw live LiveData into clean viewstates that feed the UI
+    // helper fields used to clean raw LiveData; only used internally in repo
     private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
     private final PostsViewState mergedAllPostsCache = new PostsViewState();
     private final PostsViewState mergedSubscribedPostsCache = new PostsViewState();
     private String[] clickedPostIdsCache = new String[25];
 
-    // these 3 "cleaned" LiveData feed the UI and have public getters
+    // these 3 "cleaned" LiveData feed the UI directly and have public getters
     private final LiveData<PostsViewState> allPostsViewStateLiveData;
     private final LiveData<PostsViewState> subscribedPostsViewStateLiveData;
     private final LiveData<CommentsViewState> commentsViewStateLiveData;
 
     // user login status
-    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+    private final LiveData<Boolean> isUserLoggedInLiveData;
 
     // event feeds
     private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
 
     // other
-    private final RetrofitInterface ri;
+    private final RetrofitContentInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
-    private final SharedPreferences preferences;
     private final ExecutorService executor;
+    private final NoSurfAuthenticator authenticator;
 
     public Repository(Retrofit retrofit,
-                      SharedPreferences preferences,
                       ClickedPostIdRoomDatabase db,
-                      ExecutorService executor) {
-        this.preferences = preferences;
-        ri = retrofit.create(RetrofitInterface.class);
+                      ExecutorService executor,
+                      NoSurfAuthenticator authenticator) {
+        authenticator.setRepository(this);
+        this.executor = executor;
+        this.authenticator = authenticator;
+        isUserLoggedInLiveData = authenticator.isUserLoggedInLiveData;
+        ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
         clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
-        this.executor = executor;
-
         allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
         subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
         commentsViewStateLiveData = cleanCommentsRawLiveData();
@@ -103,125 +82,8 @@ public class Repository {
 
     // region network auth calls -------------------------------------------------------------------
 
-    /* Logged-out (aka anonymous, aka app-only users require an anonymous token to interact with
-     * the Reddit API and view public posts and comments from r/all. This token is provided by
-     * fetchAppOnlyOAuthTokenASync() and does not require any user credentials.
-     *
-     *  Also called to refresh this anonymous token when it expires */
-    private void fetchAppOnlyOAuthTokenASync(final NetworkCallbacks callback, final String id) {
-        ri.fetchAppOnlyOAuthTokenASync(
-                BuildConfig.OAUTH_BASE_URL,
-                BuildConfig.APP_ONLY_GRANT_TYPE,
-                DEVICE_ID,
-                AUTH_HEADER)
-                .enqueue(new Callback<AppOnlyOAuthToken>() {
-
-            @Override
-            public void onResponse(Call<AppOnlyOAuthToken> call,
-                                   Response<AppOnlyOAuthToken> response) {
-                appOnlyOAuthTokenCache = response.body().getAccessToken();
-                // don't bother saving this ephemeral token into sharedprefs
-
-                switch (callback) {
-                    case FETCH_ALL_POSTS_ASYNC:
-                        fetchAllPostsASync();
-                        break;
-                    case FETCH_POST_COMMENTS_ASYNC:
-                        fetchPostCommentsASync(id);
-                        break;
-                    case FETCH_SUBSCRIBED_POSTS_ASYNC:
-                        // do nothing, as an app-only token is for logged-out users only
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED, t);
-                setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
-            }
-        });
-    }
-
-    /* Logged-in users can view posts from their subscribed subreddits in addition to r/all,
-     * but this requires a user OAuth token, which is provided by fetchUserOAuthTokenASync().
-     *
-     * Note that after the user is logged in, their user token is now also used for viewing
-     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
     public void fetchUserOAuthTokenASync(String code) {
-        ri.fetchUserOAuthTokenASync(
-                BuildConfig.OAUTH_BASE_URL,
-                USER_GRANT_TYPE,
-                code,
-                BuildConfig.REDIRECT_URI,
-                AUTH_HEADER)
-                .enqueue(new Callback<UserOAuthToken>() {
-
-            @Override
-            public void onResponse(Call<UserOAuthToken> call,
-                                   Response<UserOAuthToken> response) {
-                userOAuthAccessTokenCache = response.body().getAccessToken();
-                userOAuthRefreshTokenCache = response.body().getRefreshToken();
-
-                preferences
-                        .edit()
-                        .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
-                        .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshTokenCache)
-                        .apply();
-
-                setUserLoggedIn();
-                fetchAllPostsASync();
-                fetchSubscribedPostsASync();
-            }
-
-            @Override
-            public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), USER_AUTH_CALL_FAILED, t);
-                setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
-            }
-        });
-    }
-
-    private void refreshExpiredUserOAuthTokenASync(final NetworkCallbacks callback, final String id) {
-        ri.refreshExpiredUserOAuthTokenASync(
-                BuildConfig.OAUTH_BASE_URL,
-                USER_REFRESH_GRANT_TYPE,
-                userOAuthRefreshTokenCache,
-                AUTH_HEADER)
-                .enqueue(new Callback<UserOAuthToken>() {
-
-            @Override
-            public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
-                userOAuthAccessTokenCache = response.body().getAccessToken();
-
-                preferences
-                        .edit()
-                        .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
-                        .apply();
-
-                switch (callback) {
-                    case FETCH_ALL_POSTS_ASYNC:
-                        fetchAllPostsASync();
-                        break;
-                    case FETCH_SUBSCRIBED_POSTS_ASYNC:
-                        fetchSubscribedPostsASync();
-                        break;
-                    case FETCH_POST_COMMENTS_ASYNC:
-                        fetchPostCommentsASync(id);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED, t);
-                setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
-            }
-        });
+        authenticator.fetchUserOAuthTokenASync(code);
     }
 
     // endregion network auth calls ----------------------------------------------------------------
@@ -234,11 +96,11 @@ public class Repository {
         String accessToken;
         String bearerAuth;
 
-        if (isUserLoggedInCache) {
-            accessToken = userOAuthAccessTokenCache;
+        if (authenticator.isUserLoggedInCache()) {
+            accessToken = authenticator.getUserOAuthAccessTokenCache();
         } else {
-            if (!"".equals(appOnlyOAuthTokenCache)) {
-                accessToken = appOnlyOAuthTokenCache;
+            if (!"".equals(authenticator.getAppOnlyOAuthTokenCache())) {
+                accessToken = authenticator.getAppOnlyOAuthTokenCache();
             } else {
                 /* If user is logged out and there's no app only OAuth token in the cache,
                  * we need to fetch one.
@@ -267,10 +129,10 @@ public class Repository {
              * background timer task that refreshes them every X minutes */
             @Override
             public void onResponse(Call<Listing> call, Response<Listing> response) {
-                if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                    refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
+                if ((response.code() == RESPONSE_CODE_401) && (authenticator.isUserLoggedInCache())) {
+                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                 } else if (response.code() == RESPONSE_CODE_401) {
-                    fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
+                    authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                 } else {
                     allPostsRawLiveData.setValue(response.body());
                 }
@@ -286,17 +148,17 @@ public class Repository {
 
     /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
     public void fetchSubscribedPostsASync() {
-        String bearerAuth = BEARER + userOAuthAccessTokenCache;
+        String bearerAuth = BEARER + authenticator.getUserOAuthAccessTokenCache();
 
         //noinspection StatementWithEmptyBody
-        if (isUserLoggedInCache) {
+        if (authenticator.isUserLoggedInCache()) {
             ri.fetchSubscribedPostsASync(bearerAuth).enqueue(new Callback<Listing>() {
 
                 // same callback logic as documented in fetchAllPostsASync()
                 @Override
                 public void onResponse(Call<Listing> call, Response<Listing> response) {
                     if (response.code() == RESPONSE_CODE_401) {
-                        refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
+                        authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
                     } else {
                         subscribedPostsRawLiveData.setValue(response.body());
                     }
@@ -321,10 +183,10 @@ public class Repository {
             String accessToken;
             String bearerAuth;
 
-            if (isUserLoggedInCache) {
-                accessToken = userOAuthAccessTokenCache;
+            if (authenticator.isUserLoggedInCache()) {
+                accessToken = authenticator.getUserOAuthAccessTokenCache();
             } else {
-                accessToken = appOnlyOAuthTokenCache;
+                accessToken = authenticator.getAppOnlyOAuthTokenCache();
             }
 
             bearerAuth = BEARER + accessToken;
@@ -334,10 +196,10 @@ public class Repository {
                 // same callback logic as documented in fetchAllPostsASync()
                 @Override
                 public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                    if ((response.code() == RESPONSE_CODE_401) && (isUserLoggedInCache)) {
-                        refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
+                    if ((response.code() == RESPONSE_CODE_401) && (authenticator.isUserLoggedInCache())) {
+                        authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else if (response.code() == RESPONSE_CODE_401) {
-                        fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
+                        authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
                     } else {
                         commentsRawLiveData.setValue(response.body());
                     }
@@ -358,44 +220,16 @@ public class Repository {
 
     // region init/de-init methods -----------------------------------------------------------------
 
-    /* login credentials are stored in SharedPreferences to survive not only config changes,
-     *  but process termination and reboots, so user doesn't have to re-login every time the app
-     *  exits
-     *
-     *  This method should run on app initialization, to see if the user's credentials have been
-     *  previously saved */
     public void checkIfLoginCredentialsAlreadyExist() {
-        userOAuthAccessTokenCache = preferences
-                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, "");
-
-        userOAuthRefreshTokenCache = preferences
-                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, "");
-
-        if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
-            setUserLoggedIn();
-        } else {
-            // need to explicitly call this here to help ContainerFragment set itself up
-            setUserLoggedOut();
-        }
+        authenticator.checkIfLoginCredentialsAlreadyExist();
     }
 
-    private void setUserLoggedIn() {
-        isUserLoggedInCache = true;
-        isUserLoggedInLiveData.setValue(true);
+    void setUserLoggedIn() {
+        authenticator.setUserLoggedIn();
     }
 
     public void setUserLoggedOut() {
-        isUserLoggedInCache = false;
-        isUserLoggedInLiveData.setValue(false);
-
-        userOAuthAccessTokenCache = "";
-        userOAuthRefreshTokenCache = "";
-
-        preferences
-                .edit()
-                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, "")
-                .putString(KEY_USER_OAUTH_REFRESH_TOKEN, "")
-                .apply();
+        authenticator.setUserLoggedOut();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------
@@ -548,7 +382,7 @@ public class Repository {
 
     // region event handling -----------------------------------------------------------------------
 
-    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
+    void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
         networkErrorsLiveData.setValue(n);
     }
 
@@ -605,7 +439,7 @@ public class Repository {
 
     // region enums --------------------------------------------------------------------------------
 
-    private enum NetworkCallbacks {
+    enum NetworkCallbacks {
         FETCH_ALL_POSTS_ASYNC,
         FETCH_POST_COMMENTS_ASYNC,
         FETCH_SUBSCRIBED_POSTS_ASYNC

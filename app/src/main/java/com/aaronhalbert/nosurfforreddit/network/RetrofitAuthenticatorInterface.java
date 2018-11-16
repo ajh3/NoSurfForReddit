@@ -2,22 +2,17 @@ package com.aaronhalbert.nosurfforreddit.network;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Url;
 
-interface RetrofitInterface {
+interface RetrofitAuthenticatorInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
@@ -46,20 +41,4 @@ interface RetrofitInterface {
             @Field("grant_type") String grantType,
             @Field("refresh_token") String refreshToken,
             @Header("Authorization") String authorization);
-
-    @Headers({BuildConfig.USER_AGENT})
-    @GET("r/all/hot")
-    Call<Listing> fetchAllPostsASync(
-            @Header("Authorization") String authorization);
-
-    @Headers({BuildConfig.USER_AGENT})
-    @GET("hot")
-    Call<Listing> fetchSubscribedPostsASync(
-            @Header("Authorization") String authorization);
-
-    @Headers({BuildConfig.USER_AGENT})
-    @GET("comments/{article}")
-    Call<List<Listing>> fetchPostCommentsASync(
-            @Header("Authorization") String authorization,
-            @Path("article") String article);
 }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import androidx.fragment.app.FragmentActivity;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -31,10 +30,10 @@ public class ApplicationModule {
     @Singleton
     @Provides
     Repository provideNoSurfRepository(Retrofit retrofit,
-                                       @Named("oAuthSharedPrefs") SharedPreferences preferences,
                                        ClickedPostIdRoomDatabase db,
-                                       ExecutorService executor) {
-        return new Repository(retrofit, preferences, db, executor);
+                                       ExecutorService executor,
+                                       NoSurfAuthenticator authenticator) {
+        return new Repository(retrofit, db, executor, authenticator);
     }
 
     @Singleton
@@ -71,7 +70,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    NoSurfAuthenticator provideNoSurfAuthenticator() {
-        return new NoSurfAuthenticator(application);
+    NoSurfAuthenticator provideNoSurfAuthenticator(Retrofit retrofit,
+                                                   @Named("oAuthSharedPrefs") SharedPreferences preferences) {
+        return new NoSurfAuthenticator(application, retrofit, preferences);
     }
 }

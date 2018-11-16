@@ -10,7 +10,6 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.aaronhalbert.nosurfforreddit.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
@@ -35,6 +34,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.buildAuthUrl;
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.extractCodeFromIntent;
+
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
@@ -48,7 +50,6 @@ public class MainActivity extends BaseActivity implements
 
     @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    @SuppressWarnings("WeakerAccess") @Inject NoSurfAuthenticator noSurfAuthenticator;
     private NoSurfViewModel viewModel;
     private FragmentManager fm;
 
@@ -107,25 +108,6 @@ public class MainActivity extends BaseActivity implements
 
     // endregion lifecycle methods -----------------------------------------------------------------
 
-    // region login/logout -------------------------------------------------------------------------
-
-    public void login() {
-        launchWebView(new LaunchWebViewParams(
-                noSurfAuthenticator.buildAuthUrl(),
-                TAG_WEBVIEW_LOGIN_FRAGMENT,
-                true));
-    }
-
-    /* there is no viewModel.logUserIn() method, see Repository.fetchUserOAuthTokenASync()
-     * for the login routine */
-
-    public void logout() {
-        noSurfAuthenticator.clearCookies();
-        viewModel.logUserOut();
-    }
-
-    // endregion login/logout ----------------------------------------------------------------------
-
     // region helper methods -----------------------------------------------------------------------
 
     private void initPrefs() {
@@ -159,6 +141,24 @@ public class MainActivity extends BaseActivity implements
     }
 
     // endregion helper methods --------------------------------------------------------------------
+
+    // region login/logout -------------------------------------------------------------------------
+
+    public void login() {
+        launchWebView(new LaunchWebViewParams(
+                buildAuthUrl(),
+                TAG_WEBVIEW_LOGIN_FRAGMENT,
+                true));
+
+        /* onNewIntent captures the result of this login attempt, and is responsible for calling
+         * viewModel.logUserIn() if it's successful */
+    }
+
+    public void logout() {
+        viewModel.logUserOut();
+    }
+
+    // endregion login/logout ----------------------------------------------------------------------
 
     // region observers/listeners ------------------------------------------------------------------
 
@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity implements
             }
 
             try {
-                code = noSurfAuthenticator.extractCodeFromIntent(intent);
+                code = extractCodeFromIntent(intent);
             } catch (NoSurfAccessDeniedLoginException e) {
                 Log.e(getClass().toString(), ACCESS_DENIED_ERROR_MESSAGE, e);
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements
                 return;
             }
 
-            viewModel.fetchUserOAuthTokenASync(code);
+            viewModel.logUserIn(code);
         }
     }
 
