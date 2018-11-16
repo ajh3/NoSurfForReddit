@@ -120,4 +120,9 @@
 
     <style name="PostFragmentThirdComment"
         parent="PostFragmentFirstComment" tools:keep="@style/PostFragmentThirdComment" />
+
+    <!-- The launcher theme. It sets the main window background to the launch_screen drawable -->
+    <style name="Splash" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+    </style>
 </resources>

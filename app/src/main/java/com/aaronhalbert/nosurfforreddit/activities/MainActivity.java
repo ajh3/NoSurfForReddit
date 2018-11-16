@@ -82,9 +82,9 @@ public class MainActivity extends BaseActivity implements
 
         // initialization
         getPresentationComponent().inject(this);
-        super.onCreate(savedInstanceState);
         initPrefs();
         initNightMode();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // only necessary to specify the factory the first time here, subsequent calls to

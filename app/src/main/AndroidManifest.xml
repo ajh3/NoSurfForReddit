@@ -20,13 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <activity
             android:name=".activities.MainActivity"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -34,9 +31,18 @@
                 <data android:scheme="nosurfforreddit" android:host="oauth" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.SplashActivity"
+            android:theme="@style/Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <meta-data android:name="android.webkit.WebView.MetricsOptOut"
             android:value="true" />
-
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="false" />
 
