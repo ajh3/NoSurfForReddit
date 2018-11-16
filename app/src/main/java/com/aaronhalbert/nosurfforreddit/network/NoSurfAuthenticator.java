@@ -60,7 +60,7 @@ public class NoSurfAuthenticator {
 
     // other
     private final Application application;
-    private final RetrofitAuthenticatorInterface ri;
+    private final RetrofitAuthenticationInterface ri;
     private final SharedPreferences preferences;
     private Repository repository;
 
@@ -68,7 +68,7 @@ public class NoSurfAuthenticator {
                                Retrofit retrofit,
                                SharedPreferences preferences) {
         this.application = application;
-        ri = retrofit.create(RetrofitAuthenticatorInterface.class);
+        ri = retrofit.create(RetrofitAuthenticationInterface.class);
         this.preferences = preferences;
     }
 
