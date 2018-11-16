@@ -23,6 +23,7 @@ android {
         buildConfigField "String", "API_BASE_URL", '"https://oauth.reddit.com/"'
         buildConfigField "String", "OAUTH_BASE_URL", '"https://www.reddit.com/api/v1/access_token"'
         buildConfigField "String", "APP_ONLY_GRANT_TYPE", '"https://oauth.reddit.com/grants/installed_client"'
+        buildConfigField "String", "USER_AGENT", '"User-Agent: android:com.aaronhalbert.nosurfforreddit:v2 (by /u/Suspicious_Advantage)"'
     }
 
     buildTypes {

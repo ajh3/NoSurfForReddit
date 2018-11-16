@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.network;
 
+import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
@@ -17,10 +18,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Url;
 
 interface RetrofitInterface {
-    //TODO: update version here on each release
-    String USER_AGENT = "User-Agent: android:com.aaronhalbert.nosurfforreddit:v2 (by /u/Suspicious_Advantage)";
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST   // can't provide a relative URL here when using @Url
     Call<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync(
@@ -29,7 +28,7 @@ interface RetrofitInterface {
             @Field("device_id") String deviceId,
             @Header("Authorization") String authorization);
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
     Call<UserOAuthToken> fetchUserOAuthTokenASync(
@@ -39,7 +38,7 @@ interface RetrofitInterface {
             @Field("redirect_uri") String redirectUri,
             @Header("Authorization") String authorization);
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
     Call<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
@@ -48,17 +47,17 @@ interface RetrofitInterface {
             @Field("refresh_token") String refreshToken,
             @Header("Authorization") String authorization);
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @GET("r/all/hot")
     Call<Listing> fetchAllPostsASync(
             @Header("Authorization") String authorization);
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @GET("hot")
     Call<Listing> fetchSubscribedPostsASync(
             @Header("Authorization") String authorization);
 
-    @Headers({USER_AGENT})
+    @Headers({BuildConfig.USER_AGENT})
     @GET("comments/{article}")
     Call<List<Listing>> fetchPostCommentsASync(
             @Header("Authorization") String authorization,
