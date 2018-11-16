@@ -1,15 +1,16 @@
 # NoSurf for reddit
 "NoSurf for reddit" is the world's first **non-addictive** Reddit client.
 
-NoSurf for reddit lets you access:
+Here's what it does:
 
-- The top 25 posts from /r/all,
-- The top 25 posts from your subscribed subreddits,
-- The top 3 comments on each post,
+- Lets you browse ONLY the first page of /r/all,
+- Lets you browse ONLY the first page of your subscribed subreddits,
+- Lets you read ONLY the top 3 parent comments on each post,
+- Grays and X's out posts you've already read.
 
-...and nothing else. Plus, it X's out posts you've already read, so you won't click them again.
+...and that's it. No more endless scrolling. No more brain hijacking. No more mindless surfing. No more finding yourself on page 89 of /r/all at 3am.
 
-No more endless scrolling. No more brain hijacking. No more mindless surfing. Take control now by deleting your current Reddit app and installing NoSurf for reddit. Do it now.
+Take control now by deleting your current Reddit app and installing NoSurf for reddit. Do it now.
 
 Includes Night Mode and AMOLED Night Mode. No special permissions required. 
 
