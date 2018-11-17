@@ -18,41 +18,38 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
-        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingTop">4dp</item>
     </style>
 
     <style name="RecyclerViewRowDetails" tools:keep="@style/RecyclerViewRowDetails">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">14sp</item>
-
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="RecyclerViewRowThumbnail" tools:keep="@style/RecyclerViewRowThumbnail">
-        <item name="android:layout_width">90sp</item>
-        <item name="android:layout_height">90sp</item>
+        <item name="android:layout_width">96sp</item>
+        <item name="android:layout_height">96sp</item>
         <item name="android:contentDescription">@string/post_thumbnail_description</item>
-        <item name="android:padding">2dp</item>
+        <item name="android:padding">8dp</item>
     </style>
 
     <style name="PostFragmentTitle" tools:keep="@style/PostFragmentTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingLeft">5dp</item>
-        <item name="android:paddingRight">5dp</item>
-        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingTop">4dp</item>
     </style>
 
     <style name="PostFragmentDetails" tools:keep="@style/PostFragmentDetails">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">5dp</item>
-        <item name="android:paddingRight">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="PostFragmentImageForLinkPostsOnly" tools:keep="@style/PostFragmentImageForLinkPostsOnly">
@@ -66,12 +63,13 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:visibility">gone</item>
         <item name="android:background">?android:attr/colorForeground</item>
+        <item name="android:paddingBottom">3dp</item>
     </style>
 
     <style name="PostFragmentSelftextForSelfPostsOnly" tools:keep="@style/PostFragmentSelftextForSelfPostsOnly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">5dp</item>
+        <item name="android:padding">8dp</item>
         <item name="android:visibility">gone</item>
     </style>
 
@@ -86,7 +84,10 @@
     <style name="PostFragmentFirstCommentDetails" tools:keep="@style/PostFragmentFirstCommentDetails">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">5dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">4dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -94,16 +95,16 @@
     <style name="PostFragmentFirstComment" tools:keep="@style/PostFragmentFirstComment">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">10dp</item>
-        <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:visibility">gone</item>
     </style>
 
     <style name="PostFragmentDividerUnderFirstComment"
         parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" tools:keep="@style/PostFragmentDividerUnderFirstComment">
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
     </style>
 
     <style name="PostFragmentSecondCommentDetails"

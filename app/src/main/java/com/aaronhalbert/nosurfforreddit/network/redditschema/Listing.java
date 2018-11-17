@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.network.redditschema;
 
 import android.text.Spanned;
+import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -19,6 +20,7 @@ public class Listing {
     private static final String IMAGE = "image";
     private static final String USER_ABBREVIATION = "u/";
     private static final String BULLET_POINT = " \u2022 ";
+    private static final String SPOILER = "spoiler";
 
     @SerializedName("kind")
     @Expose
@@ -127,6 +129,7 @@ public class Listing {
 
     public String pickThumbnailUrl(String encodedThumbnailUrl) {
         String thumbnailUrl;
+        Log.e(getClass().toString(), "zzzz " + encodedThumbnailUrl);
 
         switch (encodedThumbnailUrl) {
             case DEFAULT:
@@ -141,8 +144,12 @@ public class Listing {
             case IMAGE:
                 thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
                 break;
+            case SPOILER:
+                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                break;
             default:
                 thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
+
                 break;
         }
         return thumbnailUrl;
