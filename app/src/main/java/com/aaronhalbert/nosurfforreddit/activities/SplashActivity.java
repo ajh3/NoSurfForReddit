@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 public class SplashActivity extends BaseActivity {
     @SuppressWarnings("WeakerAccess") @Inject SplashActivityViewModelFactory splashActivityViewModelFactory;
-    private SplashActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +40,7 @@ public class SplashActivity extends BaseActivity {
 
         startLogoAnimation();
 
-        viewModel = ViewModelProviders
+        SplashActivityViewModel viewModel = ViewModelProviders
                 .of(this, splashActivityViewModelFactory)
                 .get(SplashActivityViewModel.class);
 
