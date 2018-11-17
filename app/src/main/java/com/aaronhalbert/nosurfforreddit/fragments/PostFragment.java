@@ -6,14 +6,13 @@ import android.os.Bundle;
 
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
@@ -34,7 +33,7 @@ abstract public class PostFragment extends BaseFragment {
     public int lastClickedPostPosition;
     private String lastClickedPostId;
     private boolean commentsAlreadyLoaded;
-    private NoSurfViewModel viewModel;
+    private MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
@@ -44,7 +43,7 @@ abstract public class PostFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
 
         setHasOptionsMenu(true);
         lookupPostMetadata();

@@ -13,7 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NoSurfViewModel extends ViewModel {
+public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
 
     private final MutableLiveData<Event<Boolean>> recyclerViewClickEventsLiveData = new MutableLiveData<>();
@@ -24,12 +24,8 @@ public class NoSurfViewModel extends ViewModel {
     // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
 
-    public NoSurfViewModel(Repository repository) {
+    MainActivityViewModel(Repository repository) {
         this.repository = repository;
-
-        repository.checkIfLoginCredentialsAlreadyExist();
-        fetchAllPostsASync();
-        fetchSubscribedPostsASync();
     }
 
     /* NOTE: refer to Repository for documentation on all methods being called through to it */

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
@@ -18,7 +18,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // we only ever show the first page of posts, which is 25 by default
     private static final int ITEM_COUNT = 25;
 
-    private final NoSurfViewModel viewModel;
+    private final MainActivityViewModel viewModel;
     private final Fragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -34,7 +34,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      * (postsViewStateLiveData) and functions accordingly. */
     private final boolean isSubscribedPostsAdapter;
 
-    public PostsAdapter(NoSurfViewModel viewModel,
+    public PostsAdapter(MainActivityViewModel viewModel,
                         Fragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 

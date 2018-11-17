@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 
 /* This fragment is necessary only because it's difficult to directly swap pages inside a
@@ -25,7 +25,7 @@ public class ContainerFragment extends BaseFragment {
     private static final String TAG_SUBSCRIBED_POSTS_FRAGMENT = "subscribedPostsFragment";
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
 
-    private NoSurfViewModel viewModel;
+    private MainActivityViewModel viewModel;
     private FragmentManager fm;
 
     public static ContainerFragment newInstance() {
@@ -38,7 +38,7 @@ public class ContainerFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         fm = getChildFragmentManager();
 
         // we add both fragments and simply show/hide them as needed

@@ -20,8 +20,8 @@ import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 import javax.inject.Inject;
@@ -49,8 +49,8 @@ public class MainActivity extends BaseActivity implements
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
     @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
-    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    private NoSurfViewModel viewModel;
+    @SuppressWarnings("WeakerAccess") @Inject MainActivityViewModelFactory mainActivityViewModelFactory;
+    private MainActivityViewModel viewModel;
     private FragmentManager fm;
 
     private boolean nightMode;
@@ -71,8 +71,8 @@ public class MainActivity extends BaseActivity implements
         // ViewModelProviders.of for this activity will get the right ViewModel without specifying
         // the factory
         viewModel = ViewModelProviders
-                .of(this, viewModelFactory)
-                .get(NoSurfViewModel.class);
+                .of(this, mainActivityViewModelFactory)
+                .get(MainActivityViewModel.class);
 
         // LiveData event subscriptions
         subscribeToNetworkErrors();

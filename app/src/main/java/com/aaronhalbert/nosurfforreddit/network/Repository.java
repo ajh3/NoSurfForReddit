@@ -78,6 +78,11 @@ public class Repository {
         allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
         subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
         commentsViewStateLiveData = cleanCommentsRawLiveData();
+
+        // initialize self
+        checkIfLoginCredentialsAlreadyExist();
+        fetchAllPostsASync();
+        fetchSubscribedPostsASync();
     }
 
     // region network auth calls -------------------------------------------------------------------

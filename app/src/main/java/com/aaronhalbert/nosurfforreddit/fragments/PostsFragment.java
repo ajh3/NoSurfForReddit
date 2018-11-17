@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
@@ -24,7 +24,7 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
 abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    NoSurfViewModel viewModel;
+    MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
     // region lifecycle methods --------------------------------------------------------------------
@@ -32,7 +32,7 @@ abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         selectPostsViewStateLiveData();
         observePostsViewStateLiveData();
     }

@@ -14,7 +14,7 @@ import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.lifecycle.ViewModelProviders;
@@ -28,7 +28,7 @@ import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewP
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
-    private NoSurfViewModel viewModel;
+    private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
     private Animator refreshDrawableAnimator;
 
@@ -42,7 +42,7 @@ public class ViewPagerFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         observeIsUserLoggedInLiveData();
         observeBothPostsViewStateLiveData();
     }

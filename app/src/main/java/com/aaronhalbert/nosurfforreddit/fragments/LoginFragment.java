@@ -6,13 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
 
 import androidx.lifecycle.ViewModelProviders;
 
 public class LoginFragment extends BaseFragment {
-    private NoSurfViewModel viewModel;
+    private MainActivityViewModel viewModel;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -22,7 +22,7 @@ public class LoginFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity()).get(NoSurfViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
     }
 
     @Override
