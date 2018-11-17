@@ -52,7 +52,7 @@ public class ViewPagerFragment extends BaseFragment {
 
         /* inflate Animator in onCreateView(), as we are going to null it out in onDestroyView().
          * Keeps actions paired in corresponding lifecycle methods. */
-        refreshDrawableAnimator = AnimatorInflater.loadAnimator(getContext(), R.animator.infinite_rotation);
+        refreshDrawableAnimator = AnimatorInflater.loadAnimator(getContext(), R.animator.refresh_button_rotation);
 
         return inflater.inflate(R.layout.fragment_view_pager, container, false);
     }
@@ -125,9 +125,8 @@ public class ViewPagerFragment extends BaseFragment {
      * and more easily animate it when clicked. */
     private void setupRefreshIconAnimation(Menu menu) {
         ImageView iv = (ImageView) menu.findItem(R.id.refresh).getActionView();
-        iv.setImageResource(R.drawable.ic_refresh_24dp);
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.ic_refresh_24dp));
         refreshDrawableAnimator.setTarget(iv);
-        refreshDrawableAnimator.setInterpolator(new OvershootInterpolator());
         iv.setOnClickListener(v -> {
             refreshDrawableAnimator.start();
             ViewPager pager = getView().findViewById(R.id.view_pager_fragment_pager);

@@ -1,8 +1,12 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 
+import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewmodel.SplashActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.SplashActivityViewModelFactory;
 
@@ -33,6 +37,9 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
+
+        startLogoAnimation();
 
         viewModel = ViewModelProviders
                 .of(this, splashActivityViewModelFactory)
@@ -44,5 +51,13 @@ public class SplashActivity extends BaseActivity {
             startActivity(i);
             finish();
         });
+    }
+
+    private void startLogoAnimation() {
+        Animator refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_rotation);
+        ImageView iv = findViewById(R.id.logo);
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.web_hi_res_512));
+        refreshDrawableAnimator.setTarget(iv);
+        refreshDrawableAnimator.start();
     }
 }

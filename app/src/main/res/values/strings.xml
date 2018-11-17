@@ -12,4 +12,5 @@
     <string name="about_fragment">Copyright 2018. By /u/Suspicious_Advantage</string>
     <string name="post_image_description" tools:keep="@string/post_image_description">Post image</string>
     <string name="post_thumbnail_description" tools:keep="@string/post_thumbnail_description">Post thumbnail image</string>
+    <string name="logo_description">NoSurf logo</string>
 </resources>
