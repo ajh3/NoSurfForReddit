@@ -129,7 +129,6 @@ public class Listing {
 
     public String pickThumbnailUrl(String encodedThumbnailUrl) {
         String thumbnailUrl;
-        Log.e(getClass().toString(), "zzzz " + encodedThumbnailUrl);
 
         switch (encodedThumbnailUrl) {
             case DEFAULT:

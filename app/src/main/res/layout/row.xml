@@ -18,7 +18,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/RecyclerViewRow"
         android:id="@+id/list_item"
-        android:onClick="@{controller::onClick}">
+        android:onClick="@{controller::onClick}"
+        android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}">
 
         <ImageView
             style="@style/RecyclerViewRowThumbnail"
