@@ -53,7 +53,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void startLogoAnimation() {
-        Animator refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_rotation);
+        Animator refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_animation);
         ImageView iv = findViewById(R.id.logo);
         iv.setImageDrawable(getResources().getDrawable(R.drawable.web_hi_res_512));
         refreshDrawableAnimator.setTarget(iv);
