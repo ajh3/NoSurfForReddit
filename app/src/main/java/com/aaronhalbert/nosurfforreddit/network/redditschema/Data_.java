@@ -66,6 +66,10 @@ public class Data_ {
     @Expose
     private int numComments;
 
+    @SerializedName("over_18")
+    @Expose
+    private boolean isNsfw;
+
     public String getSubreddit() {
         return subreddit;
     }
@@ -124,5 +128,9 @@ public class Data_ {
 
     public int getNumComments() {
         return numComments;
+    }
+
+    public boolean isNsfw() {
+        return isNsfw;
     }
 }

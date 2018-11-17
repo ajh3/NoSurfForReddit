@@ -32,5 +32,6 @@ public class PostsViewState {
         public String thumbnailUrl;
         public String imageUrl;
         public String selfTextHtml;
+        public boolean isNsfw;
     }
 }

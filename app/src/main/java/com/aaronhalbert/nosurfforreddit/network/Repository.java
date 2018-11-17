@@ -306,6 +306,7 @@ public class Repository {
                 postDatum.score = data.getScore();
                 postDatum.numComments = data.getNumComments();
                 postDatum.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
+                postDatum.isNsfw = data.isNsfw();
 
                 // assign link- and self-post specific attributes
                 if (postDatum.isSelf) {
