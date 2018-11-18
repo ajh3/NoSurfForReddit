@@ -67,9 +67,9 @@ public class MainActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // only necessary to specify the factory the first time here, subsequent calls to
-        // ViewModelProviders.of for this activity will get the right ViewModel without specifying
-        // the factory
+        /* only necessary to specify the factory the first time here, subsequent calls to
+         * ViewModelProviders.of for this activity will get the right ViewModel without specifying
+         * the factory */
         viewModel = ViewModelProviders
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
@@ -81,15 +81,8 @@ public class MainActivity extends BaseActivity implements
         subscribeToLoginFragmentClickEvents();
         subscribeToViewPagerFragmentClickEvents();
 
-        fm = getSupportFragmentManager();
-
-        if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
-            fm.beginTransaction()
-                    .add(R.id.main_activity_frame_layout,
-                            ViewPagerFragment.newInstance(),
-                            TAG_VIEW_PAGER_FRAGMENT)
-                    .commit();
-        }
+        // add main content fragment
+        addViewPagerFragment();
     }
 
     @Override
@@ -138,6 +131,18 @@ public class MainActivity extends BaseActivity implements
 
     private void nightModeOff() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    private void addViewPagerFragment() {
+        fm = getSupportFragmentManager();
+
+        if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
+            fm.beginTransaction()
+                    .add(R.id.main_activity_frame_layout,
+                            ViewPagerFragment.newInstance(),
+                            TAG_VIEW_PAGER_FRAGMENT)
+                    .commit();
+        }
     }
 
     // endregion helper methods --------------------------------------------------------------------
