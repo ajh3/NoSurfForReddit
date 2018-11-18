@@ -29,7 +29,9 @@ public class DataBindingHandlers {
     @BindingAdapter("imageUrl")
     public static void bindImage(ImageView iv, String url) {
         Context context = iv.getContext();
-        
+
+        // Glide seems to have a problem with switching this url. If/else works
+        // Not sure whether it's a bug in Glide or in my code
         if (DEFAULT.equals(url)) {
             GlideApp.with(context)
                     .load(AppCompatResources.getDrawable(
