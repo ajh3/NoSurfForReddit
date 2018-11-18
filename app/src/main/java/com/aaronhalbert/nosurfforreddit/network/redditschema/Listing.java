@@ -11,16 +11,13 @@ import androidx.core.text.HtmlCompat;
 @SuppressWarnings("ALL")
 public class Listing {
     private static final String AUTO_MODERATOR = "AutoModerator";
-    private static final String LINK_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_default_thumbnail_192";
-    private static final String SELF_POST_DEFAULT_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/self_post_default_thumbnail_192";
-    private static final String LINK_POST_NSFW_THUMBNAIL = "android.resource://com.aaronhalbert.nosurfforreddit/drawable/link_post_nsfw_thumbnail_192";
-    private static final String DEFAULT = "default";
-    private static final String SELF = "self";
-    private static final String NSFW = "nsfw";
-    private static final String IMAGE = "image";
     private static final String USER_ABBREVIATION = "u/";
     private static final String BULLET_POINT = " \u2022 ";
-    private static final String SPOILER = "spoiler";
+    public static final String DEFAULT = "default";
+    public static final String SELF = "self";
+    public static final String NSFW = "nsfw";
+    public static final String IMAGE = "image";
+    public static final String SPOILER = "spoiler";
 
     @SerializedName("kind")
     @Expose
@@ -73,7 +70,7 @@ public class Listing {
         Data_ data = getData().getChildren().get(i).getData();
 
         if (data.getPreview() == null) {
-            return LINK_POST_DEFAULT_THUMBNAIL;
+            return DEFAULT;
         } else {
             String encodedImageUrl = data
                     .getPreview()
@@ -132,23 +129,22 @@ public class Listing {
 
         switch (encodedThumbnailUrl) {
             case DEFAULT:
-                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                thumbnailUrl = DEFAULT;
                 break;
             case SELF:
-                thumbnailUrl = SELF_POST_DEFAULT_THUMBNAIL;
+                thumbnailUrl = SELF;
                 break;
             case NSFW:
-                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                thumbnailUrl = NSFW;
                 break;
             case IMAGE:
-                thumbnailUrl = LINK_POST_DEFAULT_THUMBNAIL;
+                thumbnailUrl = IMAGE;
                 break;
             case SPOILER:
-                thumbnailUrl = LINK_POST_NSFW_THUMBNAIL;
+                thumbnailUrl = SPOILER;
                 break;
             default:
                 thumbnailUrl = decodeHtml(encodedThumbnailUrl).toString();
-
                 break;
         }
         return thumbnailUrl;

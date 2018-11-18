@@ -1,14 +1,22 @@
 package com.aaronhalbert.nosurfforreddit.databinding;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
+
+import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.DEFAULT;
+import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.IMAGE;
+import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.NSFW;
+import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.SELF;
+import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.SPOILER;
 
 @SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {
@@ -20,10 +28,49 @@ public class DataBindingHandlers {
 
     @BindingAdapter("imageUrl")
     public static void bindImage(ImageView iv, String url) {
-        GlideApp.with(iv.getContext())
-                .load(url)
-                .centerCrop()
-                .into(iv);
+        Context context = iv.getContext();
+        
+        if (DEFAULT.equals(url)) {
+            GlideApp.with(context)
+                    .load(AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.link_post_thumbnail))
+                    .centerCrop()
+                    .into(iv);
+        } else if (SELF.equals(url)) {
+            GlideApp.with(context)
+                    .load(AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.self_post_thumbnail))
+                    .centerCrop()
+                    .into(iv);
+        } else if (NSFW.equals(url)) {
+            GlideApp.with(context)
+                    .load(AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.nsfw_thumbnail))
+                    .centerCrop()
+                    .into(iv);
+        } else if (IMAGE.equals(url)) {
+            GlideApp.with(context)
+                    .load(AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.link_post_thumbnail))
+                    .centerCrop()
+                    .into(iv);
+        } else if (SPOILER.equals(url)) {
+            GlideApp.with(context)
+                    .load(AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.spoiler_thumbnail))
+                    .centerCrop()
+                    .into(iv);
+        } else {
+            GlideApp.with(context)
+                    .load(url)
+                    .centerCrop()
+                    .into(iv);
+        }
     }
 
     @BindingAdapter("strikethrough")
