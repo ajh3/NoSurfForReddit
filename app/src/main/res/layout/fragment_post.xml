@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel"/>
+            type="com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel"/>
     </data>
 
     <ScrollView

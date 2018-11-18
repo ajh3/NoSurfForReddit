@@ -2,24 +2,21 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
 
 import javax.inject.Inject;
 
 public class NoSurfWebViewFragment extends BaseFragment {
     private static final String KEY_URL = "url";
 
-    @SuppressWarnings("WeakerAccess")
-    @Inject NoSurfWebViewClient noSurfWebViewClient;
-
+    @SuppressWarnings("WeakerAccess") @Inject NoSurfWebViewClient noSurfWebViewClient;
     private String url;
 
     public static NoSurfWebViewFragment newInstance(String url) {

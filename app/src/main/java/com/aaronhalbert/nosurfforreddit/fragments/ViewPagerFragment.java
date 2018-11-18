@@ -9,13 +9,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
+
+import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
@@ -28,7 +31,9 @@ import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewP
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
-    private MainActivityViewModel viewModel;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    private ViewPagerFragmentViewModel viewModel;
+    private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
     private Animator refreshDrawableAnimator;
 
@@ -40,9 +45,11 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ViewPagerFragmentViewModel.class);
+        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         observeIsUserLoggedInLiveData();
         observeBothPostsViewStateLiveData();
     }
@@ -90,16 +97,16 @@ public class ViewPagerFragment extends BaseFragment {
                  * in order to animate it. */
                 return true;
             case R.id.login:
-                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
+                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
                 return true;
             case R.id.logout:
-                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
+                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
                 return true;
             case R.id.settings:
-                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
+                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
                 return true;
             case R.id.about:
-                viewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
+                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
                 return true;
         }
 

@@ -1,9 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.os.Bundle;
-import androidx.preference.PreferenceFragmentCompat;
 
 import com.aaronhalbert.nosurfforreddit.R;
+
+import androidx.preference.PreferenceFragmentCompat;
 
 public class NoSurfPreferenceFragment extends PreferenceFragmentCompat {
 

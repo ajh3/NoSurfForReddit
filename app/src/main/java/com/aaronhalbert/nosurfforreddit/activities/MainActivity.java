@@ -49,8 +49,7 @@ public class MainActivity extends BaseActivity implements
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
     @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
-    @SuppressWarnings("WeakerAccess") @Inject
-    ViewModelFactory viewModelFactory;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
     private FragmentManager fm;
 

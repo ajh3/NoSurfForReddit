@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
@@ -18,7 +19,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // we only ever show the first page of posts, which is 25 by default
     private static final int ITEM_COUNT = 25;
 
-    private final MainActivityViewModel viewModel;
+    private final MainActivityViewModel mainActivityViewModel;
     private final Fragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -34,11 +35,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      * (postsViewStateLiveData) and functions accordingly. */
     private final boolean isSubscribedPostsAdapter;
 
-    public PostsAdapter(MainActivityViewModel viewModel,
+    public PostsAdapter(PostsFragmentViewModel viewModel,
+                        MainActivityViewModel mainActivityViewModel,
                         Fragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 
-        this.viewModel = viewModel;
+        this.mainActivityViewModel = mainActivityViewModel;
         this.hostFragment = hostFragment;
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
@@ -100,13 +102,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         public void onClick(View v) {
             int position = getAdapterPosition();
 
-            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
+            mainActivityViewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
                     position,
                     postsViewStateLiveData.getValue().postData.get(position).id,
                     postsViewStateLiveData.getValue().postData.get(position).isSelf,
                     isSubscribedPostsAdapter));
 
-            viewModel.setRecyclerViewClickEventsLiveData(true);
+            mainActivityViewModel.setRecyclerViewClickEventsLiveData(true);
         }
     }
 

@@ -1,38 +1,45 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
+
+import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /* base fragment containing the master view of posts, in a RecyclerView
  *
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
-abstract class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    MainActivityViewModel viewModel;
+abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    PostsFragmentViewModel viewModel;
+    MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
     // region lifecycle methods --------------------------------------------------------------------
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostsFragmentViewModel.class);
+        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         selectPostsViewStateLiveData();
         observePostsViewStateLiveData();
     }

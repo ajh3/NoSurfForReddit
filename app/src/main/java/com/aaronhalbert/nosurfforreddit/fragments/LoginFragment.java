@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 
 import androidx.lifecycle.ViewModelProviders;
 

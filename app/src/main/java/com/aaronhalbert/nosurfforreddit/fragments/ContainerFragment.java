@@ -1,18 +1,17 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 /* This fragment is necessary only because it's difficult to directly swap pages inside a
  * FragmentPagerAdapter.

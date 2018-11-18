@@ -1,9 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
@@ -11,11 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
+import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
-import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
+import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
+
+import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
  *
@@ -29,11 +33,12 @@ abstract public class PostFragment extends BaseFragment {
     private final TextView[] commentsDetails = new TextView[3];
     private final View[] dividers = new View[2];
 
-    @SuppressWarnings("WeakerAccess")
-    public int lastClickedPostPosition;
+    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition;
     private String lastClickedPostId;
     private boolean commentsAlreadyLoaded;
-    private MainActivityViewModel viewModel;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    private PostFragmentViewModel viewModel;
+    private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
@@ -41,9 +46,11 @@ abstract public class PostFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
+        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
 
         setHasOptionsMenu(true);
         lookupPostMetadata();
@@ -84,7 +91,7 @@ abstract public class PostFragment extends BaseFragment {
     public void onImageClick(View view) {
         String url = postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition).url;
 
-        viewModel.setPostFragmentClickEventsLiveData(new LaunchWebViewParams(
+        mainActivityViewModel.setPostFragmentClickEventsLiveData(new LaunchWebViewParams(
                 url,
                 null,
                 false));
@@ -175,7 +182,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void lookupPostMetadata() {
-        LastClickedPostMetadata lastClickedPostMetadata = viewModel.getLastClickedPostMetadata();
+        LastClickedPostMetadata lastClickedPostMetadata = mainActivityViewModel.getLastClickedPostMetadata();
 
         lastClickedPostPosition = lastClickedPostMetadata.lastClickedPostPosition;
         lastClickedPostId = lastClickedPostMetadata.lastClickedPostId;
