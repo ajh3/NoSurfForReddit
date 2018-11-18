@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.viewmodel.SplashActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.SplashActivityViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -30,7 +30,7 @@ import androidx.lifecycle.ViewModelProviders;
  * which is prettier. */
 
 public class SplashActivity extends BaseActivity {
-    @SuppressWarnings("WeakerAccess") @Inject SplashActivityViewModelFactory splashActivityViewModelFactory;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class SplashActivity extends BaseActivity {
         startLogoAnimation();
 
         SplashActivityViewModel viewModel = ViewModelProviders
-                .of(this, splashActivityViewModelFactory)
+                .of(this, viewModelFactory)
                 .get(SplashActivityViewModel.class);
 
         Intent i = new Intent(this, MainActivity.class);
