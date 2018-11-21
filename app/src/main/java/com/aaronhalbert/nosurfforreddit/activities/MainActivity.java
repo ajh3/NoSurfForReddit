@@ -3,18 +3,16 @@ package com.aaronhalbert.nosurfforreddit.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragmentDirections;
-import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
@@ -24,19 +22,17 @@ import javax.inject.Named;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.extractCodeFromIntent;
 
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
+
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
-    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
@@ -44,11 +40,10 @@ public class MainActivity extends BaseActivity implements
     @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
-    private FragmentManager fm;
+    private NavController navController;
 
     private boolean nightMode;
     private boolean amoledNightMode;
-    private boolean externalBrowser;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -61,13 +56,14 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
 
         /* only necessary to specify the factory the first time here, subsequent calls to
-         * ViewModelProviders.of for this activity will get the right ViewModel without specifying
-         * the factory */
+         * ViewModelProviders.of for MainActivityViewModel will get the right ViewModel without
+         * specifying the factory */
         viewModel = ViewModelProviders
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
 
-        // LiveData event subscriptions
+        navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment));
+
         subscribeToNetworkErrors();
     }
 
@@ -93,7 +89,6 @@ public class MainActivity extends BaseActivity implements
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
         nightMode = preferences.getBoolean(KEY_NIGHT_MODE, true);
         amoledNightMode = preferences.getBoolean(KEY_AMOLED_NIGHT_MODE, false);
-        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
     }
 
     private void initNightMode() {
@@ -107,11 +102,12 @@ public class MainActivity extends BaseActivity implements
     private void nightModeOn() {
         new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        View v = getWindow().getDecorView();
 
         if (amoledNightMode) {
-            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg));
+            v.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg));
         } else {
-            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.colorNightBg));
+            v.setBackgroundColor(ContextCompat.getColor(this, R.color.colorNightBg));
         }
     }
 
@@ -128,11 +124,8 @@ public class MainActivity extends BaseActivity implements
 
     // region observers/listeners ------------------------------------------------------------------
 
-    /* MainActivity is in charge of all navigation. It uses the listeners below
-     * to listen/react to nav events propagated via LiveData through the ViewModel */
-
-    //TODO: is there a way to cleanly throw exceptions from the Repository up to the view layer
-    // and show Toasts that way, so we don't need this observer?
+    /* TODO: is there a way to cleanly throw exceptions from the Repository up to the view layer
+     * and show Toasts that way, so we don't need this observer? */
     private void subscribeToNetworkErrors() {
         Context context = this;
 
@@ -158,8 +151,8 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    // captures result from Reddit login page using custom redirect URI nosurfforreddit://oauth
-    // intent filter is configured in manifest
+    /* captures result from Reddit login page using custom redirect URI nosurfforreddit://oauth .
+     * Intent filter is configured in manifest. */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -187,34 +180,4 @@ public class MainActivity extends BaseActivity implements
     }
 
     // endregion observers/listeners ---------------------------------------------------------------
-
-    // region app navigation -----------------------------------------------------------------------
-
-    //TODO: rename or consolidate these actions?
-    public void openLink(String url, boolean isLogin) {
-        if (externalBrowser && !isLogin) {
-            launchExternalBrowser(Uri.parse(url));
-        } else if (isLogin) {
-            ViewPagerFragmentDirections.GotoUrlAction action
-                    = ViewPagerFragmentDirections.gotoUrlAction(url);
-
-            Navigation.findNavController(findViewById(R.id.nav_host_fragment))
-                    .navigate(action);
-        } else {
-            //TODO: Move to postfragment?
-            LinkPostFragmentDirections.GotoUrlAction action
-                    = LinkPostFragmentDirections.gotoUrlAction(url);
-
-            Navigation.findNavController(findViewById(R.id.nav_host_fragment))
-                    .navigate(action);
-        }
-    }
-
-    //TODO: convert to Nav? and any other startActivity?
-    private void launchExternalBrowser(Uri uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
-    }
-
-    // endregion app navigation --------------------------------------------------------------------
 }

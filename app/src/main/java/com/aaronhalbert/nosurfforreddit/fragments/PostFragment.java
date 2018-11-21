@@ -1,6 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
@@ -9,21 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
-import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.Navigation;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
  *
@@ -31,21 +30,23 @@ import androidx.navigation.Navigation;
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
+    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String ZERO = "zero";
 
     private final TextView[] comments = new TextView[3];
     private final TextView[] commentsDetails = new TextView[3];
     private final View[] dividers = new View[2];
 
-    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition;
-    private String lastClickedPostId;
-    private boolean commentsAlreadyLoaded;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
     private PostFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
-    Activity activity;
+    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition;
+    private String lastClickedPostId;
+    private boolean commentsAlreadyLoaded;
+    boolean externalBrowser;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ abstract public class PostFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-        activity = getActivity();
+        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
 
         setHasOptionsMenu(true);
         lookupPostMetadata();
@@ -97,8 +98,7 @@ abstract public class PostFragment extends BaseFragment {
     public void onImageClick(View view) {
         String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
 
-        //TODO: make this fragment independent of its activity
-        ((MainActivity) activity).openLink(url, false);
+        launchLink(view, url);
     }
 
     // endregion listeners -------------------------------------------------------------------------
@@ -147,7 +147,7 @@ abstract public class PostFragment extends BaseFragment {
     private void observeCommentsFinishedLoadingLiveEvent() {
         viewModel.getCommentsViewStateLiveData().observe(this, commentsViewState -> {
             if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
-                updateViewVisibilities();
+                updateCommentViewVisibilities();
 
                 commentsAlreadyLoaded = true;
             }
@@ -156,7 +156,7 @@ abstract public class PostFragment extends BaseFragment {
 
     private void setupComments() {
         /* To get the comments for a given post, we have to take the post's ID and make a separate
-         * API call, which happens here, and we record that the post has been clicked in order
+         * API call, which happens here, and we also record that the post has been clicked in order
          * to now display it with struck-out / grayed-out formatting */
 
         if (!commentsAlreadyLoaded) {
@@ -164,11 +164,11 @@ abstract public class PostFragment extends BaseFragment {
             viewModel.fetchPostCommentsASync(lastClickedPostId);
             viewModel.insertClickedPostId(lastClickedPostId);
         } else {
-            updateViewVisibilities();
+            updateCommentViewVisibilities();
         }
     }
 
-    private void updateViewVisibilities() {
+    private void updateCommentViewVisibilities() {
         /* show the correct comment and divider views based on how many comments the post has */
 
         int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
@@ -198,11 +198,18 @@ abstract public class PostFragment extends BaseFragment {
         }
     }
 
+    //TODO: convert to Nav? and any other startActivity?
+    void launchExternalBrowser(Uri uri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
     // endregion helper methods --------------------------------------------------------------------
 
     // region abstract methods ---------------------------------------------------------------------
 
     abstract void setupPostViews();
+    abstract void launchLink(View view, String url);
 
     // endregion abstract methods ------------------------------------------------------------------
 }

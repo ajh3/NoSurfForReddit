@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,9 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
-import com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
@@ -28,6 +25,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 
+import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.buildAuthUrl;
+
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
@@ -36,7 +35,6 @@ public class ViewPagerFragment extends BaseFragment {
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
     private Animator refreshDrawableAnimator;
-    private Activity activity;
 
     public static ViewPagerFragment newInstance() {
         return new ViewPagerFragment();
@@ -51,7 +49,6 @@ public class ViewPagerFragment extends BaseFragment {
         setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ViewPagerFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-        activity = getActivity();
         observeIsUserLoggedInLiveData();
         observeBothPostsViewStateLiveData();
     }
@@ -98,9 +95,7 @@ public class ViewPagerFragment extends BaseFragment {
                 mainActivityViewModel.logUserOut();
                 return true;
             case R.id.fragment_login_dest:
-                //TODO: make this fragment independent of its activity
-                ((MainActivity) activity)
-                        .openLink(NoSurfAuthenticator.buildAuthUrl(), true);
+                login();
                 return true;
             case R.id.fragment_nosurf_preference_dest:
             case R.id.fragment_about_dest:
@@ -168,4 +163,15 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     // endregion observers -------------------------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
+
+    private void login() {
+        ViewPagerFragmentDirections.GotoUrlAction action
+                = ViewPagerFragmentDirections.gotoUrlAction(buildAuthUrl());
+
+        Navigation.findNavController(getView()).navigate(action);
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
 }

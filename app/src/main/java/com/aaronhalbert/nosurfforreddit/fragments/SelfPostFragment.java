@@ -29,4 +29,9 @@ public class SelfPostFragment extends PostFragment {
                     .setVisibility(View.VISIBLE);
         }
     }
+
+    @Override
+    void launchLink(View view, String url) {
+        // do nothing; only applies to LinkPostFragment
+    }
 }

@@ -1,22 +1,20 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
-import androidx.lifecycle.LiveData;
-
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
+import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
+import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
-import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
+
+import androidx.lifecycle.LiveData;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
@@ -24,7 +22,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private static final int ITEM_COUNT = 25;
 
     private final MainActivityViewModel mainActivityViewModel;
-    private final Fragment hostFragment;
+    private final PostsFragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
 
     /* this app has two primary screens/modes, a feed of posts from r/all (Reddit's public home
@@ -41,7 +39,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     public PostsAdapter(PostsFragmentViewModel viewModel,
                         MainActivityViewModel mainActivityViewModel,
-                        Fragment hostFragment,
+                        PostsFragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 
         this.mainActivityViewModel = mainActivityViewModel;
@@ -105,6 +103,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
+            NavController navController = Navigation.findNavController(v);
 
             mainActivityViewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
                     position,
@@ -114,9 +113,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                     isSubscribedPostsAdapter));
 
             if (postsViewStateLiveData.getValue().postData.get(position).isSelf) {
-                Navigation.findNavController(v).navigate(R.id.fragment_self_post_dest);
+                ViewPagerFragmentDirections.ClickSelfPostAction action
+                        = ViewPagerFragmentDirections.clickSelfPostAction();
+
+                navController.navigate(action);
             } else {
-                Navigation.findNavController(v).navigate(R.id.fragment_link_post_dest);
+                ViewPagerFragmentDirections.ClickLinkPostAction action
+                        = ViewPagerFragmentDirections.clickLinkPostAction();
+
+                navController.navigate(action);
             }
         }
     }

@@ -4,17 +4,12 @@ import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
-import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
-    private final MutableLiveData<Event<Boolean>> recyclerViewClickEventsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Event<LaunchWebViewParams>> postFragmentClickEventsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Event<Boolean>> loginFragmentClickEventsLiveData = new MutableLiveData<>();
     // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
 
@@ -44,31 +39,7 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<Event<Repository.NetworkErrors>> getNetworkErrorsLiveData() {
         return repository.getNetworkErrorsLiveData();
     }
-    // no setter for network errors in ViewModel; they are set in repository
-
-    public LiveData<Event<Boolean>> getRecyclerViewClickEventsLiveData() {
-        return recyclerViewClickEventsLiveData;
-    }
-
-    public void setRecyclerViewClickEventsLiveData(Boolean b) {
-        recyclerViewClickEventsLiveData.setValue(new Event<>(b));
-    }
-
-    public LiveData<Event<LaunchWebViewParams>> getPostFragmentClickEventsLiveData() {
-        return postFragmentClickEventsLiveData;
-    }
-
-    public void setPostFragmentClickEventsLiveData(LaunchWebViewParams l) {
-        postFragmentClickEventsLiveData.setValue(new Event<>(l));
-    }
-
-    public LiveData<Event<Boolean>> getLoginFragmentClickEventsLiveData() {
-        return loginFragmentClickEventsLiveData;
-    }
-
-    public void setLoginFragmentClickEventsLiveData(Boolean b) {
-        loginFragmentClickEventsLiveData.setValue(new Event<>(b));
-    }
+    /* no setter for network errors in ViewModel; they are set in repository */
 
     // endregion event handling --------------------------------------------------------------------
 
