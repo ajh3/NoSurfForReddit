@@ -10,14 +10,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents;
-
 public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
     private final MutableLiveData<Event<Boolean>> recyclerViewClickEventsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<LaunchWebViewParams>> postFragmentClickEventsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<Boolean>> loginFragmentClickEventsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Event<ViewPagerFragmentNavigationEvents>> viewPagerFragmentClickEventsLiveData = new MutableLiveData<>();
     // caches a few key variables from the most recently clicked/viewed post
     private LastClickedPostMetadata lastClickedPostMetadata;
 
@@ -71,14 +68,6 @@ public class MainActivityViewModel extends ViewModel {
 
     public void setLoginFragmentClickEventsLiveData(Boolean b) {
         loginFragmentClickEventsLiveData.setValue(new Event<>(b));
-    }
-
-    public LiveData<Event<ViewPagerFragmentNavigationEvents>> getViewPagerFragmentClickEventsLiveData() {
-        return viewPagerFragmentClickEventsLiveData;
-    }
-
-    public void setViewPagerFragmentClickEventsLiveData(ViewPagerFragmentNavigationEvents v) {
-        viewPagerFragmentClickEventsLiveData.setValue(new Event<>(v));
     }
 
     // endregion event handling --------------------------------------------------------------------

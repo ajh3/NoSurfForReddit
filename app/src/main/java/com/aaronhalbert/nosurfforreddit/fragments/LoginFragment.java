@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,12 +8,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 
 import androidx.lifecycle.ViewModelProviders;
 
 public class LoginFragment extends BaseFragment {
     private MainActivityViewModel viewModel;
+    private Activity activity;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -23,6 +27,8 @@ public class LoginFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        //TODO: make this fragment independent of its activity
+        activity = getActivity();
     }
 
     @Override
@@ -37,6 +43,7 @@ public class LoginFragment extends BaseFragment {
     }
 
     private void login() {
-        viewModel.setLoginFragmentClickEventsLiveData(true);
+        ((MainActivity) activity)
+                .openLink(NoSurfAuthenticator.buildAuthUrl(), true);
     }
 }

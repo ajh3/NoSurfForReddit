@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/fragment_view_pager_dest">
+    app:startDestination="@id/fragment_view_pager_dest">
 
     <fragment
         android:id="@+id/fragment_view_pager_dest"
@@ -11,18 +11,54 @@
         tools:layout="@layout/fragment_view_pager">
 
         <action
-            android:id="@+id/click_post_action"
-            app:destination="@+id/fragment_post_dest">
-        </action>
+            android:id="@+id/click_link_post_action"
+            app:destination="@id/fragment_link_post_dest" />
+
+        <action
+            android:id="@+id/click_self_post_action"
+            app:destination="@id/fragment_self_post_dest" />
+
+        <action
+            android:id="@+id/goto_url_action"
+            app:destination="@id/fragment_nosurf_web_view_dest" />
     </fragment>
 
     <fragment
-        android:id="@+id/fragment_post_dest"
+        android:id="@+id/fragment_link_post_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment"
+        tools:layout="@layout/fragment_post">
+
+        <action
+            android:id="@id/goto_url_action"
+            app:destination="@id/fragment_nosurf_web_view_dest" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_self_post_dest"
         android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment"
         tools:layout="@layout/fragment_post">
     </fragment>
 
+    <fragment
+        android:id="@+id/fragment_login_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.LoginFragment"
+        tools:layout="@layout/fragment_login">
+    </fragment>
 
+    <fragment
+        android:id="@+id/fragment_nosurf_web_view_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment">
 
+        <argument android:name="url" app:argType="string"/>
+    </fragment>
 
+    <fragment
+        android:id="@+id/fragment_nosurf_preference_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_about_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.AboutFragment">
+    </fragment>
 </navigation>

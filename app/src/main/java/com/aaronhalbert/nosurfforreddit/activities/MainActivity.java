@@ -13,16 +13,11 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.fragments.AboutFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragmentDirections;
+import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
 import com.aaronhalbert.nosurfforreddit.network.Repository;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
-import com.aaronhalbert.nosurfforreddit.webview.LaunchWebViewParams;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,16 +26,14 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
 
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.buildAuthUrl;
 import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.extractCodeFromIntent;
 
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG_WEBVIEW_LOGIN_FRAGMENT = "webviewLoginFragmentTag";
-    private static final String TAG_VIEW_PAGER_FRAGMENT = "viewPagerFragmentTag";
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
@@ -76,13 +69,6 @@ public class MainActivity extends BaseActivity implements
 
         // LiveData event subscriptions
         subscribeToNetworkErrors();
-        subscribeToRecyclerViewClickEvents();
-        subscribeToPostFragmentClickEvents();
-        subscribeToLoginFragmentClickEvents();
-        subscribeToViewPagerFragmentClickEvents();
-
-        // add main content fragment
-        addViewPagerFragment();
     }
 
     @Override
@@ -133,37 +119,12 @@ public class MainActivity extends BaseActivity implements
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
-    private void addViewPagerFragment() {
-        fm = getSupportFragmentManager();
-
-        if (fm.findFragmentByTag(TAG_VIEW_PAGER_FRAGMENT) == null) {
-            fm.beginTransaction()
-                    .add(R.id.main_activity_frame_layout,
-                            ViewPagerFragment.newInstance(),
-                            TAG_VIEW_PAGER_FRAGMENT)
-                    .commit();
-        }
+    private void navUp() {
+        Navigation.findNavController(findViewById(R.id.nav_host_fragment))
+                .navigateUp();
     }
 
     // endregion helper methods --------------------------------------------------------------------
-
-    // region login/logout -------------------------------------------------------------------------
-
-    public void login() {
-        launchWebView(new LaunchWebViewParams(
-                buildAuthUrl(),
-                TAG_WEBVIEW_LOGIN_FRAGMENT,
-                true));
-
-        /* onNewIntent captures the result of this login attempt, and is responsible for calling
-         * viewModel.logUserIn() if it's successful */
-    }
-
-    public void logout() {
-        viewModel.logUserOut();
-    }
-
-    // endregion login/logout ----------------------------------------------------------------------
 
     // region observers/listeners ------------------------------------------------------------------
 
@@ -180,65 +141,6 @@ public class MainActivity extends BaseActivity implements
 
             if (n != null) {
                 Toast.makeText(context, NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void subscribeToRecyclerViewClickEvents() {
-        viewModel.getRecyclerViewClickEventsLiveData().observe(this, clickEvent -> {
-            Boolean b = clickEvent.getContentIfNotHandled();
-
-            if (b != null) {
-                launchPost();
-            }
-        });
-    }
-
-    private void subscribeToPostFragmentClickEvents() {
-        viewModel.getPostFragmentClickEventsLiveData().observe(this, clickEvent -> {
-            LaunchWebViewParams l = clickEvent.getContentIfNotHandled();
-
-            if (l != null) {
-                if (externalBrowser) {
-                    launchExternalBrowser(Uri.parse(l.url));
-                } else {
-                    launchWebView(l);
-                }
-            }
-        });
-    }
-
-    private void subscribeToLoginFragmentClickEvents() {
-        viewModel.getLoginFragmentClickEventsLiveData().observe(this, clickEvent -> {
-            Boolean b = clickEvent.getContentIfNotHandled();
-
-            if (b != null) {
-                login();
-            }
-        });
-    }
-
-    private void subscribeToViewPagerFragmentClickEvents() {
-        viewModel.getViewPagerFragmentClickEventsLiveData().observe(this, clickEvent -> {
-            ViewPagerFragment.ViewPagerFragmentNavigationEvents v = clickEvent.getContentIfNotHandled();
-
-            if (v != null) {
-                switch (v) {
-                    case VIEW_PAGER_FRAGMENT_LOGIN_EVENT:
-                        login();
-                        break;
-                    case VIEW_PAGER_FRAGMENT_LOGOUT_EVENT:
-                        logout();
-                        break;
-                    case VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT:
-                        launchPreferencesScreen();
-                        break;
-                    case VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT:
-                        launchAboutScreen();
-                        break;
-                    default:
-                        break;
-                }
             }
         });
     }
@@ -264,25 +166,23 @@ public class MainActivity extends BaseActivity implements
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             String code;
-            Fragment loginFragment = fm.findFragmentByTag(TAG_WEBVIEW_LOGIN_FRAGMENT);
-
-            if (loginFragment != null) {
-                fm.beginTransaction().remove(loginFragment).commit();
-            }
 
             try {
                 code = extractCodeFromIntent(intent);
             } catch (NoSurfAccessDeniedLoginException e) {
                 Log.e(getClass().toString(), ACCESS_DENIED_ERROR_MESSAGE, e);
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                navUp();
                 return;
             } catch (NoSurfLoginException e) {
                 Log.e(getClass().toString(), LOGIN_FAILED_ERROR_MESSAGE, e);
                 Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                navUp();
                 return;
             }
 
             viewModel.logUserIn(code);
+            navUp();
         }
     }
 
@@ -290,73 +190,30 @@ public class MainActivity extends BaseActivity implements
 
     // region app navigation -----------------------------------------------------------------------
 
-    public void launchWebView(LaunchWebViewParams launchWebViewParams) {
-        String url = launchWebViewParams.url;
-        String tag = launchWebViewParams.tag;
-        boolean doAnimation = launchWebViewParams.doAnimation;
+    //TODO: rename or consolidate these actions?
+    public void openLink(String url, boolean isLogin) {
+        if (externalBrowser && !isLogin) {
+            launchExternalBrowser(Uri.parse(url));
+        } else if (isLogin) {
+            ViewPagerFragmentDirections.GotoUrlAction action
+                    = ViewPagerFragmentDirections.gotoUrlAction(url);
 
-        FragmentTransaction ft = fm.beginTransaction();
+            Navigation.findNavController(findViewById(R.id.nav_host_fragment))
+                    .navigate(action);
+        } else {
+            //TODO: Move to postfragment?
+            LinkPostFragmentDirections.GotoUrlAction action
+                    = LinkPostFragmentDirections.gotoUrlAction(url);
 
-        if (doAnimation) {
-            ft.setCustomAnimations(
-                    R.anim.push_up_in,
-                    R.anim.push_up_out,
-                    R.anim.push_down_in,
-                    R.anim.push_down_out);
+            Navigation.findNavController(findViewById(R.id.nav_host_fragment))
+                    .navigate(action);
         }
-
-        ft.add(R.id.main_activity_frame_layout, NoSurfWebViewFragment.newInstance(url), tag)
-                .addToBackStack(null)
-                .commit();
     }
 
+    //TODO: convert to Nav? and any other startActivity?
     private void launchExternalBrowser(Uri uri) {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
-    }
-
-    private void launchPost() {
-        Fragment f;
-
-        if (viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf) {
-            f = SelfPostFragment.newInstance();
-        } else {
-            f = LinkPostFragment.newInstance();
-        }
-
-        fm.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.slide_in_right,
-                        R.anim.slide_out_left,
-                        R.anim.slide_in_left,
-                        R.anim.slide_out_right)
-                .replace(R.id.main_activity_frame_layout, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void launchPreferencesScreen() {
-        fm.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.push_up_in,
-                        R.anim.push_up_out,
-                        R.anim.push_down_in,
-                        R.anim.push_down_out)
-                .replace(R.id.main_activity_frame_layout, NoSurfPreferenceFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void launchAboutScreen() {
-        fm.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.push_up_in,
-                        R.anim.push_up_out,
-                        R.anim.push_down_in,
-                        R.anim.push_down_out)
-                .replace(R.id.main_activity_frame_layout, AboutFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
     }
 
     // endregion app navigation --------------------------------------------------------------------

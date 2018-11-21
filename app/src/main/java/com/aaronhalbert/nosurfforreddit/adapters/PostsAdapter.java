@@ -3,11 +3,15 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 import androidx.lifecycle.LiveData;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
@@ -106,9 +110,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                     position,
                     postsViewStateLiveData.getValue().postData.get(position).id,
                     postsViewStateLiveData.getValue().postData.get(position).isSelf,
+                    postsViewStateLiveData.getValue().postData.get(position).url,
                     isSubscribedPostsAdapter));
 
-            mainActivityViewModel.setRecyclerViewClickEventsLiveData(true);
+            if (postsViewStateLiveData.getValue().postData.get(position).isSelf) {
+                Navigation.findNavController(v).navigate(R.id.fragment_self_post_dest);
+            } else {
+                Navigation.findNavController(v).navigate(R.id.fragment_link_post_dest);
+            }
         }
     }
 

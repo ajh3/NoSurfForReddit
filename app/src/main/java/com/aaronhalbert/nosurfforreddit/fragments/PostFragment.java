@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
@@ -20,6 +23,7 @@ import javax.inject.Inject;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
  *
@@ -41,6 +45,7 @@ abstract public class PostFragment extends BaseFragment {
     private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
+    Activity activity;
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -51,6 +56,7 @@ abstract public class PostFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        activity = getActivity();
 
         setHasOptionsMenu(true);
         lookupPostMetadata();
@@ -89,12 +95,10 @@ abstract public class PostFragment extends BaseFragment {
     // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
-        String url = postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition).url;
+        String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
 
-        mainActivityViewModel.setPostFragmentClickEventsLiveData(new LaunchWebViewParams(
-                url,
-                null,
-                false));
+        //TODO: make this fragment independent of its activity
+        ((MainActivity) activity).openLink(url, false);
     }
 
     // endregion listeners -------------------------------------------------------------------------

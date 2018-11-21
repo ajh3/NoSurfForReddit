@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.activities.MainActivity;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
+import com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
@@ -21,12 +24,9 @@ import com.google.android.material.tabs.TabLayout;
 import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
-
-import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT;
-import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT;
-import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGIN_EVENT;
-import static com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment.ViewPagerFragmentNavigationEvents.VIEW_PAGER_FRAGMENT_LOGOUT_EVENT;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 
@@ -36,6 +36,7 @@ public class ViewPagerFragment extends BaseFragment {
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
     private Animator refreshDrawableAnimator;
+    private Activity activity;
 
     public static ViewPagerFragment newInstance() {
         return new ViewPagerFragment();
@@ -50,6 +51,7 @@ public class ViewPagerFragment extends BaseFragment {
         setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ViewPagerFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        activity = getActivity();
         observeIsUserLoggedInLiveData();
         observeBothPostsViewStateLiveData();
     }
@@ -92,22 +94,21 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.refresh:
-                /* N/A. The refresh button is "overridden" by setupRefreshIconAnimation()
-                 * in order to animate it. */
-                return true;
-            case R.id.login:
-                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGIN_EVENT);
-                return true;
             case R.id.logout:
-                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LOGOUT_EVENT);
+                mainActivityViewModel.logUserOut();
                 return true;
-            case R.id.settings:
-                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT);
+            case R.id.fragment_login_dest:
+                //TODO: make this fragment independent of its activity
+                ((MainActivity) activity)
+                        .openLink(NoSurfAuthenticator.buildAuthUrl(), true);
                 return true;
-            case R.id.about:
-                mainActivityViewModel.setViewPagerFragmentClickEventsLiveData(VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT);
-                return true;
+            case R.id.fragment_nosurf_preference_dest:
+            case R.id.fragment_about_dest:
+                return NavigationUI
+                        .onNavDestinationSelected(item, Navigation.findNavController(getView()));
+            //case R.id.refresh:
+            /* N/A. The refresh button is "overridden" by setupRefreshIconAnimation()
+             * in order to animate it. */
         }
 
         return super.onOptionsItemSelected(item);
@@ -115,7 +116,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem loginMenuItem = menu.findItem(R.id.login);
+        MenuItem loginMenuItem = menu.findItem(R.id.fragment_login_dest);
         MenuItem logoutMenuItem = menu.findItem(R.id.logout);
 
         if (isUserLoggedIn) {
@@ -167,15 +168,4 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     // endregion observers -------------------------------------------------------------------------
-
-    // region enums --------------------------------------------------------------------------------
-
-    public enum ViewPagerFragmentNavigationEvents {
-        VIEW_PAGER_FRAGMENT_LOGIN_EVENT,
-        VIEW_PAGER_FRAGMENT_LOGOUT_EVENT,
-        VIEW_PAGER_FRAGMENT_LAUNCH_PREFS_EVENT,
-        VIEW_PAGER_FRAGMENT_LAUNCH_ABOUT_EVENT
-    }
-
-    // endregion enums -----------------------------------------------------------------------------
 }
