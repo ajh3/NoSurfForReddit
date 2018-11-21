@@ -14,26 +14,20 @@ import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
 import javax.inject.Inject;
 
 public class NoSurfWebViewFragment extends BaseFragment {
-    private static final String KEY_URL = "url";
 
     @SuppressWarnings("WeakerAccess") @Inject NoSurfWebViewClient noSurfWebViewClient;
     private String url;
 
-    public static NoSurfWebViewFragment newInstance(String url) {
-        NoSurfWebViewFragment fragment = new NoSurfWebViewFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_URL, url);
-        fragment.setArguments(args);
-        return fragment;
+    public static NoSurfWebViewFragment newInstance() {
+        return new NoSurfWebViewFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            url = getArguments().getString(KEY_URL);
-        }
+
+        url = NoSurfWebViewFragmentArgs.fromBundle(getArguments()).getUrl();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -52,7 +46,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
         browserSettings.setUseWideViewPort(true);
         browser.setWebViewClient(noSurfWebViewClient);
         browser.loadUrl(url);
-        
+
         return result;
     }
 }
