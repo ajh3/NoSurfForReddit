@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/fragment_self_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment"
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment"
         tools:layout="@layout/fragment_post">
     </fragment>
 
