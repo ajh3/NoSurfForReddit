@@ -42,6 +42,8 @@ public class LoginFragment extends BaseFragment {
         return v;
     }
 
+    /* onNewIntent in MainActivity captures the result of this login attempt, and is responsible
+    * for calling viewModel.logUserIn() if it's successful */
     private void login() {
         ((MainActivity) activity)
                 .openLink(NoSurfAuthenticator.buildAuthUrl(), true);
