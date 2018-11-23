@@ -2,6 +2,8 @@ package com.aaronhalbert.nosurfforreddit.adapters;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
@@ -11,6 +13,7 @@ import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.LiveData;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -105,13 +108,28 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             int position = getAdapterPosition();
             NavController navController = Navigation.findNavController(v);
 
+            setLastClickedPostMetadata(position);
+
+            /* if the clicked post is a link post and the user clicked directly on the image
+             * thumbnail, then shortcut to the link itself and skip showing the PostFragment */
+            if (v instanceof ImageView && !(postsViewStateLiveData.getValue().postData.get(position).isSelf)) {
+                gotoUrlDirectly(navController);
+            } else {
+                launchPost(position, navController);
+            }
+        }
+
+        /* cache this information in the ViewModel, as it's used by various other components */
+        private void setLastClickedPostMetadata(int position) {
             mainActivityViewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
                     position,
                     postsViewStateLiveData.getValue().postData.get(position).id,
                     postsViewStateLiveData.getValue().postData.get(position).isSelf,
                     postsViewStateLiveData.getValue().postData.get(position).url,
                     isSubscribedPostsAdapter));
+        }
 
+        private void launchPost(int position, NavController navController) {
             if (postsViewStateLiveData.getValue().postData.get(position).isSelf) {
                 ViewPagerFragmentDirections.ClickSelfPostAction action
                         = ViewPagerFragmentDirections.clickSelfPostAction();
@@ -123,6 +141,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
                 navController.navigate(action);
             }
+        }
+
+        private void gotoUrlDirectly(NavController navController) {
+            ViewPagerFragmentDirections.GotoUrlAction action
+                    = ViewPagerFragmentDirections
+                    .gotoUrlAction(mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl);
+
+            navController.navigate(action);
         }
     }
 

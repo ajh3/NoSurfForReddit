@@ -12,41 +12,52 @@
         <variable
             name="controller"
             type="com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter.RowHolder"/>
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/RecyclerViewRow"
         android:id="@+id/list_item"
-        android:onClick="@{controller::onClick}"
         android:visibility="@{TextUtils.isEmpty(controller.postsViewStateLiveData.postData[controller.position].title) ? View.GONE : View.VISIBLE}">
 
         <ImageView
             style="@style/RecyclerViewRowThumbnail"
             android:id="@+id/thumbnail"
             android:contentDescription="@string/post_thumbnail_description"
+            android:onClick="@{controller::onClick}"
             app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
             app:transparency="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
             app:layout_constraintStart_toStartOf="@id/list_item"
-            app:layout_constraintTop_toTopOf="@id/list_item"/>
+            app:layout_constraintTop_toTopOf="@id/list_item"
+            app:layout_constraintEnd_toStartOf="@id/item_title_and_details" />
 
-        <TextView
-            style="@style/RecyclerViewRowTitle"
-            android:id="@+id/title"
-            android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
-            app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/item_title_and_details"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:onClick="@{controller::onClick}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
-            app:layout_constraintEnd_toEndOf="@id/list_item"
-            app:layout_constraintTop_toTopOf="@id/list_item" />
+            app:layout_constraintEnd_toEndOf="@id/list_item">
 
-        <TextView
-            style="@style/RecyclerViewRowDetails"
-            android:id="@+id/details"
-            android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
-            app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
-            app:layout_constraintStart_toEndOf="@id/thumbnail"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintEnd_toEndOf="@id/list_item" />
+            <TextView
+                style="@style/RecyclerViewRowTitle"
+                android:id="@+id/title"
+                android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
+                app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
+                app:layout_constraintStart_toStartOf="@id/item_title_and_details"
+                app:layout_constraintEnd_toEndOf="@id/item_title_and_details"
+                app:layout_constraintTop_toTopOf="@id/item_title_and_details" />
+
+            <TextView
+                style="@style/RecyclerViewRowDetails"
+                android:id="@+id/details"
+                android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
+                app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
+                app:layout_constraintStart_toStartOf="@id/item_title_and_details"
+                app:layout_constraintEnd_toEndOf="@id/item_title_and_details"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
