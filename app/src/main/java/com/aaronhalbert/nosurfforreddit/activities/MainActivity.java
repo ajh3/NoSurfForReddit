@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity implements
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
 
-        setupNavigation();
+        initNavigation();
         subscribeToNetworkErrors();
     }
 
@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity implements
         navController.navigateUp();
     }
 
-    private void setupNavigation() {
+    private void initNavigation() {
         navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment));
 
         AppBarConfiguration appBarConfiguration =
