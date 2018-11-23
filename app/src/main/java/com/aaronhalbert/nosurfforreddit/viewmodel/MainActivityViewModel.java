@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.viewmodel;
 
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -62,4 +63,12 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     // endregion getter/setter methods -------------------------------------------------------------
+
+    // region misc ---------------------------------------------------------------------------------
+
+    public void insertClickedPostId(String id) {
+        repository.insertClickedPostId(new ClickedPostId(id));
+    }
+
+    // endregion misc ------------------------------------------------------------------------------
 }

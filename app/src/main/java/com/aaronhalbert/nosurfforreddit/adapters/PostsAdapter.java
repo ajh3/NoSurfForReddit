@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -109,6 +110,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             NavController navController = Navigation.findNavController(v);
 
             setLastClickedPostMetadata(position);
+            Log.e(getClass().toString(), "saving...");
+            mainActivityViewModel.insertClickedPostId(postsViewStateLiveData.getValue().postData.get(position).id);
 
             /* if the clicked post is a link post and the user clicked directly on the image
              * thumbnail, then shortcut to the link itself and skip showing the PostFragment */

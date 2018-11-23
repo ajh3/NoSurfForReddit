@@ -155,13 +155,11 @@ abstract public class PostFragment extends BaseFragment {
 
     private void setupComments() {
         /* To get the comments for a given post, we have to take the post's ID and make a separate
-         * API call, which happens here, and we also record that the post has been clicked in order
-         * to now display it with struck-out / grayed-out formatting */
+         * API call, which happens here. */
 
         if (!commentsAlreadyLoaded) {
             observeCommentsFinishedLoadingLiveEvent();
             viewModel.fetchPostCommentsASync(lastClickedPostId);
-            viewModel.insertClickedPostId(lastClickedPostId);
         } else {
             updateCommentViewVisibilities();
         }

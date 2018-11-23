@@ -1,7 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
@@ -21,19 +18,24 @@ import com.google.android.material.tabs.TabLayout;
 import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 
-public class ViewPagerFragment extends BaseFragment {
+public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private ViewPagerFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
-    private Animator refreshDrawableAnimator;
+
+    private ViewPager pager;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private NavController navController;
 
     public static ViewPagerFragment newInstance() {
         return new ViewPagerFragment();
@@ -55,10 +57,6 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        /* inflate Animator in onCreateView(), as we are going to null it out in onDestroyView().
-         * Keeps actions paired in corresponding lifecycle methods. */
-        refreshDrawableAnimator = AnimatorInflater.loadAnimator(getContext(), R.animator.refresh_button_rotation);
-
         return inflater.inflate(R.layout.fragment_view_pager, container, false);
     }
 
@@ -66,7 +64,10 @@ public class ViewPagerFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ViewPager pager = view.findViewById(R.id.view_pager_fragment_pager);
+        setupSwipeRefreshLayout(view);
+        navController = Navigation.findNavController(view);
+
+        pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
         NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
                 new NoSurfFragmentPagerAdapter(getChildFragmentManager());
@@ -76,6 +77,18 @@ public class ViewPagerFragment extends BaseFragment {
         tabs.setTabMode(TabLayout.MODE_FIXED);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        /* prevent memory leaks due to fragment going on backstack while retaining these
+         * in instance variables. See commends on PostsFragment.onDestroyView() for a more detailed
+         * explanation of this leak. */
+        pager = null;
+        swipeRefreshLayout = null;
+        navController = null;
+    }
+
     // endregion lifecycle methods -----------------------------------------------------------------
 
     // region menu ---------------------------------------------------------------------------------
@@ -83,7 +96,6 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.actions, menu);
-        setupRefreshIconAnimation(menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -108,9 +120,9 @@ public class ViewPagerFragment extends BaseFragment {
             case R.id.goto_about_action:
                 launchAboutScreen();
                 return true;
-            //case R.id.refresh:
-            /* N/A. The refresh button is "overridden" by setupRefreshIconAnimation()
-             * in order to animate it. */
+            case R.id.refresh:
+                refresh();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -130,29 +142,6 @@ public class ViewPagerFragment extends BaseFragment {
         }
     }
 
-    /* The refresh button does not have an icon assigned to it in XML. Instead, we use its
-     * actionViewClass attribute to assign a drawable, so that we can treat it as an ImageView
-     * and more easily animate it when clicked. */
-    private void setupRefreshIconAnimation(Menu menu) {
-        ImageView iv = (ImageView) menu.findItem(R.id.refresh).getActionView();
-        iv.setImageDrawable(getResources().getDrawable(R.drawable.ic_refresh_24dp));
-        refreshDrawableAnimator.setTarget(iv);
-        iv.setOnClickListener(v -> {
-            refreshDrawableAnimator.start();
-            ViewPager pager = getView().findViewById(R.id.view_pager_fragment_pager);
-
-            if (pager.getCurrentItem() == 0) {
-                viewModel.fetchAllPostsASync();
-            } else {
-                if (isUserLoggedIn) {
-                    viewModel.fetchSubscribedPostsASync();
-                } else {
-                    refreshDrawableAnimator.end();
-                }
-            }
-        });
-    }
-
     // endregion menu ------------------------------------------------------------------------------
 
     // region observers ----------------------------------------------------------------------------
@@ -160,8 +149,10 @@ public class ViewPagerFragment extends BaseFragment {
     /* We need to observe both viewstates, as the refresh button may refresh either data stream
      * depending on which ViewPager page is currently selected. */
     private void observeBothPostsViewStateLiveData() {
-        viewModel.getAllPostsViewStateLiveData().observe(this, listing -> refreshDrawableAnimator.end());
-        viewModel.getSubscribedPostsViewStateLiveData().observe(this, listing -> refreshDrawableAnimator.end());
+        viewModel.getAllPostsViewStateLiveData()
+                .observe(this, listing -> cancelRefreshingAnimation());
+        viewModel.getSubscribedPostsViewStateLiveData()
+                .observe(this, listing -> cancelRefreshingAnimation());
     }
 
     private void observeIsUserLoggedInLiveData() {
@@ -169,30 +160,71 @@ public class ViewPagerFragment extends BaseFragment {
                 .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
     }
 
+    /* onRefresh is called directly when the user swipes to refresh. It is also called indirectly
+     * when the user clicks "Refresh" in the menu, by way of refresh() triggering onRefresh()
+     * by posting a Runnable and turning on the animation manually. */
+    @Override
+    public void onRefresh() {
+        if (pager.getCurrentItem() == 0) {
+            viewModel.fetchAllPostsASync();
+        } else if ((pager.getCurrentItem() == 1) && isUserLoggedIn) {
+            viewModel.fetchSubscribedPostsASync();
+        }
+    }
+
     // endregion observers -------------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
+
+    private void refresh() {
+        if (pager.getCurrentItem() == 0) {
+            swipeRefreshLayout.post(() -> {
+                swipeRefreshLayout.setRefreshing(true);
+                ViewPagerFragment.this.onRefresh();
+            });
+        } else if ((pager.getCurrentItem() == 1) && isUserLoggedIn) {
+            swipeRefreshLayout.post(() -> {
+                swipeRefreshLayout.setRefreshing(true);
+                ViewPagerFragment.this.onRefresh();
+            });
+        }
+    }
+
+    private void setupSwipeRefreshLayout(View v) {
+        swipeRefreshLayout = v.findViewById(R.id.view_pager_fragment_swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+    }
+
+    private void cancelRefreshingAnimation() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
+
+    // region navigation helper methods ------------------------------------------------------------
 
     private void launchLoginScreen() {
         ViewPagerFragmentDirections.GotoUrlAction action
                 = ViewPagerFragmentDirections.gotoUrlAction(buildAuthUrl());
 
-        Navigation.findNavController(getView()).navigate(action);
+        navController.navigate(action);
     }
 
     private void launchPrefsScreen() {
         ViewPagerFragmentDirections.GotoPrefsAction action
                 = ViewPagerFragmentDirections.gotoPrefsAction();
 
-        Navigation.findNavController(getView()).navigate(action);
+        navController.navigate(action);
     }
 
     private void launchAboutScreen() {
         ViewPagerFragmentDirections.GotoAboutAction action
                 = ViewPagerFragmentDirections.gotoAboutAction();
 
-        Navigation.findNavController(getView()).navigate(action);
+        navController.navigate(action);
     }
 
-    // endregion helper methods --------------------------------------------------------------------
+    // endregion navigation helper methods ---------------------------------------------------------
 }

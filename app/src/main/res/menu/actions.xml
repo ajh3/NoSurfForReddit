@@ -4,20 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        app:showAsAction="ifRoom"
-        app:actionViewClass="android.widget.ImageView"/>
-
-    <item
         android:id="@+id/goto_url_action"
         android:title="@string/login"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/logout"
-        android:title="@string/logout"
-        app:showAsAction="never"/>
+        android:id="@+id/refresh"
+        android:title="@string/refresh"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/goto_prefs_action"
@@ -27,5 +21,10 @@
     <item
         android:id="@+id/goto_about_action"
         android:title="@string/about"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout"
         app:showAsAction="never"/>
 </menu>

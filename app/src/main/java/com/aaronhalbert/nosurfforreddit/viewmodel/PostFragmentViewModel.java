@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.viewmodel;
 
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
-import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -29,9 +28,5 @@ public class PostFragmentViewModel extends ViewModel {
 
     public LiveData<CommentsViewState> getCommentsViewStateLiveData() {
         return repository.getCommentsViewStateLiveData();
-    }
-
-    public void insertClickedPostId(String id) {
-        repository.insertClickedPostId(new ClickedPostId(id));
     }
 }

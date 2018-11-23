@@ -27,9 +27,4 @@ public class AllPostsFragment extends PostsFragment {
     void selectPostsViewStateLiveData() {
         postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
     }
-
-    @Override
-    public void onRefresh() {
-        viewModel.fetchAllPostsASync();
-    }
 }
