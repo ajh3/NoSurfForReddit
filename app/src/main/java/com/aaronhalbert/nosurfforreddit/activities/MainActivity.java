@@ -21,10 +21,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.extractCodeFromIntent;
 
@@ -62,8 +65,7 @@ public class MainActivity extends BaseActivity implements
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
 
-        navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment));
-
+        setupNavigation();
         subscribeToNetworkErrors();
     }
 
@@ -116,8 +118,18 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void navUp() {
-        Navigation.findNavController(findViewById(R.id.nav_host_fragment))
-                .navigateUp();
+        navController.navigateUp();
+    }
+
+    private void setupNavigation() {
+        navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment));
+
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(navController.getGraph()).build();
+
+        Toolbar t = findViewById(R.id.action_bar);
+
+        NavigationUI.setupWithNavController(t, navController, appBarConfiguration);
     }
 
     // endregion helper methods --------------------------------------------------------------------
