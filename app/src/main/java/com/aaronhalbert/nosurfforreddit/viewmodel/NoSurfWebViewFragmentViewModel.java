@@ -6,10 +6,10 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-public class PostsFragmentViewModel extends ViewModel {
+public class NoSurfWebViewFragmentViewModel extends ViewModel {
     private final Repository repository;
 
-    PostsFragmentViewModel(Repository repository) {
+    NoSurfWebViewFragmentViewModel(Repository repository) {
         this.repository = repository;
     }
 
