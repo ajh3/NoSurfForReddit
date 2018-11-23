@@ -12,13 +12,39 @@
         tools:layout="@layout/fragment_view_pager">
         <action
             android:id="@+id/click_link_post_action"
-            app:destination="@id/fragment_link_post_dest" />
+            app:destination="@id/fragment_link_post_dest"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/click_self_post_action"
-            app:destination="@id/fragment_self_post_dest" />
+            app:destination="@id/fragment_self_post_dest"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest" />
+            app:destination="@id/fragment_nosurf_web_view_dest"
+            app:enterAnim="@anim/push_up_in"
+            app:exitAnim="@anim/push_up_out"
+            app:popEnterAnim="@anim/push_down_in"
+            app:popExitAnim="@anim/push_down_out" />
+        <action
+            android:id="@+id/goto_prefs_action"
+            app:destination="@id/fragment_nosurf_preference_dest"
+            app:enterAnim="@anim/push_up_in"
+            app:exitAnim="@anim/push_up_out"
+            app:popEnterAnim="@anim/push_down_in"
+            app:popExitAnim="@anim/push_down_out" />
+        <action
+            android:id="@+id/goto_about_action"
+            app:destination="@id/fragment_about_dest"
+            app:enterAnim="@anim/push_up_in"
+            app:exitAnim="@anim/push_up_out"
+            app:popEnterAnim="@anim/push_down_in"
+            app:popExitAnim="@anim/push_down_out" />
     </fragment>
 
     <fragment
@@ -33,7 +59,11 @@
         tools:layout="@layout/fragment_post">
         <action
             android:id="@id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest" />
+            app:destination="@id/fragment_nosurf_web_view_dest"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -48,7 +78,11 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest" />
+            app:destination="@id/fragment_nosurf_web_view_dest"
+            app:enterAnim="@anim/push_up_in"
+            app:exitAnim="@anim/push_up_out"
+            app:popEnterAnim="@anim/push_down_in"
+            app:popExitAnim="@anim/push_down_out" />
     </fragment>
 
     <fragment

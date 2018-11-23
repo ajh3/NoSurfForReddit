@@ -88,19 +88,27 @@ public class ViewPagerFragment extends BaseFragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /* Nav component documentation says to handle menu clicks like this:
+     *
+     * return NavigationUI.onNavDestinationSelected(item, Navigation.findNavController(getView()));
+     *
+     * However, this method does not appear to honor animation transitions defined in XML, so we
+     * perform a standard navigate-by-action instead. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.logout:
                 mainActivityViewModel.logUserOut();
                 return true;
-            case R.id.fragment_login_dest:
-                login();
+            case R.id.goto_url_action:
+                launchLoginScreen();
                 return true;
-            case R.id.fragment_nosurf_preference_dest:
-            case R.id.fragment_about_dest:
-                return NavigationUI
-                        .onNavDestinationSelected(item, Navigation.findNavController(getView()));
+            case R.id.goto_prefs_action:
+                launchPrefsScreen();
+                return true;
+            case R.id.goto_about_action:
+                launchAboutScreen();
+                return true;
             //case R.id.refresh:
             /* N/A. The refresh button is "overridden" by setupRefreshIconAnimation()
              * in order to animate it. */
@@ -111,7 +119,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem loginMenuItem = menu.findItem(R.id.fragment_login_dest);
+        MenuItem loginMenuItem = menu.findItem(R.id.goto_url_action);
         MenuItem logoutMenuItem = menu.findItem(R.id.logout);
 
         if (isUserLoggedIn) {
@@ -166,9 +174,23 @@ public class ViewPagerFragment extends BaseFragment {
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void login() {
+    private void launchLoginScreen() {
         ViewPagerFragmentDirections.GotoUrlAction action
                 = ViewPagerFragmentDirections.gotoUrlAction(buildAuthUrl());
+
+        Navigation.findNavController(getView()).navigate(action);
+    }
+
+    private void launchPrefsScreen() {
+        ViewPagerFragmentDirections.GotoPrefsAction action
+                = ViewPagerFragmentDirections.gotoPrefsAction();
+
+        Navigation.findNavController(getView()).navigate(action);
+    }
+
+    private void launchAboutScreen() {
+        ViewPagerFragmentDirections.GotoAboutAction action
+                = ViewPagerFragmentDirections.gotoAboutAction();
 
         Navigation.findNavController(getView()).navigate(action);
     }

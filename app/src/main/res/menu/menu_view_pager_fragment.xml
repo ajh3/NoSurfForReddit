@@ -10,7 +10,7 @@
         app:actionViewClass="android.widget.ImageView"/>
 
     <item
-        android:id="@+id/fragment_login_dest"
+        android:id="@+id/goto_url_action"
         android:title="@string/login"
         app:showAsAction="never"/>
 
@@ -20,12 +20,12 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/fragment_nosurf_preference_dest"
+        android:id="@+id/goto_prefs_action"
         android:title="@string/settings"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/fragment_about_dest"
+        android:id="@+id/goto_about_action"
         android:title="@string/about"
         app:showAsAction="never"/>
 </menu>
