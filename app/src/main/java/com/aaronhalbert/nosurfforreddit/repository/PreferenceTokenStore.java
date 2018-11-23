@@ -20,28 +20,28 @@ public class PreferenceTokenStore implements TokenStore {
         return preferences.getString(KEY_USER_OAUTH_REFRESH_TOKEN, "");
     }
 
-    public void setUserOAuthAccessToken(String userOAuthAccessToken) {
+    public void setUserOAuthAccessTokenAsync(String userOAuthAccessToken) {
         preferences
                 .edit()
                 .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessToken)
                 .apply();
     }
 
-    public void setUserOAuthRefreshToken(String userOAuthRefreshToken) {
+    public void setUserOAuthRefreshTokenAsync(String userOAuthRefreshToken) {
         preferences
                 .edit()
                 .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshToken)
                 .apply();
     }
 
-    public void clearUserOAuthAccessToken() {
+    public void clearUserOAuthAccessTokenAsync() {
         preferences
                 .edit()
                 .putString(KEY_USER_OAUTH_ACCESS_TOKEN, "")
                 .apply();
     }
 
-    public void clearUserOAuthRefreshToken() {
+    public void clearUserOAuthRefreshTokenAsync() {
         preferences
                 .edit()
                 .putString(KEY_USER_OAUTH_REFRESH_TOKEN, "")

@@ -4,9 +4,9 @@ public interface TokenStore {
     String getUserOAuthAccessToken();
     String getUserOAuthRefreshToken();
 
-    void setUserOAuthAccessToken(String userOAuthAccessToken);
-    void setUserOAuthRefreshToken(String userOAuthRefreshToken);
+    void setUserOAuthAccessTokenAsync(String userOAuthAccessToken);
+    void setUserOAuthRefreshTokenAsync(String userOAuthRefreshToken);
 
-    void clearUserOAuthAccessToken();
-    void clearUserOAuthRefreshToken();
+    void clearUserOAuthAccessTokenAsync();
+    void clearUserOAuthRefreshTokenAsync();
 }

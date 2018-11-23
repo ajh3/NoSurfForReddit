@@ -133,8 +133,8 @@ public class NoSurfAuthenticator {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
                         userOAuthRefreshTokenCache = response.body().getRefreshToken();
 
-                        preferenceTokenStore.setUserOAuthAccessToken(userOAuthAccessTokenCache);
-                        preferenceTokenStore.setUserOAuthRefreshToken(userOAuthRefreshTokenCache);
+                        preferenceTokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
+                        preferenceTokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
 
                         repository.setUserLoggedIn();
                         repository.fetchAllPostsASync();
@@ -161,7 +161,7 @@ public class NoSurfAuthenticator {
                     public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
 
-                        preferenceTokenStore.setUserOAuthAccessToken(userOAuthAccessTokenCache);
+                        preferenceTokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
 
                         switch (callback) {
                             case FETCH_ALL_POSTS_ASYNC:
@@ -222,8 +222,8 @@ public class NoSurfAuthenticator {
         userOAuthAccessTokenCache = "";
         userOAuthRefreshTokenCache = "";
 
-        preferenceTokenStore.clearUserOAuthAccessToken();
-        preferenceTokenStore.clearUserOAuthRefreshToken();
+        preferenceTokenStore.clearUserOAuthAccessTokenAsync();
+        preferenceTokenStore.clearUserOAuthRefreshTokenAsync();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------
