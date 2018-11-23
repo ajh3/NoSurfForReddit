@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
@@ -83,7 +82,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_view_pager_fragment, menu);
+        inflater.inflate(R.menu.actions, menu);
         setupRefreshIconAnimation(menu);
         super.onCreateOptionsMenu(menu, inflater);
     }

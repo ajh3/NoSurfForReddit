@@ -131,6 +131,16 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="goto_about_action">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="goto_prefs_action">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="goto_url_action">
                               <value>
                                 <LayoutPositions />
