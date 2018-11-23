@@ -1,10 +1,8 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
@@ -14,7 +12,6 @@ import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.LiveData;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -34,7 +31,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      *
      * any field/method referring to "AllPosts" refers to the former, and any field/method
      * referring to "SubscribedPosts" refers to the latter.
-     *
+     *        Log.e(getClass().toString(), "PostsFragment view destroyed");
      * Many components, such as this adapter, are easily reused for either feed. For example,
      * all that's necessary to configure this adapter is to pass it the boolean argument
      * isSubscribedPostsAdapter in the constructor, and it sets own its data source
@@ -110,7 +107,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             NavController navController = Navigation.findNavController(v);
 
             setLastClickedPostMetadata(position);
-            Log.e(getClass().toString(), "saving...");
             mainActivityViewModel.insertClickedPostId(postsViewStateLiveData.getValue().postData.get(position).id);
 
             /* if the clicked post is a link post and the user clicked directly on the image
