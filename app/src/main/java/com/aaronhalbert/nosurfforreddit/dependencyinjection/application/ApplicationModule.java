@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
+import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
@@ -58,6 +60,18 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
+    PreferenceSettingsStore providePreferenceSettingsStore(@Named("defaultSharedPrefs") SharedPreferences preferences) {
+        return new PreferenceSettingsStore(preferences);
+    }
+
+    @Singleton
+    @Provides
+    PreferenceTokenStore providePreferenceTokenStore(@Named("oAuthSharedPrefs") SharedPreferences preferences) {
+        return new PreferenceTokenStore(preferences);
+    }
+
+    @Singleton
+    @Provides
     ClickedPostIdRoomDatabase provideClickedPostIdRoomDatabase() {
         return ClickedPostIdRoomDatabase.getDatabase(application);
     }
@@ -71,7 +85,7 @@ public class ApplicationModule {
     @Singleton
     @Provides
     NoSurfAuthenticator provideNoSurfAuthenticator(Retrofit retrofit,
-                                                   @Named("oAuthSharedPrefs") SharedPreferences preferences) {
-        return new NoSurfAuthenticator(application, retrofit, preferences);
+                                                   PreferenceTokenStore preferenceTokenStore) {
+        return new NoSurfAuthenticator(application, retrofit, preferenceTokenStore);
     }
 }

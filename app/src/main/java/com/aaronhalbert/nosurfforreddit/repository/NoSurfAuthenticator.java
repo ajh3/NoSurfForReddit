@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.app.Application;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -46,8 +45,6 @@ public class NoSurfAuthenticator {
     private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
     private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
-    private static final String KEY_USER_OAUTH_ACCESS_TOKEN = "userAccessToken";
-    private static final String KEY_USER_OAUTH_REFRESH_TOKEN = "userAccessRefreshToken";
 
     // caches to let us keep working during asynchronous writes to SharedPrefs
     private String userOAuthAccessTokenCache = "";
@@ -61,15 +58,15 @@ public class NoSurfAuthenticator {
     // other
     private final Application application;
     private final RetrofitAuthenticationInterface ri;
-    private final SharedPreferences preferences;
+    private final PreferenceTokenStore preferenceTokenStore;
     private Repository repository;
 
     public NoSurfAuthenticator(Application application,
                                Retrofit retrofit,
-                               SharedPreferences preferences) {
+                               PreferenceTokenStore preferenceTokenStore) {
         this.application = application;
         ri = retrofit.create(RetrofitAuthenticationInterface.class);
-        this.preferences = preferences;
+        this.preferenceTokenStore = preferenceTokenStore;
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -136,11 +133,8 @@ public class NoSurfAuthenticator {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
                         userOAuthRefreshTokenCache = response.body().getRefreshToken();
 
-                        preferences
-                                .edit()
-                                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
-                                .putString(KEY_USER_OAUTH_REFRESH_TOKEN, userOAuthRefreshTokenCache)
-                                .apply();
+                        preferenceTokenStore.setUserOAuthAccessToken(userOAuthAccessTokenCache);
+                        preferenceTokenStore.setUserOAuthRefreshToken(userOAuthRefreshTokenCache);
 
                         repository.setUserLoggedIn();
                         repository.fetchAllPostsASync();
@@ -167,10 +161,7 @@ public class NoSurfAuthenticator {
                     public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
 
-                        preferences
-                                .edit()
-                                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, userOAuthAccessTokenCache)
-                                .apply();
+                        preferenceTokenStore.setUserOAuthAccessToken(userOAuthAccessTokenCache);
 
                         switch (callback) {
                             case FETCH_ALL_POSTS_ASYNC:
@@ -206,11 +197,8 @@ public class NoSurfAuthenticator {
      *  This method should run on app initialization, to see if the user's credentials have been
      *  previously saved */
     void checkIfLoginCredentialsAlreadyExist() {
-        userOAuthAccessTokenCache = preferences
-                .getString(KEY_USER_OAUTH_ACCESS_TOKEN, "");
-
-        userOAuthRefreshTokenCache = preferences
-                .getString(KEY_USER_OAUTH_REFRESH_TOKEN, "");
+        userOAuthAccessTokenCache = preferenceTokenStore.getUserOAuthAccessToken();
+        userOAuthRefreshTokenCache = preferenceTokenStore.getUserOAuthRefreshToken();
 
         if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
             setUserLoggedIn();
@@ -234,11 +222,8 @@ public class NoSurfAuthenticator {
         userOAuthAccessTokenCache = "";
         userOAuthRefreshTokenCache = "";
 
-        preferences
-                .edit()
-                .putString(KEY_USER_OAUTH_ACCESS_TOKEN, "")
-                .putString(KEY_USER_OAUTH_REFRESH_TOKEN, "")
-                .apply();
+        preferenceTokenStore.clearUserOAuthAccessToken();
+        preferenceTokenStore.clearUserOAuthRefreshToken();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------

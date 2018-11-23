@@ -13,12 +13,12 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
+import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -34,13 +34,11 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.ex
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String KEY_NIGHT_MODE = "nightMode";
-    private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
-    @SuppressWarnings("WeakerAccess") @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
+    @SuppressWarnings("WeakerAccess") @Inject PreferenceSettingsStore preferenceSettingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
     private NavController navController;
@@ -73,14 +71,14 @@ public class MainActivity extends BaseActivity implements
     protected void onResume() {
         super.onResume();
 
-        preferences.registerOnSharedPreferenceChangeListener(this);
+        preferenceSettingsStore.registerListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
+        preferenceSettingsStore.unregisterListener(this);
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -89,8 +87,9 @@ public class MainActivity extends BaseActivity implements
 
     private void initPrefs() {
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
-        nightMode = preferences.getBoolean(KEY_NIGHT_MODE, true);
-        amoledNightMode = preferences.getBoolean(KEY_AMOLED_NIGHT_MODE, false);
+
+        nightMode = preferenceSettingsStore.isNightMode();
+        amoledNightMode = preferenceSettingsStore.isAmoledNightMode();
     }
 
     private void initNightMode() {
@@ -152,7 +151,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        nightMode = sharedPreferences.getBoolean(KEY_NIGHT_MODE, true);
+        nightMode = preferenceSettingsStore.isNightMode();
 
         if (nightMode) {
             nightModeOn();

@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
+import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
@@ -19,7 +19,6 @@ import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -38,7 +37,7 @@ abstract public class PostFragment extends BaseFragment {
     private final View[] dividers = new View[2];
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    @Inject @Named("defaultSharedPrefs") SharedPreferences preferences;
+    @Inject PreferenceSettingsStore preferenceSettingsStore;
     private PostFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
@@ -57,7 +56,7 @@ abstract public class PostFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-        externalBrowser = preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
+        externalBrowser = preferenceSettingsStore.isUseExternalBrowser();
 
         setHasOptionsMenu(true);
         lookupPostMetadata();
