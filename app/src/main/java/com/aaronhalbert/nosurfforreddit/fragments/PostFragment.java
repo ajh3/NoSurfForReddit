@@ -29,7 +29,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
-    private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String ZERO = "zero";
 
     private final TextView[] comments = new TextView[3];
