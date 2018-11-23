@@ -10,7 +10,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 
 import androidx.navigation.Navigation;
 
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.buildAuthUrl;
+import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 public class LoginFragment extends BaseFragment {
 

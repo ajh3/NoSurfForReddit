@@ -1,8 +1,8 @@
-package com.aaronhalbert.nosurfforreddit.network;
+package com.aaronhalbert.nosurfforreddit.repository;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

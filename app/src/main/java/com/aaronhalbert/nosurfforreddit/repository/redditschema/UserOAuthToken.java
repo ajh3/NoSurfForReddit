@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.network.redditschema;
+package com.aaronhalbert.nosurfforreddit.repository.redditschema;
 
 import com.google.gson.annotations.SerializedName;
 

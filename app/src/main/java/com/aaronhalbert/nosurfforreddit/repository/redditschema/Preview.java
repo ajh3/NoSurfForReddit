@@ -1,5 +1,5 @@
 
-package com.aaronhalbert.nosurfforreddit.network.redditschema;
+package com.aaronhalbert.nosurfforreddit.repository.redditschema;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

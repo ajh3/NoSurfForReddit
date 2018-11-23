@@ -1,6 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.viewmodel;
 
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;

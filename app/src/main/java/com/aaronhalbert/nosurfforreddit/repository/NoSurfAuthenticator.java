@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.network;
+package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.app.Application;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
 import java.util.UUID;
 
@@ -24,9 +24,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.USER_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.USER_AUTH_CALL_ERROR;
 
 /* see https://github.com/reddit-archive/reddit/wiki/OAuth2 for Reddit login API documentation */
 

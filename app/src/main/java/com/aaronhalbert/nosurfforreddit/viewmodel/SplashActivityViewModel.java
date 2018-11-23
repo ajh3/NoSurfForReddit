@@ -1,6 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.viewmodel;
 
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import androidx.lifecycle.LiveData;

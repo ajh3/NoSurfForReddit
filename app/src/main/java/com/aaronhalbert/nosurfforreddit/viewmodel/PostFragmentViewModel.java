@@ -1,6 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.viewmodel;
 
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;

@@ -1,6 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.presentation;
 
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import dagger.Module;

@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.network;
+package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.util.Log;
 

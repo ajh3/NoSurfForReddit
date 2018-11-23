@@ -1,7 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.viewmodel;
 
 import com.aaronhalbert.nosurfforreddit.Event;
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 

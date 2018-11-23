@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator;
-import com.aaronhalbert.nosurfforreddit.network.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
 import java.util.concurrent.ExecutorService;

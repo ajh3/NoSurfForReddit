@@ -1,7 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.network.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.repository.RateLimitInterceptor;
 
 import javax.inject.Singleton;
 

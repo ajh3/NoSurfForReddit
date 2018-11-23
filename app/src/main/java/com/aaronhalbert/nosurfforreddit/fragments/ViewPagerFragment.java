@@ -25,7 +25,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 
-import static com.aaronhalbert.nosurfforreddit.network.NoSurfAuthenticator.buildAuthUrl;
+import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 

@@ -1,10 +1,10 @@
-package com.aaronhalbert.nosurfforreddit.network;
+package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.Event;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.Data_;
-import com.aaronhalbert.nosurfforreddit.network.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
@@ -24,9 +24,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.network.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 
 public class Repository {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";

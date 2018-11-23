@@ -12,11 +12,11 @@ import android.widget.TextView;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.glide.GlideApp;
 
-import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.DEFAULT;
-import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.IMAGE;
-import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.NSFW;
-import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.SELF;
-import static com.aaronhalbert.nosurfforreddit.network.redditschema.Listing.SPOILER;
+import static com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing.DEFAULT;
+import static com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing.IMAGE;
+import static com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing.NSFW;
+import static com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing.SELF;
+import static com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing.SPOILER;
 
 @SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {

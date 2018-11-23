@@ -1,7 +1,6 @@
-package com.aaronhalbert.nosurfforreddit.network.redditschema;
+package com.aaronhalbert.nosurfforreddit.repository.redditschema;
 
 import android.text.Spanned;
-import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
