@@ -30,11 +30,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="nosurfforreddit" android:host="oauth" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".activities.SplashActivity"
-            android:theme="@style/Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

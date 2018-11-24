@@ -1,5 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.aaronhalbert.nosurfforreddit.R;
@@ -62,6 +65,11 @@ public class MainActivity extends BaseActivity implements
         viewModel = ViewModelProviders
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
+
+        /* only run the splash animation on first app lanuch */
+        if (savedInstanceState == null) {
+            setupSplashAnimation();
+        }
 
         initNavigation();
         subscribeToNetworkErrors();
@@ -129,6 +137,22 @@ public class MainActivity extends BaseActivity implements
         Toolbar t = findViewById(R.id.action_bar);
 
         NavigationUI.setupWithNavController(t, navController, appBarConfiguration);
+    }
+
+    private void setupSplashAnimation() {
+        Animator refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_animation);
+        ImageView iv = findViewById(R.id.logo);
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.web_hi_res_512));
+        refreshDrawableAnimator.setTarget(iv);
+        refreshDrawableAnimator.start();
+
+        setupSplashCanceler();
+    }
+
+    private void setupSplashCanceler() {
+        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
+            findViewById(R.id.logo).setVisibility(View.GONE);
+        });
     }
 
     // endregion helper methods --------------------------------------------------------------------

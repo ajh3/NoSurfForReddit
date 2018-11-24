@@ -56,8 +56,15 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_view_pager, container, false);
 
-        return inflater.inflate(R.layout.fragment_view_pager, container, false);
+        /* allow splash animation to work correctly by ensuring RecyclerView is visible when
+         * going BACK from a PostFragment. Necessary because this fragment's view hierarchy
+         * is GONE by default to make the splash screen show over a totally blank background.
+         * We toggle it VISIBLE whenever data are available. */
+        setupSplashVisibilityToggle(v); //
+
+        return v;
     }
 
     @Override
@@ -199,6 +206,12 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    private void setupSplashVisibilityToggle(View v) {
+        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
+            v.findViewById(R.id.view_pager_fragment_swipe_refresh_layout).setVisibility(View.VISIBLE);
+        });
     }
 
     // endregion helper methods --------------------------------------------------------------------

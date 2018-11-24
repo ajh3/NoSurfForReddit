@@ -17,9 +17,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass == MainActivityViewModel.class) {
             return (T) new MainActivityViewModel(repository);
-        } else if (modelClass == SplashActivityViewModel.class) {
-            return (T) new SplashActivityViewModel(repository);
-        }  else if (modelClass == PostFragmentViewModel.class) {
+        } else if (modelClass == PostFragmentViewModel.class) {
             return (T) new PostFragmentViewModel(repository);
         } else if (modelClass == PostsFragmentViewModel.class) {
             return (T) new PostsFragmentViewModel(repository);
