@@ -46,10 +46,6 @@ public class MainActivityViewModel extends ViewModel {
 
     // region getter/setter methods ----------------------------------------------------------------
 
-    public LiveData<Boolean> getIsUserLoggedInLiveData() {
-        return repository.getIsUserLoggedInLiveData();
-    }
-
     public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
         return repository.getAllPostsViewStateLiveData();
     }

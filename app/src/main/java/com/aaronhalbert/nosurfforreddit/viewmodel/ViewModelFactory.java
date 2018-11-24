@@ -25,6 +25,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new ViewPagerFragmentViewModel(repository);
         } else if (modelClass == NoSurfWebViewFragmentViewModel.class) {
             return (T) new NoSurfWebViewFragmentViewModel(repository);
+        } else if (modelClass == ContainerFragmentViewModel.class) {
+            return (T) new ContainerFragmentViewModel(repository);
         } else {
             throw new RuntimeException("invalid ViewModel class" + modelClass);
         }
