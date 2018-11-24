@@ -1,7 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
@@ -192,12 +190,6 @@ abstract public class PostFragment extends BaseFragment {
         } else {
             postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
         }
-    }
-
-    //TODO: convert to Nav? and any other startActivity?
-    void launchExternalBrowser(Uri uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
     }
 
     // endregion helper methods --------------------------------------------------------------------

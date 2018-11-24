@@ -3,6 +3,8 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.net.Uri;
 import android.view.View;
 
+import com.aaronhalbert.nosurfforreddit.ExternalBrowser;
+
 import androidx.navigation.Navigation;
 
 /* for displaying a Reddit link-type post, as opposed to a self-type
@@ -24,7 +26,8 @@ public class LinkPostFragment extends PostFragment {
     @Override
     void launchLink(View view, String url) {
         if (externalBrowser) {
-            launchExternalBrowser(Uri.parse(url));
+            ExternalBrowser e = new ExternalBrowser(getContext());
+            e.launchExternalBrowser(Uri.parse(url));
         } else {
             LinkPostFragmentDirections.GotoUrlAction action
                     = LinkPostFragmentDirections.gotoUrlAction(url);

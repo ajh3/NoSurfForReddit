@@ -143,13 +143,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void gotoUrlDirectly(NavController navController) {
+            String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
+
             ViewPagerFragmentDirections.GotoUrlAction action
                     = ViewPagerFragmentDirections
-                    .gotoUrlAction(mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl);
+                    .gotoUrlAction(url);
 
             navController.navigate(action);
         }
     }
-
     // endregion helper classes---------------------------------------------------------------------
 }
