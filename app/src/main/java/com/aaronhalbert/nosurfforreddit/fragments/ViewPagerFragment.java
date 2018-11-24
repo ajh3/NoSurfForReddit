@@ -23,6 +23,8 @@ import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
@@ -219,8 +221,8 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
     // region navigation helper methods ------------------------------------------------------------
 
     private void launchLoginScreen() {
-        ViewPagerFragmentDirections.GotoUrlAction action
-                = ViewPagerFragmentDirections.gotoUrlAction(buildAuthUrl());
+        GotoUrlGlobalAction action
+                = gotoUrlGlobalAction(buildAuthUrl());
 
         navController.navigate(action);
     }

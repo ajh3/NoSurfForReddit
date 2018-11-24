@@ -10,6 +10,8 @@ import com.aaronhalbert.nosurfforreddit.R;
 
 import androidx.navigation.Navigation;
 
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 public class LoginFragment extends BaseFragment {
@@ -37,8 +39,8 @@ public class LoginFragment extends BaseFragment {
     /* onNewIntent in MainActivity captures the result of this login attempt, and is responsible
     * for calling viewModel.logUserIn() if it's successful */
     private void login() {
-        LoginFragmentDirections.GotoUrlAction action
-                = LoginFragmentDirections.gotoUrlAction(buildAuthUrl());
+        GotoUrlGlobalAction action
+                = gotoUrlGlobalAction(buildAuthUrl());
 
         Navigation.findNavController(getView()).navigate(action);
     }

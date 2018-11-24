@@ -7,6 +7,9 @@ import com.aaronhalbert.nosurfforreddit.ExternalBrowser;
 
 import androidx.navigation.Navigation;
 
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
+
 /* for displaying a Reddit link-type post, as opposed to a self-type
  *
  * also see SelfPostFragment */
@@ -29,8 +32,8 @@ public class LinkPostFragment extends PostFragment {
             ExternalBrowser e = new ExternalBrowser(getContext());
             e.launchExternalBrowser(Uri.parse(url));
         } else {
-            LinkPostFragmentDirections.GotoUrlAction action
-                    = LinkPostFragmentDirections.gotoUrlAction(url);
+            GotoUrlGlobalAction action
+                    = gotoUrlGlobalAction(url);
 
             Navigation.findNavController(view).navigate(action);
         }

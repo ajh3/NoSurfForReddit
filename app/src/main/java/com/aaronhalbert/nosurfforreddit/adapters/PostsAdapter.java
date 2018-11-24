@@ -17,6 +17,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
+
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     // we only ever show the first page of posts, which is 25 by default
@@ -145,9 +148,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         private void gotoUrlDirectly(NavController navController) {
             String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
 
-            ViewPagerFragmentDirections.GotoUrlAction action
-                    = ViewPagerFragmentDirections
-                    .gotoUrlAction(url);
+            GotoUrlGlobalAction action
+                    = gotoUrlGlobalAction(url);
 
             navController.navigate(action);
         }

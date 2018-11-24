@@ -25,13 +25,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest"
-            app:enterAnim="@anim/push_up_in"
-            app:exitAnim="@anim/push_up_out"
-            app:popEnterAnim="@anim/push_down_in"
-            app:popExitAnim="@anim/push_down_out" />
-        <action
             android:id="@+id/goto_prefs_action"
             app:destination="@id/fragment_nosurf_preference_dest"
             app:enterAnim="@anim/push_up_in"
@@ -57,13 +50,6 @@
         android:id="@+id/fragment_link_post_dest"
         android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment"
         tools:layout="@layout/fragment_post">
-        <action
-            android:id="@id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -76,13 +62,6 @@
         android:id="@+id/fragment_login_dest"
         android:name="com.aaronhalbert.nosurfforreddit.fragments.LoginFragment"
         tools:layout="@layout/fragment_login">
-        <action
-            android:id="@id/goto_url_action"
-            app:destination="@id/fragment_nosurf_web_view_dest"
-            app:enterAnim="@anim/push_up_in"
-            app:exitAnim="@anim/push_up_out"
-            app:popEnterAnim="@anim/push_down_in"
-            app:popExitAnim="@anim/push_down_out" />
     </fragment>
 
     <fragment
@@ -102,4 +81,13 @@
         android:id="@+id/fragment_about_dest"
         android:name="com.aaronhalbert.nosurfforreddit.fragments.AboutFragment">
     </fragment>
+
+    <action
+        android:id="@+id/goto_url_global_action"
+        app:destination="@id/fragment_nosurf_web_view_dest"
+        app:enterAnim="@anim/push_up_in"
+        app:exitAnim="@anim/push_up_out"
+        app:popEnterAnim="@anim/push_down_in"
+        app:popExitAnim="@anim/push_down_out" />
+
 </navigation>
