@@ -8,6 +8,7 @@ public class PreferenceSettingsStore implements SettingsStore {
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+    private static final String KEY_DEFAULT_PAGE_IS_SUBSCRIBED = "defaultPageIsSubscribed";
 
     private final SharedPreferences preferences;
 
@@ -25,6 +26,10 @@ public class PreferenceSettingsStore implements SettingsStore {
 
     public boolean isUseExternalBrowser() {
         return preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
+    }
+
+    public boolean isDefaultPageSubscribed() {
+        return preferences.getBoolean(KEY_DEFAULT_PAGE_IS_SUBSCRIBED, false);
     }
 
     public void registerListener(MainActivity mainActivity) {

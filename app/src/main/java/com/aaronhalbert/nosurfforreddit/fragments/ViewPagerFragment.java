@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
+import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
@@ -30,6 +31,7 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 
 public class ViewPagerFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    @Inject PreferenceSettingsStore preferenceSettingsStore;
     private ViewPagerFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
@@ -68,6 +70,7 @@ public class ViewPagerFragment extends BaseFragment {
 
         navController = Navigation.findNavController(view);
         setupViewPagerWithTabLayout(view);
+        setPage();
     }
 
     @Override
@@ -164,6 +167,12 @@ public class ViewPagerFragment extends BaseFragment {
         pager.setAdapter(noSurfFragmentPagerAdapter);
         tabs.setupWithViewPager(pager);
         tabs.setTabMode(TabLayout.MODE_FIXED);
+    }
+
+    private void setPage() {
+        if (preferenceSettingsStore.isDefaultPageSubscribed()) {
+            pager.setCurrentItem(1);
+        }
     }
 
     // endregion helper methods --------------------------------------------------------------------
