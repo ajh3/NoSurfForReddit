@@ -30,4 +30,10 @@ public class SubscribedPostsFragment extends PostsFragment {
     void selectPostsViewStateLiveData() {
         postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
     }
+
+    /* see comments in AllPostsFragment.onRefresh() */
+    @Override
+    public void onRefresh() {
+        viewModel.fetchSubscribedPostsASync();
+    }
 }

@@ -13,6 +13,14 @@ public class PostsFragmentViewModel extends ViewModel {
         this.repository = repository;
     }
 
+    public void fetchAllPostsASync() {
+        repository.fetchAllPostsASync();
+    }
+
+    public void fetchSubscribedPostsASync() {
+        repository.fetchSubscribedPostsASync();
+    }
+
     public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
         return repository.getAllPostsViewStateLiveData();
     }

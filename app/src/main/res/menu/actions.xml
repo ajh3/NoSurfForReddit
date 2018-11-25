@@ -4,27 +4,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/goto_url_action"
-        android:title="@string/login"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/goto_prefs_action"
+        android:id="@+id/settings"
         android:title="@string/settings"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/goto_about_action"
+        android:id="@+id/about"
         android:title="@string/about"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/logout"
         android:title="@string/logout"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/login"
+        android:title="@string/login"
         app:showAsAction="never"/>
 </menu>

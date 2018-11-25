@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
@@ -29,14 +28,13 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 
-public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ViewPagerFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private ViewPagerFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
 
     private ViewPager pager;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private NavController navController;
 
     public static ViewPagerFragment newInstance() {
@@ -53,18 +51,13 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ViewPagerFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         observeIsUserLoggedInLiveData();
-        observeBothPostsViewStateLiveData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_view_pager, container, false);
 
-        /* allow splash animation to work correctly by ensuring RecyclerView is visible when
-         * going BACK from a PostFragment. Necessary because this fragment's view hierarchy
-         * is GONE by default to make the splash screen show over a totally blank background.
-         * We toggle it VISIBLE whenever data are available. */
-        setupSplashVisibilityToggle(v); //
+        setupSplashVisibilityToggle(v);
 
         return v;
     }
@@ -73,28 +66,18 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupSwipeRefreshLayout(view);
         navController = Navigation.findNavController(view);
-
-        pager = view.findViewById(R.id.view_pager_fragment_pager);
-        TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
-        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
-                new NoSurfFragmentPagerAdapter(getChildFragmentManager());
-
-        pager.setAdapter(noSurfFragmentPagerAdapter);
-        tabs.setupWithViewPager(pager);
-        tabs.setTabMode(TabLayout.MODE_FIXED);
+        setupViewPagerWithTabLayout(view);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        /* prevent memory leaks due to fragment going on backstack while retaining these
-         * in instance variables. See commends on PostsFragment.onDestroyView() for a more detailed
+        /* prevent memory leaks due to fragment going on backstack while retaining these objects
+         * in instance variables. See comments on PostsFragment.onDestroyView() for a more detailed
          * explanation of this leak. */
         pager = null;
-        swipeRefreshLayout = null;
         navController = null;
     }
 
@@ -112,26 +95,24 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
      *
      * return NavigationUI.onNavDestinationSelected(item, Navigation.findNavController(getView()));
      *
-     * However, this method does not appear to honor animation transitions defined in XML, so we
-     * perform a standard navigate-by-action instead. */
+     * However, this does not appear to honor animation transitions defined in XML, so we
+     * perform a manual navigate-by-action instead. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.logout:
                 mainActivityViewModel.logUserOut();
                 return true;
-            case R.id.goto_url_action:
+            case R.id.login:
                 launchLoginScreen();
                 return true;
-            case R.id.goto_prefs_action:
+            case R.id.settings:
                 launchPrefsScreen();
                 return true;
-            case R.id.goto_about_action:
+            case R.id.about:
                 launchAboutScreen();
                 return true;
-            case R.id.refresh:
-                refresh();
-                return true;
+            // case R.id.refresh: handled in PostsFragment
         }
 
         return super.onOptionsItemSelected(item);
@@ -139,7 +120,7 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem loginMenuItem = menu.findItem(R.id.goto_url_action);
+        MenuItem loginMenuItem = menu.findItem(R.id.login);
         MenuItem logoutMenuItem = menu.findItem(R.id.logout);
 
         if (isUserLoggedIn) {
@@ -155,65 +136,34 @@ public class ViewPagerFragment extends BaseFragment implements SwipeRefreshLayou
 
     // region observers ----------------------------------------------------------------------------
 
-    /* We need to observe both viewstates, as the refresh button may refresh either data stream
-     * depending on which ViewPager page is currently selected. */
-    private void observeBothPostsViewStateLiveData() {
-        viewModel.getAllPostsViewStateLiveData()
-                .observe(this, listing -> cancelRefreshingAnimation());
-        viewModel.getSubscribedPostsViewStateLiveData()
-                .observe(this, listing -> cancelRefreshingAnimation());
-    }
-
     private void observeIsUserLoggedInLiveData() {
         viewModel.getIsUserLoggedInLiveData()
                 .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
-    }
-
-    /* onRefresh is called directly when the user swipes to refresh. It is also called indirectly
-     * when the user clicks "Refresh" in the menu, by way of refresh() triggering onRefresh()
-     * by posting a Runnable and turning on the animation manually. */
-    @Override
-    public void onRefresh() {
-        if (pager.getCurrentItem() == 0) {
-            viewModel.fetchAllPostsASync();
-        } else if ((pager.getCurrentItem() == 1) && isUserLoggedIn) {
-            viewModel.fetchSubscribedPostsASync();
-        }
     }
 
     // endregion observers -------------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void refresh() {
-        if (pager.getCurrentItem() == 0) {
-            swipeRefreshLayout.post(() -> {
-                swipeRefreshLayout.setRefreshing(true);
-                ViewPagerFragment.this.onRefresh();
-            });
-        } else if ((pager.getCurrentItem() == 1) && isUserLoggedIn) {
-            swipeRefreshLayout.post(() -> {
-                swipeRefreshLayout.setRefreshing(true);
-                ViewPagerFragment.this.onRefresh();
-            });
-        }
-    }
-
-    private void setupSwipeRefreshLayout(View v) {
-        swipeRefreshLayout = v.findViewById(R.id.view_pager_fragment_swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-    }
-
-    private void cancelRefreshingAnimation() {
-        if (swipeRefreshLayout.isRefreshing()) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
+    /* allow splash animation to work correctly by ensuring RecyclerView is visible when
+     * going BACK from a PostFragment. Necessary because this fragment's view hierarchy
+     * is GONE by default to make the splash screen show over a totally blank background
+     * on initial app startup. We toggle it VISIBLE whenever data are available. */
     private void setupSplashVisibilityToggle(View v) {
         viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
-            v.findViewById(R.id.view_pager_fragment_swipe_refresh_layout).setVisibility(View.VISIBLE);
+            v.findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE);
         });
+    }
+
+    private void setupViewPagerWithTabLayout(View view) {
+        pager = view.findViewById(R.id.view_pager_fragment_pager);
+        TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
+        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
+                new NoSurfFragmentPagerAdapter(getChildFragmentManager());
+
+        pager.setAdapter(noSurfFragmentPagerAdapter);
+        tabs.setupWithViewPager(pager);
+        tabs.setTabMode(TabLayout.MODE_FIXED);
     }
 
     // endregion helper methods --------------------------------------------------------------------

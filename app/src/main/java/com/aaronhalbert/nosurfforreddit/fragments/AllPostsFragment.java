@@ -27,4 +27,12 @@ public class AllPostsFragment extends PostsFragment {
     void selectPostsViewStateLiveData() {
         postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
     }
+
+    /* onRefresh is called directly when the user swipes to refresh. It is also called indirectly
+     * when the user clicks "Refresh" in the menu, via PostsFragment.refreshWithAnimation()
+     * triggering onRefresh() by posting a Runnable and turning on the animation manually. */
+    @Override
+    public void onRefresh() {
+        viewModel.fetchAllPostsASync();
+    }
 }

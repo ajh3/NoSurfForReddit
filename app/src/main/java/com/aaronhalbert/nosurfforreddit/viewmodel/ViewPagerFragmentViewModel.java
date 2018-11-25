@@ -13,20 +13,8 @@ public class ViewPagerFragmentViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public void fetchAllPostsASync() {
-        repository.fetchAllPostsASync();
-    }
-
-    public void fetchSubscribedPostsASync() {
-        repository.fetchSubscribedPostsASync();
-    }
-
     public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
         return repository.getAllPostsViewStateLiveData();
-    }
-
-    public LiveData<PostsViewState> getSubscribedPostsViewStateLiveData() {
-        return repository.getSubscribedPostsViewStateLiveData();
     }
 
     public LiveData<Boolean> getIsUserLoggedInLiveData() {
