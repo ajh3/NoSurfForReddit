@@ -134,8 +134,11 @@ public class MainActivity extends BaseActivity implements
         AppBarConfiguration appBarConfiguration =
                 new AppBarConfiguration.Builder(navController.getGraph()).build();
 
-        Toolbar t = findViewById(R.id.action_bar);
+        Toolbar t = findViewById(R.id.toolbar);
+        setSupportActionBar(t);
 
+        // enables "Up" navigation button in toolbar
+        // TODO: set labels for nav destinations
         NavigationUI.setupWithNavController(t, navController, appBarConfiguration);
     }
 
