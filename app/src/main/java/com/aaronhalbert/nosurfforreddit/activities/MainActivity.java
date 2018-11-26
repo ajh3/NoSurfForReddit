@@ -121,6 +121,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void nightModeOff() {
+        new WebView(this); // see comment in nightModeOn()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
