@@ -57,11 +57,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_view_pager, container, false);
-
-        setupSplashVisibilityToggle(v);
-
-        return v;
+        return inflater.inflate(R.layout.fragment_view_pager, container, false);
     }
 
     @Override
@@ -71,6 +67,7 @@ public class ViewPagerFragment extends BaseFragment {
         navController = Navigation.findNavController(view);
         setupViewPagerWithTabLayout(view);
         setPage();
+        setupSplashVisibilityToggle();
     }
 
     @Override
@@ -144,19 +141,19 @@ public class ViewPagerFragment extends BaseFragment {
                 .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
     }
 
-    // endregion observers -------------------------------------------------------------------------
-
-    // region helper methods -----------------------------------------------------------------------
-
     /* allow splash animation to work correctly by ensuring RecyclerView is visible when
      * going BACK from a PostFragment. Necessary because this fragment's view hierarchy
      * is GONE by default to make the splash screen show over a totally blank background
      * on initial app startup. We toggle it VISIBLE whenever data are available. */
-    private void setupSplashVisibilityToggle(View v) {
+    private void setupSplashVisibilityToggle() {
         viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
-            v.findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE);
         });
     }
+
+    // endregion observers -------------------------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
 
     private void setupViewPagerWithTabLayout(View view) {
         pager = view.findViewById(R.id.view_pager_fragment_pager);
