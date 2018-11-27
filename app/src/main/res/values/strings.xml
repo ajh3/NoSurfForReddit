@@ -6,8 +6,8 @@
     <string name="night_mode">Night mode</string>
     <string name="amoled_night_mode">AMOLED night mode</string>
     <string name="external_browser">Launch links in external browser</string>
-    <string name="login">Login</string>
-    <string name="logout">Logout</string>
+    <string name="login">Log in</string>
+    <string name="logout">Log out</string>
     <string name="login_instructions">You must log in to view your subscribed subreddits.</string>
     <string name="about_fragment">Copyright 2018. By /u/Suspicious_Advantage</string>
     <string name="post_image_description" tools:keep="@string/post_image_description">Post image</string>
