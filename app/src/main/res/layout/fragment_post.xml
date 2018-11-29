@@ -8,10 +8,6 @@
         <variable
             name="postFragment"
             type="com.aaronhalbert.nosurfforreddit.fragments.PostFragment"/>
-
-        <variable
-            name="viewModel"
-            type="com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel"/>
     </data>
 
     <ScrollView
@@ -69,13 +65,13 @@
             <TextView
                 style="@style/PostFragmentFirstCommentDetails"
                 android:id="@+id/post_fragment_first_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[0]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentDetails[0]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_comment_progress_bar"/>
 
             <TextView
                 style="@style/PostFragmentFirstComment"
                 android:id="@+id/post_fragment_first_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[0]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentBodies[0]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_first_comment_details"/>
 
             <View
@@ -86,13 +82,13 @@
             <TextView
                 style="@style/PostFragmentSecondCommentDetails"
                 android:id="@+id/post_fragment_second_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[1]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentDetails[1]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_first_comment"/>
 
             <TextView
                 style="@style/PostFragmentSecondComment"
                 android:id="@+id/post_fragment_second_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[1]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentBodies[1]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_second_comment_details"/>
 
             <View
@@ -103,13 +99,13 @@
             <TextView
                 style="@style/PostFragmentThirdCommentDetails"
                 android:id="@+id/post_fragment_third_comment_details"
-                android:text="@{viewModel.commentsViewStateLiveData.commentDetails[2]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentDetails[2]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_second_comment"/>
 
             <TextView
                 style="@style/PostFragmentThirdComment"
                 android:id="@+id/post_fragment_third_comment"
-                android:text="@{viewModel.commentsViewStateLiveData.commentBodies[2]}"
+                android:text="@{postFragment.viewModel.commentsViewStateLiveData.commentBodies[2]}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_third_comment_details"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +30,13 @@ abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
 
-    private final TextView[] comments = new TextView[3];
-    private final TextView[] commentsDetails = new TextView[3];
-    private final View[] dividers = new View[2];
+    private TextView[] comments = new TextView[3];
+    private TextView[] commentsDetails = new TextView[3];
+    private View[] dividers = new View[2];
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject PreferenceSettingsStore preferenceSettingsStore;
+
     private PostFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
@@ -77,6 +79,17 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // avoid leaking any of these views when fragment goes on backstack
+        fragmentPostBinding = null;
+        comments = null;
+        commentsDetails = null;
+        dividers = null;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(KEY_COMMENTS_ALREADY_LOADED, commentsAlreadyLoaded);
 
@@ -97,9 +110,13 @@ abstract public class PostFragment extends BaseFragment {
 
     // region getter methods -----------------------------------------------------------------------
 
-    // expose this for the data binding class
+    // expose these for the data binding class
     public LiveData<PostsViewState> getPostsViewStateLiveData() {
         return postsViewStateLiveData;
+    }
+
+    public PostFragmentViewModel getViewModel() {
+        return viewModel;
     }
 
     // endregion getter methods --------------------------------------------------------------------
@@ -110,7 +127,6 @@ abstract public class PostFragment extends BaseFragment {
         fragmentPostBinding = FragmentPostBinding.inflate(requireActivity().getLayoutInflater(),
                 container,
                 false);
-        fragmentPostBinding.setViewModel(viewModel);
         fragmentPostBinding.setPostFragment(this);
         fragmentPostBinding.setLifecycleOwner(this);
     }
@@ -137,7 +153,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void observeCommentsFinishedLoadingLiveEvent() {
-        viewModel.getCommentsViewStateLiveData().observe(this, commentsViewState -> {
+        viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
             if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
                 updateCommentViewVisibilities();
 
