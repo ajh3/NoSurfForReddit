@@ -30,9 +30,9 @@ abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
 
-    private TextView[] comments = new TextView[3];
-    private TextView[] commentsDetails = new TextView[3];
-    private View[] dividers = new View[2];
+    private TextView[] comments;
+    private TextView[] commentsDetails;
+    private View[] dividers;
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject PreferenceSettingsStore preferenceSettingsStore;
@@ -132,6 +132,10 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void findPostViews() {
+        comments = new TextView[3];
+        commentsDetails = new TextView[3];
+        dividers = new View[2];
+
         // put these views into arrays to more easily work with them in for loops
         comments[0] = fragmentPostBinding.postFragmentFirstComment;
         comments[1] = fragmentPostBinding.postFragmentSecondComment;

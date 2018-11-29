@@ -121,15 +121,19 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
 
     private void refreshWithAnimation() {
         swipeRefreshLayout.post(() -> {
-            swipeRefreshLayout.setRefreshing(true);
+            setSwipeRefreshLayoutRefreshStatus(true);
             onRefresh();
         });
     }
 
     private void cancelRefreshAnimation() {
         if (swipeRefreshLayout.isRefreshing()) {
-            swipeRefreshLayout.setRefreshing(false);
+            setSwipeRefreshLayoutRefreshStatus(false);
         }
+    }
+
+    private void setSwipeRefreshLayoutRefreshStatus(boolean b) {
+        swipeRefreshLayout.setRefreshing(b);
     }
 
     // endregion helper methods --------------------------------------------------------------------
