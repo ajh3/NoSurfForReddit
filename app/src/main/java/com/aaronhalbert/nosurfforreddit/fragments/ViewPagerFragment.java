@@ -146,7 +146,7 @@ public class ViewPagerFragment extends BaseFragment {
      * is GONE by default to make the splash screen show over a totally blank background
      * on initial app startup. We toggle it VISIBLE whenever data are available. */
     private void setupSplashVisibilityToggle() {
-        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
+        viewModel.getAllPostsViewStateLiveData().observe(getViewLifecycleOwner(), postsViewState -> {
             getView().findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE);
         });
     }
