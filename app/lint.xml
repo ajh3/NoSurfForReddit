@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <issue id="IconDuplicates">
+        <ignore path="src/main/res/mipmap-mdpi/ic_launcher.png" />
+        <ignore path="src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
+        <ignore path="src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+    </issue>
     <issue id="UnusedResources">
         <ignore path="src/main/res/drawable-nodpi/link_post_default_thumbnail_192.png" />
         <ignore path="src/main/res/drawable-nodpi/link_post_nsfw_thumbnail_192.png" />
         <ignore path="src/main/res/drawable-nodpi/self_post_default_thumbnail_192.png" />
+        <ignore path="src/main/res/drawable-nodpi/web_hi_res_512.png" />
     </issue>
 </lint>

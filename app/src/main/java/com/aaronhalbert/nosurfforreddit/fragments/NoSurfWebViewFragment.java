@@ -24,10 +24,6 @@ public class NoSurfWebViewFragment extends BaseFragment {
     private NoSurfWebViewFragmentViewModel viewModel;
     private String url;
 
-    public static NoSurfWebViewFragment newInstance() {
-        return new NoSurfWebViewFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);

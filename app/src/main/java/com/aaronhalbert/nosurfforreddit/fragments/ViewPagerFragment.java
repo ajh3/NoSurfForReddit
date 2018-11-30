@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
-import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
+import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
@@ -31,17 +31,13 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 
 public class ViewPagerFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    @Inject PreferenceSettingsStore preferenceSettingsStore;
+    @Inject SettingsStore settingsStore;
     private ViewPagerFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
     private boolean isUserLoggedIn = false;
 
     private ViewPager pager;
     private NavController navController;
-
-    public static ViewPagerFragment newInstance() {
-        return new ViewPagerFragment();
-    }
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -146,9 +142,8 @@ public class ViewPagerFragment extends BaseFragment {
      * is GONE by default to make the splash screen show over a totally blank background
      * on initial app startup. We toggle it VISIBLE whenever data are available. */
     private void setupSplashVisibilityToggle() {
-        viewModel.getAllPostsViewStateLiveData().observe(getViewLifecycleOwner(), postsViewState -> {
-            getView().findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE);
-        });
+        viewModel.getAllPostsViewStateLiveData().observe(getViewLifecycleOwner(), postsViewState ->
+                getView().findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE));
     }
 
     // endregion observers -------------------------------------------------------------------------
@@ -167,7 +162,7 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void setPage() {
-        if (preferenceSettingsStore.isDefaultPageSubscribed()) {
+        if (settingsStore.isDefaultPageSubscribed()) {
             pager.setCurrentItem(1);
         }
     }

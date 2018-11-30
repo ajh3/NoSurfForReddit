@@ -6,6 +6,7 @@ public interface SettingsStore {
     boolean isNightMode();
     boolean isAmoledNightMode();
     boolean isUseExternalBrowser();
+    boolean isDefaultPageSubscribed();
 
     void registerListener(MainActivity mainActivity);
     void unregisterListener(MainActivity mainActivity);

@@ -7,9 +7,6 @@ import android.view.View;
  * also see LinkPostFragment */
 
 public class SelfPostFragment extends PostFragment {
-    public static SelfPostFragment newInstance() {
-        return new SelfPostFragment();
-    }
 
     @Override
     void setupPostViews() {

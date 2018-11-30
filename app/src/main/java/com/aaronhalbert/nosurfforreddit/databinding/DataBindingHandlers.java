@@ -76,7 +76,7 @@ public class DataBindingHandlers {
     }
 
     @BindingAdapter("strikethrough")
-    public static void strikethru(TextView tv, boolean hasBeenClicked) {
+    public static void strikethrough(TextView tv, boolean hasBeenClicked) {
         if (hasBeenClicked) {
             tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             tv.setTextColor(ContextCompat

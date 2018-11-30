@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.viewstate;
 
 /* data structure to hold info on the most-recently clicked post in a RecyclerView */
 
+@SuppressWarnings("WeakerAccess")
 public class LastClickedPostMetadata {
     public final int lastClickedPostPosition;
     public final String lastClickedPostId;

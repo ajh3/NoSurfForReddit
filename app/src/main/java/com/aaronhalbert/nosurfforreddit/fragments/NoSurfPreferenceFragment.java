@@ -8,10 +8,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 public class NoSurfPreferenceFragment extends PreferenceFragmentCompat {
 
-    public static NoSurfPreferenceFragment newInstance() {
-        return new NoSurfPreferenceFragment();
-    }
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);

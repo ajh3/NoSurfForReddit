@@ -3,14 +3,13 @@ package com.aaronhalbert.nosurfforreddit.fragments;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
-import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
+import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
@@ -35,7 +34,7 @@ abstract public class PostFragment extends BaseFragment {
     private View[] dividers;
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    @Inject PreferenceSettingsStore preferenceSettingsStore;
+    @Inject SettingsStore settingsStore;
 
     private PostFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
@@ -55,7 +54,7 @@ abstract public class PostFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-        externalBrowser = preferenceSettingsStore.isUseExternalBrowser();
+        externalBrowser = settingsStore.isUseExternalBrowser();
 
         setHasOptionsMenu(true);
         lookupPostMetadata();

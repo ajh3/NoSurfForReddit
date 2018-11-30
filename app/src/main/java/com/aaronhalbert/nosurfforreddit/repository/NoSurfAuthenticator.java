@@ -58,15 +58,15 @@ public class NoSurfAuthenticator {
     // other
     private final Application application;
     private final RetrofitAuthenticationInterface ri;
-    private final PreferenceTokenStore preferenceTokenStore;
+    private final TokenStore tokenStore;
     private Repository repository;
 
     public NoSurfAuthenticator(Application application,
                                Retrofit retrofit,
-                               PreferenceTokenStore preferenceTokenStore) {
+                               TokenStore tokenStore) {
         this.application = application;
         ri = retrofit.create(RetrofitAuthenticationInterface.class);
-        this.preferenceTokenStore = preferenceTokenStore;
+        this.tokenStore = tokenStore;
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -133,8 +133,8 @@ public class NoSurfAuthenticator {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
                         userOAuthRefreshTokenCache = response.body().getRefreshToken();
 
-                        preferenceTokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-                        preferenceTokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
+                        tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
+                        tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
 
                         repository.setUserLoggedIn();
                         repository.fetchAllPostsASync();
@@ -161,7 +161,7 @@ public class NoSurfAuthenticator {
                     public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
                         userOAuthAccessTokenCache = response.body().getAccessToken();
 
-                        preferenceTokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
+                        tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
 
                         switch (callback) {
                             case FETCH_ALL_POSTS_ASYNC:
@@ -197,8 +197,8 @@ public class NoSurfAuthenticator {
      *  This method should run on app initialization, to see if the user's credentials have been
      *  previously saved */
     void checkIfLoginCredentialsAlreadyExist() {
-        userOAuthAccessTokenCache = preferenceTokenStore.getUserOAuthAccessToken();
-        userOAuthRefreshTokenCache = preferenceTokenStore.getUserOAuthRefreshToken();
+        userOAuthAccessTokenCache = tokenStore.getUserOAuthAccessToken();
+        userOAuthRefreshTokenCache = tokenStore.getUserOAuthRefreshToken();
 
         if (!"".equals(userOAuthAccessTokenCache) && !"".equals(userOAuthRefreshTokenCache)) {
             setUserLoggedIn();
@@ -222,8 +222,8 @@ public class NoSurfAuthenticator {
         userOAuthAccessTokenCache = "";
         userOAuthRefreshTokenCache = "";
 
-        preferenceTokenStore.clearUserOAuthAccessTokenAsync();
-        preferenceTokenStore.clearUserOAuthRefreshTokenAsync();
+        tokenStore.clearUserOAuthAccessTokenAsync();
+        tokenStore.clearUserOAuthRefreshTokenAsync();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------

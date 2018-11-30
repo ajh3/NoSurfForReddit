@@ -16,8 +16,8 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity implements
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
 
-    @SuppressWarnings("WeakerAccess") @Inject PreferenceSettingsStore preferenceSettingsStore;
+    @SuppressWarnings("WeakerAccess") @Inject SettingsStore settingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
     private NavController navController;
@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity implements
                 .of(this, viewModelFactory)
                 .get(MainActivityViewModel.class);
 
-        /* only run the splash animation on first app lanuch */
+        /* only run the splash animation on first app launch */
         if (savedInstanceState == null) {
             setupSplashAnimation();
         }
@@ -79,14 +79,14 @@ public class MainActivity extends BaseActivity implements
     protected void onResume() {
         super.onResume();
 
-        preferenceSettingsStore.registerListener(this);
+        settingsStore.registerListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        preferenceSettingsStore.unregisterListener(this);
+        settingsStore.unregisterListener(this);
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -96,8 +96,8 @@ public class MainActivity extends BaseActivity implements
     private void initPrefs() {
         PreferenceManager.setDefaultValues(getApplication(), R.xml.preferences, false);
 
-        nightMode = preferenceSettingsStore.isNightMode();
-        amoledNightMode = preferenceSettingsStore.isAmoledNightMode();
+        nightMode = settingsStore.isNightMode();
+        amoledNightMode = settingsStore.isAmoledNightMode();
     }
 
     private void initNightMode() {
@@ -154,9 +154,8 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void setupSplashCanceler() {
-        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
-            findViewById(R.id.logo).setVisibility(View.GONE);
-        });
+        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState ->
+                findViewById(R.id.logo).setVisibility(View.GONE));
     }
 
     // endregion helper methods --------------------------------------------------------------------
@@ -179,7 +178,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        nightMode = preferenceSettingsStore.isNightMode();
+        nightMode = settingsStore.isNightMode();
 
         if (nightMode) {
             nightModeOn();

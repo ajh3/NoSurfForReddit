@@ -15,9 +15,6 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalA
  * also see SelfPostFragment */
 
 public class LinkPostFragment extends PostFragment {
-    public static LinkPostFragment newInstance() {
-        return new LinkPostFragment();
-    }
 
     @Override
     void setupPostViews() {

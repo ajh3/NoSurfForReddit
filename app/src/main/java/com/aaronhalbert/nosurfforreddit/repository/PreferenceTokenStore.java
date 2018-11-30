@@ -12,14 +12,17 @@ public class PreferenceTokenStore implements TokenStore {
         this.preferences = preferences;
     }
 
+    @Override
     public String getUserOAuthAccessToken() {
         return preferences.getString(KEY_USER_OAUTH_ACCESS_TOKEN, "");
     }
 
+    @Override
     public String getUserOAuthRefreshToken() {
         return preferences.getString(KEY_USER_OAUTH_REFRESH_TOKEN, "");
     }
 
+    @Override
     public void setUserOAuthAccessTokenAsync(String userOAuthAccessToken) {
         preferences
                 .edit()
@@ -27,6 +30,7 @@ public class PreferenceTokenStore implements TokenStore {
                 .apply();
     }
 
+    @Override
     public void setUserOAuthRefreshTokenAsync(String userOAuthRefreshToken) {
         preferences
                 .edit()
@@ -34,6 +38,7 @@ public class PreferenceTokenStore implements TokenStore {
                 .apply();
     }
 
+    @Override
     public void clearUserOAuthAccessTokenAsync() {
         preferences
                 .edit()
@@ -41,6 +46,7 @@ public class PreferenceTokenStore implements TokenStore {
                 .apply();
     }
 
+    @Override
     public void clearUserOAuthRefreshTokenAsync() {
         preferences
                 .edit()

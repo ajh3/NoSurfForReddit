@@ -9,6 +9,8 @@ import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.repository.TokenStore;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 
 import java.util.concurrent.ExecutorService;
@@ -60,13 +62,13 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    PreferenceSettingsStore providePreferenceSettingsStore(@Named("defaultSharedPrefs") SharedPreferences preferences) {
+    SettingsStore provideSettingsStore(@Named("defaultSharedPrefs") SharedPreferences preferences) {
         return new PreferenceSettingsStore(preferences);
     }
 
     @Singleton
     @Provides
-    PreferenceTokenStore providePreferenceTokenStore(@Named("oAuthSharedPrefs") SharedPreferences preferences) {
+    TokenStore provideTokenStore(@Named("oAuthSharedPrefs") SharedPreferences preferences) {
         return new PreferenceTokenStore(preferences);
     }
 
@@ -85,7 +87,7 @@ public class ApplicationModule {
     @Singleton
     @Provides
     NoSurfAuthenticator provideNoSurfAuthenticator(Retrofit retrofit,
-                                                   PreferenceTokenStore preferenceTokenStore) {
-        return new NoSurfAuthenticator(application, retrofit, preferenceTokenStore);
+                                                   TokenStore tokenStore) {
+        return new NoSurfAuthenticator(application, retrofit, tokenStore);
     }
 }

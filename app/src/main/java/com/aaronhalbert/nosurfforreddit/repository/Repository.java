@@ -225,7 +225,7 @@ public class Repository {
 
     // region init/de-init methods -----------------------------------------------------------------
 
-    public void checkIfLoginCredentialsAlreadyExist() {
+    private void checkIfLoginCredentialsAlreadyExist() {
         authenticator.checkIfLoginCredentialsAlreadyExist();
     }
 

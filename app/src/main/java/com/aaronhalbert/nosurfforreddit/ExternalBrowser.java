@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 public class ExternalBrowser {
-    Context context;
+    private final Context context;
 
     public ExternalBrowser(Context context) {
         this.context = context;
