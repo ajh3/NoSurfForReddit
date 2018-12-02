@@ -7,12 +7,13 @@ import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aaronhalbert.nosurfforreddit.ShareHelper;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.ShareHelper;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
@@ -106,13 +107,21 @@ abstract public class PostFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_share_action_provider, menu);
-
-        ShareHelper helper = new ShareHelper();
-        helper.setupShareActionProvider(menu);
-        Intent i = helper.createShareIntent(lastClickedPostPermalink);
-        helper.setShareIntent(i);
-
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_item_share:
+                ShareHelper shareHelper = new ShareHelper(getContext());
+                shareHelper.createShareIntent(lastClickedPostPermalink);
+                shareHelper.launchShareIntent();
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // endregion menu ------------------------------------------------------------------------------
