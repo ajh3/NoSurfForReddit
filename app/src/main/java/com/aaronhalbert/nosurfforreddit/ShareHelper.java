@@ -5,6 +5,9 @@ import android.content.Intent;
 
 import static com.aaronhalbert.nosurfforreddit.BuildConfig.REDDIT_URL_BASE;
 
+/* I prefer this custom solution to ShareActionProvider. Don't like the "frequent" shortcut
+ * it puts in the action bar, or the border it draws between the icons. The standard chooser
+ * is preferable IMO. */
 public class ShareHelper {
     private static final String SHARE_POST = "Share post...";
 

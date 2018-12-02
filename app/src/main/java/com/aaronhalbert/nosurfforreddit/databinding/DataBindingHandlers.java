@@ -69,7 +69,7 @@ public class DataBindingHandlers {
                     .into(iv);
         } else {
             GlideApp.with(context)
-                    .asBitmap()
+                    .asBitmap() // prevents gifs from playing in-app
                     .load(url)
                     .centerCrop()
                     .into(iv);
