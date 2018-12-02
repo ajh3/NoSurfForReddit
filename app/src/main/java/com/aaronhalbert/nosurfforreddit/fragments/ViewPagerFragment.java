@@ -23,8 +23,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewpager.widget.ViewPager;
 
-import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
-import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoLoginUrlGlobalAction;
+import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
@@ -172,8 +172,8 @@ public class ViewPagerFragment extends BaseFragment {
     // region navigation helper methods ------------------------------------------------------------
 
     private void launchLoginScreen() {
-        GotoUrlGlobalAction action
-                = gotoUrlGlobalAction(buildAuthUrl());
+        GotoLoginUrlGlobalAction action
+                = gotoLoginUrlGlobalAction(buildAuthUrl());
 
         navController.navigate(action);
     }

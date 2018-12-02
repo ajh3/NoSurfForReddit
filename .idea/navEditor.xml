@@ -68,6 +68,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="fragment_nosurf_web_view_login_dest">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="fragment_post_dest">
                     <value>
                       <LayoutPositions>
@@ -126,6 +138,11 @@
                           </map>
                         </option>
                       </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="goto_login_url_global_action">
+                    <value>
+                      <LayoutPositions />
                     </value>
                   </entry>
                   <entry key="goto_url_global_action">

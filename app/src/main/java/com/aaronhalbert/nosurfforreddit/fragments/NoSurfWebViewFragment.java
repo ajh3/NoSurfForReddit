@@ -36,7 +36,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
+        setupMenu();
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NoSurfWebViewFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
@@ -104,6 +104,10 @@ public class NoSurfWebViewFragment extends BaseFragment {
         return mainActivityViewModel
                 .getLastClickedPostMetadata()
                 .lastClickedPostPermalink;
+    }
+
+    void setupMenu() {
+        setHasOptionsMenu(true);
     }
 
     // endregion helper methods --------------------------------------------------------------------
