@@ -69,6 +69,7 @@ public class DataBindingHandlers {
                     .into(iv);
         } else {
             GlideApp.with(context)
+                    .asBitmap()
                     .load(url)
                     .centerCrop()
                     .into(iv);
