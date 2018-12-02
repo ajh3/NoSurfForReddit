@@ -128,7 +128,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                     postsViewStateLiveData.getValue().postData.get(position).id,
                     postsViewStateLiveData.getValue().postData.get(position).isSelf,
                     postsViewStateLiveData.getValue().postData.get(position).url,
-                    isSubscribedPostsAdapter));
+                    isSubscribedPostsAdapter,
+                    postsViewStateLiveData.getValue().postData.get(position).permalink));
         }
 
         private void launchPost(int position, NavController navController) {

@@ -33,5 +33,6 @@ public class PostsViewState {
         public String imageUrl;
         public String selfTextHtml;
         public boolean isNsfw;
+        public String permalink;
     }
 }

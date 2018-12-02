@@ -14,4 +14,5 @@
     <string name="post_thumbnail_description" tools:keep="@string/post_thumbnail_description">Post thumbnail image</string>
     <string name="logo_description">NoSurf logo</string>
     <string name="default_page_is_subscribed">\"Your subreddits\" is default screen</string>
+    <string name="share">Share</string>
 </resources>

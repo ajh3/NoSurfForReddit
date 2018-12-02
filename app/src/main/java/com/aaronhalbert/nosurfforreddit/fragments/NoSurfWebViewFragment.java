@@ -1,14 +1,19 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.aaronhalbert.nosurfforreddit.ShareHelper;
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.NoSurfWebViewFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.webview.NoSurfWebViewClient;
@@ -18,18 +23,23 @@ import javax.inject.Inject;
 import androidx.lifecycle.ViewModelProviders;
 
 public class NoSurfWebViewFragment extends BaseFragment {
-
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @SuppressWarnings("WeakerAccess") @Inject NoSurfWebViewClient noSurfWebViewClient;
     private NoSurfWebViewFragmentViewModel viewModel;
+    private MainActivityViewModel mainActivityViewModel;
     private String url;
+
+    // region lifecycle methods --------------------------------------------------------------------
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NoSurfWebViewFragmentViewModel.class);
+        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         setupObserverHack();
 
         url = NoSurfWebViewFragmentArgs.fromBundle(getArguments()).getUrl();
@@ -55,6 +65,26 @@ public class NoSurfWebViewFragment extends BaseFragment {
         return result;
     }
 
+    // endregion lifecycle methods -----------------------------------------------------------------
+
+    // region menu ---------------------------------------------------------------------------------
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_share_action_provider, menu);
+
+        ShareHelper helper = new ShareHelper();
+        helper.setupShareActionProvider(menu);
+        Intent i = helper.createShareIntent(getLastClickedPostPermalink());
+        helper.setShareIntent(i);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    // endregion menu ------------------------------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
+
     private void setupObserverHack() {
         /* these observers are necessary to ensure that a post is properly displayed as read
          * (i.e., struck/grayed-out) when the user clicks the image thumbnail to directly
@@ -69,4 +99,12 @@ public class NoSurfWebViewFragment extends BaseFragment {
             // do nothing
         });
     }
+
+    private String getLastClickedPostPermalink() {
+        return mainActivityViewModel
+                .getLastClickedPostMetadata()
+                .lastClickedPostPermalink;
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
 }

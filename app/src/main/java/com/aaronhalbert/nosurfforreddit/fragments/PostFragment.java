@@ -1,13 +1,18 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aaronhalbert.nosurfforreddit.ShareHelper;
+import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
@@ -29,10 +34,6 @@ abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
 
-    private TextView[] comments;
-    private TextView[] commentsDetails;
-    private View[] dividers;
-
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
 
@@ -40,10 +41,17 @@ abstract public class PostFragment extends BaseFragment {
     private MainActivityViewModel mainActivityViewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
-    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition;
+
+    private TextView[] comments;
+    private TextView[] commentsDetails;
+    private View[] dividers;
+
     private String lastClickedPostId;
+    private String lastClickedPostUrl;
+    private String lastClickedPostPermalink;
     private boolean commentsAlreadyLoaded;
     boolean externalBrowser;
+    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition; // data binding class accesses
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -52,18 +60,14 @@ abstract public class PostFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         externalBrowser = settingsStore.isUseExternalBrowser();
 
-        setHasOptionsMenu(true);
         lookupPostMetadata();
-
-        /* avoid additional comments network call on config change */
-        if (savedInstanceState != null) {
-            commentsAlreadyLoaded = savedInstanceState
-                    .getBoolean(KEY_COMMENTS_ALREADY_LOADED, false);
-        }
+        checkIfCommentsAlreadyLoaded(savedInstanceState);
     }
 
     @Override
@@ -97,12 +101,26 @@ abstract public class PostFragment extends BaseFragment {
 
     // endregion lifecycle methods -----------------------------------------------------------------
 
+    // region menu ---------------------------------------------------------------------------------
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_share_action_provider, menu);
+
+        ShareHelper helper = new ShareHelper();
+        helper.setupShareActionProvider(menu);
+        Intent i = helper.createShareIntent(lastClickedPostPermalink);
+        helper.setShareIntent(i);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    // endregion menu ------------------------------------------------------------------------------
+
     // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
-        String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
-
-        launchLink(view, url);
+        launchLink(view, lastClickedPostUrl);
     }
 
     // endregion listeners -------------------------------------------------------------------------
@@ -199,11 +217,21 @@ abstract public class PostFragment extends BaseFragment {
 
         lastClickedPostPosition = lastClickedPostMetadata.lastClickedPostPosition;
         lastClickedPostId = lastClickedPostMetadata.lastClickedPostId;
+        lastClickedPostUrl = lastClickedPostMetadata.lastClickedPostUrl;
+        lastClickedPostPermalink = lastClickedPostMetadata.lastClickedPostPermalink;
 
         if (lastClickedPostMetadata.lastClickedPostIsSubscribed) {
             postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
         } else {
             postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
+        }
+    }
+
+    private void checkIfCommentsAlreadyLoaded(Bundle savedInstanceState) {
+        /* avoid additional comments network call on config change */
+        if (savedInstanceState != null) {
+            commentsAlreadyLoaded = savedInstanceState
+                    .getBoolean(KEY_COMMENTS_ALREADY_LOADED, false);
         }
     }
 
