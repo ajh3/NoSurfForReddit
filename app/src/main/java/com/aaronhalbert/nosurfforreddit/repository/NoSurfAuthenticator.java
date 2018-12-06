@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,6 +19,8 @@ import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 import java.util.UUID;
 
 import androidx.lifecycle.MutableLiveData;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,41 +79,43 @@ public class NoSurfAuthenticator {
      * fetchAppOnlyOAuthTokenASync() and does not require any user credentials.
      *
      *  Also called to refresh this anonymous token when it expires */
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     void fetchAppOnlyOAuthTokenASync(final Repository.NetworkCallbacks callback, final String id) {
+
         ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
-                .enqueue(new Callback<AppOnlyOAuthToken>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            appOnlyOAuthTokenCache = data.getAccessToken();
 
-                    @Override
-                    public void onResponse(Call<AppOnlyOAuthToken> call,
-                                           Response<AppOnlyOAuthToken> response) {
-                        appOnlyOAuthTokenCache = response.body().getAccessToken();
-                        // don't bother saving this ephemeral token into sharedprefs
+                            // don't bother saving this ephemeral token into sharedprefs
 
-                        switch (callback) {
-                            case FETCH_ALL_POSTS_ASYNC:
-                                repository.fetchAllPostsASync();
-                                break;
-                            case FETCH_POST_COMMENTS_ASYNC:
-                                repository.fetchPostCommentsASync(id);
-                                break;
-                            case FETCH_SUBSCRIBED_POSTS_ASYNC:
-                                // do nothing, as an app-only token is for logged-out users only
-                                break;
-                            default:
-                                break;
+                            switch (callback) {
+                                case FETCH_ALL_POSTS_ASYNC:
+                                    repository.fetchAllPostsASync();
+                                    break;
+                                case FETCH_POST_COMMENTS_ASYNC:
+                                    repository.fetchPostCommentsASync(id);
+                                    break;
+                                case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                                    // do nothing, as an app-only token is for logged-out users only
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        error -> {
+                            Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
+                            repository.setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AppOnlyOAuthToken> call, Throwable t) {
-                        Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED, t);
-                        repository.setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
-                    }
-                });
+                );
     }
 
     /* Logged-in users can view posts from their subscribed subreddits in addition to r/all,
