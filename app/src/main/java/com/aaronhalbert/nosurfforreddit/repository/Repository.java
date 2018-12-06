@@ -51,7 +51,7 @@ public class Repository {
     // these 3 "cleaned" LiveData feed the UI directly and have public getters
     private final LiveData<PostsViewState> allPostsViewStateLiveData;
     private final LiveData<PostsViewState> subscribedPostsViewStateLiveData;
-    private final LiveData<CommentsViewState> commentsViewStateLiveData;
+    private final MutableLiveData<CommentsViewState> commentsViewStateLiveData = new MutableLiveData<>();
 
     // user login status
     private final LiveData<Boolean> isUserLoggedInLiveData;
@@ -79,7 +79,6 @@ public class Repository {
         clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
         allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
         subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
-        commentsViewStateLiveData = cleanCommentsRawLiveData();
 
         // initialize self
         checkIfLoginCredentialsAlreadyExist();
@@ -207,8 +206,9 @@ public class Repository {
             ri.fetchPostCommentsASync(bearerAuth, id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map(this::cleanCommentsRawDataRx)
                     .subscribe(
-                            commentsRawLiveData::setValue,
+                            commentsViewStateLiveData::setValue,
                             error -> {
                                 Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
@@ -246,38 +246,45 @@ public class Repository {
 
     // region viewstate Transformations ------------------------------------------------------------
 
-    private LiveData<CommentsViewState> cleanCommentsRawLiveData() {
-        return Transformations.map(commentsRawLiveData, input -> {
-            CommentsViewState commentsViewState;
-            int autoModOffset;
 
-            //check if there is at least 1 comment
-            if (input.get(1).getNumTopLevelComments() > 0) {
 
-                //calculate the number of valid comments after checking for & excluding AutoMod
-                autoModOffset = input.get(1).calculateAutoModOffset();
-                int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
 
-                // only display first 3 top-level comments
-                if (numComments > 3) numComments = 3;
+    //TODO rename
+    private CommentsViewState cleanCommentsRawDataRx(List<Listing> input) {
+        CommentsViewState commentsViewState;
+        int autoModOffset;
 
-                commentsViewState = new CommentsViewState(numComments, input.get(0).getCommentId());
+        //check if there is at least 1 comment
+        if (input.get(1).getNumTopLevelComments() > 0) {
 
-                // construct the viewstate object
-                for (int i = 0; i < numComments; i++) {
-                    String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
-                    int commentScore = input.get(1).getCommentScore(autoModOffset, i);
+            //calculate the number of valid comments after checking for & excluding AutoMod
+            autoModOffset = input.get(1).calculateAutoModOffset();
+            int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
 
-                    commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
-                    commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
-                }
-            } else { //if zero comments
-                commentsViewState = new CommentsViewState(0, ZERO);
+            // only display first 3 top-level comments
+            if (numComments > 3) numComments = 3;
+
+            commentsViewState = new CommentsViewState(numComments, input.get(0).getCommentId());
+
+            // construct the viewstate object
+            for (int i = 0; i < numComments; i++) {
+                String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
+                int commentScore = input.get(1).getCommentScore(autoModOffset, i);
+
+                commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
+                commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
             }
+        } else { //if zero comments
+            commentsViewState = new CommentsViewState(0, ZERO);
+        }
 
-            return commentsViewState;
-        });
+        return commentsViewState;
     }
+
+
+
+
+
 
     /* Cleans dirty/raw post data from the Reddit API
      *
