@@ -21,12 +21,8 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.HttpException;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
@@ -68,11 +64,6 @@ public class Repository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
-
-
-
-    private final CompositeDisposable disposables = new CompositeDisposable();
-
 
 
     public Repository(Retrofit retrofit,
@@ -137,8 +128,6 @@ public class Repository {
 
         bearerAuth = BEARER + accessToken;
 
-
-
         //TODO: update these comments for RxJava implmentation
         /* conditional logic here fetches or refreshes expired tokens if there's a 401
          * error, and passes itself as a callback to try fetching posts once again after the
@@ -162,11 +151,11 @@ public class Repository {
                             } else if (401 == ((HttpException) error).code()) {
                                 authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                             }
-                        });
+                        }
+                );
     }
+
     //TODO clean up this formatting /\  \/
-
-
 
     /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -188,8 +177,8 @@ public class Repository {
                                 setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
 
                                 if (401 == ((HttpException) error).code()) {
-                authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
-                                       }
+                                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
+                                }
                             }
                     );
         } else {
