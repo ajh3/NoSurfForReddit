@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.Event;
@@ -107,6 +108,8 @@ public class Repository {
 
     /* gets posts from r/all, using either a user or anonymous token based on the user's
        login status. Works for both logged-in and logged-out users */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public void fetchAllPostsASync() {
         String accessToken;
         String bearerAuth;
@@ -144,49 +147,41 @@ public class Repository {
          * I use callbacks this way to "react" to expired tokens instead of running some
          * background timer task that refreshes them every X minutes */
 
-        disposables.add(ri.fetchAllPostsASync(bearerAuth)
+        ri.fetchAllPostsASync(bearerAuth)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            allPostsRawLiveData.setValue(data);
-                            Log.e(getClass().toString(), "# of disposables: " + disposables.size());
-                            //disposables.clear();
-                            },
-
+                        allPostsRawLiveData::setValue,
                         error -> {
                             Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
                             setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
 
-                            if (401 == ((HttpException) error).code() && (authenticator.isUserLoggedInCache())) {
+                            if (401 == ((HttpException) error).code() && authenticator.isUserLoggedInCache()) {
                                 authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                             } else if (401 == ((HttpException) error).code()) {
                                 authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                             }
-                        })
-        );
+                        });
     }
     //TODO clean up this formatting /\  \/
 
 
 
     /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public void fetchSubscribedPostsASync() {
         String bearerAuth = BEARER + authenticator.getUserOAuthAccessTokenCache();
 
         //noinspection StatementWithEmptyBody
         if (authenticator.isUserLoggedInCache()) {
 
-            disposables.add(ri.fetchSubscribedPostsASync(bearerAuth)
+            ri.fetchSubscribedPostsASync(bearerAuth)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            data -> {
-                                subscribedPostsRawLiveData.setValue(data);
-                                Log.e(getClass().toString(), "# of disposables: " + disposables.size());
-                                //disposables.clear();
-                                },
+                            subscribedPostsRawLiveData::setValue,
                             error -> {
                                 Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
@@ -196,13 +191,15 @@ public class Repository {
                 authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
                                        }
                             }
-                    ));
+                    );
         } else {
             // do nothing if user is logged out, as subscribed posts are only for logged-in users
         }
     }
 
     /* get a post's comments; works for both logged-in and logged-out users */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public void fetchPostCommentsASync(final String id) {
 
         //noinspection StatementWithEmptyBody
@@ -218,26 +215,23 @@ public class Repository {
 
             bearerAuth = BEARER + accessToken;
 
-            ri.fetchPostCommentsASync(bearerAuth, id).enqueue(new Callback<List<Listing>>() {
+            ri.fetchPostCommentsASync(bearerAuth, id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            commentsRawLiveData::setValue,
+                            error -> {
+                                Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
-                // same callback logic as documented in fetchAllPostsASync()
-                @Override
-                public void onResponse(Call<List<Listing>> call, Response<List<Listing>> response) {
-                    if ((response.code() == RESPONSE_CODE_401) && (authenticator.isUserLoggedInCache())) {
-                        authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
-                    } else if (response.code() == RESPONSE_CODE_401) {
-                        authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
-                    } else {
-                        commentsRawLiveData.setValue(response.body());
-                    }
-                }
+                                setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
 
-                @Override
-                public void onFailure(Call<List<Listing>> call, Throwable t) {
-                    Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED, t);
-                    setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
-                }
-            });
+                                if (401 == ((HttpException) error).code() && authenticator.isUserLoggedInCache()) {
+                                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
+                                } else if (401 == ((HttpException) error).code()) {
+                                    authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
+                                }
+                            }
+                    );
         } else {
             // do nothing if blank id is passed
         }

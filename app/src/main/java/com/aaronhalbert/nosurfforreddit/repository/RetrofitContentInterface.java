@@ -6,8 +6,6 @@ import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
 import java.util.List;
 
 import io.reactivex.Maybe;
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -27,7 +25,7 @@ interface RetrofitContentInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("comments/{article}")
-    Call<List<Listing>> fetchPostCommentsASync(
+    Maybe<List<Listing>> fetchPostCommentsASync(
             @Header("Authorization") String authorization,
             @Path("article") String article);
 }
