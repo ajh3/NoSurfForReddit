@@ -22,7 +22,7 @@ interface RetrofitContentInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("hot")
-    Call<Listing> fetchSubscribedPostsASync(
+    Maybe<Listing> fetchSubscribedPostsASync(
             @Header("Authorization") String authorization);
 
     @Headers({BuildConfig.USER_AGENT})

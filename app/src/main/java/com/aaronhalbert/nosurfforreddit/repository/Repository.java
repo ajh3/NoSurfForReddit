@@ -148,11 +148,13 @@ public class Repository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> { allPostsRawLiveData.setValue(data);
+                        data -> {
+                            allPostsRawLiveData.setValue(data);
                             Log.e(getClass().toString(), "# of disposables: " + disposables.size());
-                            disposables.clear(); },
+                            //disposables.clear();
+                            },
 
-                        error -> { if (error instanceof HttpException) {
+                        error -> {
                             Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
                             setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
@@ -162,18 +164,10 @@ public class Repository {
                             } else if (401 == ((HttpException) error).code()) {
                                 authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
                             }
-                        }
-                        }));
-
-        //TODO: disposables being accumulated
-        //disposables.dispose();
+                        })
+        );
     }
-
-
-
-
-
-
+    //TODO clean up this formatting /\  \/
 
 
 
@@ -183,24 +177,26 @@ public class Repository {
 
         //noinspection StatementWithEmptyBody
         if (authenticator.isUserLoggedInCache()) {
-            ri.fetchSubscribedPostsASync(bearerAuth).enqueue(new Callback<Listing>() {
 
-                // same callback logic as documented in fetchAllPostsASync()
-                @Override
-                public void onResponse(Call<Listing> call, Response<Listing> response) {
-                    if (response.code() == RESPONSE_CODE_401) {
-                        authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
-                    } else {
-                        subscribedPostsRawLiveData.setValue(response.body());
-                    }
-                }
+            disposables.add(ri.fetchSubscribedPostsASync(bearerAuth)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> {
+                                subscribedPostsRawLiveData.setValue(data);
+                                Log.e(getClass().toString(), "# of disposables: " + disposables.size());
+                                //disposables.clear();
+                                },
+                            error -> {
+                                Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
 
-                @Override
-                public void onFailure(Call<Listing> call, Throwable t) {
-                    Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED, t);
-                    setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
-                }
-            });
+                                setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
+
+                                if (401 == ((HttpException) error).code()) {
+                authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
+                                       }
+                            }
+                    ));
         } else {
             // do nothing if user is logged out, as subscribed posts are only for logged-in users
         }
