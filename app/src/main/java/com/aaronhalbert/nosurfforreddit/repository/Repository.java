@@ -19,8 +19,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -63,6 +67,12 @@ public class Repository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
+
+
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
+
+
 
     public Repository(Retrofit retrofit,
                       ClickedPostIdRoomDatabase db,
@@ -124,32 +134,48 @@ public class Repository {
 
         bearerAuth = BEARER + accessToken;
 
-        ri.fetchAllPostsASync(bearerAuth).enqueue(new Callback<Listing>() {
 
-            /* conditional logic here fetches or refreshes expired tokens if there's a 401
-             * error, and passes itself as a callback to try fetching posts once again after the
-             * token has been refreshed
-             *
-             * I use callbacks this way to "react" to expired tokens instead of running some
-             * background timer task that refreshes them every X minutes */
-            @Override
-            public void onResponse(Call<Listing> call, Response<Listing> response) {
-                if ((response.code() == RESPONSE_CODE_401) && (authenticator.isUserLoggedInCache())) {
-                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
-                } else if (response.code() == RESPONSE_CODE_401) {
-                    authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
-                } else {
-                    allPostsRawLiveData.setValue(response.body());
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Listing> call, Throwable t) {
-                Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED, t);
-                setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
-            }
-        });
+        //TODO: update these comments for RxJava implmentation
+        /* conditional logic here fetches or refreshes expired tokens if there's a 401
+         * error, and passes itself as a callback to try fetching posts once again after the
+         * token has been refreshed
+         *
+         * I use callbacks this way to "react" to expired tokens instead of running some
+         * background timer task that refreshes them every X minutes */
+
+        disposables.add(ri.fetchAllPostsASync(bearerAuth)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> { allPostsRawLiveData.setValue(data);
+                            Log.e(getClass().toString(), "# of disposables: " + disposables.size());
+                            disposables.clear(); },
+
+                        error -> { if (error instanceof HttpException) {
+                            Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
+
+                            setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
+
+                            if (401 == ((HttpException) error).code() && (authenticator.isUserLoggedInCache())) {
+                                authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
+                            } else if (401 == ((HttpException) error).code()) {
+                                authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
+                            }
+                        }
+                        }));
+
+        //TODO: disposables being accumulated
+        //disposables.dispose();
     }
+
+
+
+
+
+
+
+
 
     /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
     public void fetchSubscribedPostsASync() {
