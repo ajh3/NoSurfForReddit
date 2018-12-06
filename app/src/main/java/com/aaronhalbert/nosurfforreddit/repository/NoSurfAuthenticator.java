@@ -123,6 +123,9 @@ public class NoSurfAuthenticator {
      *
      * Note that after the user is logged in, their user token is now also used for viewing
      * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     void fetchUserOAuthTokenASync(String code) {
         ri.fetchUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
@@ -130,65 +133,66 @@ public class NoSurfAuthenticator {
                 code,
                 BuildConfig.REDIRECT_URI,
                 AUTH_HEADER)
-                .enqueue(new Callback<UserOAuthToken>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            userOAuthAccessTokenCache = data.getAccessToken();
+                            userOAuthRefreshTokenCache = data.getRefreshToken();
 
-                    @Override
-                    public void onResponse(Call<UserOAuthToken> call,
-                                           Response<UserOAuthToken> response) {
-                        userOAuthAccessTokenCache = response.body().getAccessToken();
-                        userOAuthRefreshTokenCache = response.body().getRefreshToken();
+                            tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
+                            tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
 
-                        tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-                        tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
+                            repository.setUserLoggedIn();
+                            repository.fetchAllPostsASync();
+                            repository.fetchSubscribedPostsASync();
+                        },
+                        error -> {
+                            Log.e(getClass().toString(), USER_AUTH_CALL_FAILED);
+                            repository.setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
+                        }
+                );
 
-                        repository.setUserLoggedIn();
-                        repository.fetchAllPostsASync();
-                        repository.fetchSubscribedPostsASync();
-                    }
 
-                    @Override
-                    public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                        Log.e(getClass().toString(), USER_AUTH_CALL_FAILED, t);
-                        repository.setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
-                    }
-                });
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     void refreshExpiredUserOAuthTokenASync(final Repository.NetworkCallbacks callback, final String id) {
+
         ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .enqueue(new Callback<UserOAuthToken>() {
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            userOAuthAccessTokenCache = data.getAccessToken();
 
-                    @Override
-                    public void onResponse(Call<UserOAuthToken> call, Response<UserOAuthToken> response) {
-                        userOAuthAccessTokenCache = response.body().getAccessToken();
+                            tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
 
-                        tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-
-                        switch (callback) {
-                            case FETCH_ALL_POSTS_ASYNC:
-                                repository.fetchAllPostsASync();
-                                break;
-                            case FETCH_SUBSCRIBED_POSTS_ASYNC:
-                                repository.fetchSubscribedPostsASync();
-                                break;
-                            case FETCH_POST_COMMENTS_ASYNC:
-                                repository.fetchPostCommentsASync(id);
-                                break;
-                            default:
-                                break;
+                            switch (callback) {
+                                case FETCH_ALL_POSTS_ASYNC:
+                                    repository.fetchAllPostsASync();
+                                    break;
+                                case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                                    repository.fetchSubscribedPostsASync();
+                                    break;
+                                case FETCH_POST_COMMENTS_ASYNC:
+                                    repository.fetchPostCommentsASync(id);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        error -> {
+                            Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
+                            repository.setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
                         }
-                    }
+                );
 
-                    @Override
-                    public void onFailure(Call<UserOAuthToken> call, Throwable t) {
-                        Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED, t);
-                        repository.setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
-                    }
-                });
     }
 
     // endregion network auth calls ----------------------------------------------------------------

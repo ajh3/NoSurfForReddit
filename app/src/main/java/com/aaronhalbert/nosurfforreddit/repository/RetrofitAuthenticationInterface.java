@@ -27,7 +27,7 @@ interface RetrofitAuthenticationInterface {
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
-    Call<UserOAuthToken> fetchUserOAuthTokenASync(
+    Maybe<UserOAuthToken> fetchUserOAuthTokenASync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("code") String code,
@@ -37,7 +37,7 @@ interface RetrofitAuthenticationInterface {
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
-    Call<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
+    Maybe<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("refresh_token") String refreshToken,
