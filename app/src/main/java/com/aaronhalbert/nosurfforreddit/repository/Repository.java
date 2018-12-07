@@ -12,6 +12,7 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +21,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
@@ -40,7 +45,6 @@ public class Repository {
     // these 3 "raw" LiveData come straight from the Reddit API; only used internally in repo
     private final MutableLiveData<Listing> allPostsRawLiveData = new MutableLiveData<>();
     private final MutableLiveData<Listing> subscribedPostsRawLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Listing>> commentsRawLiveData = new MutableLiveData<>();
 
     // helper fields used to clean raw LiveData; only used internally in repo
     private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
@@ -66,6 +70,14 @@ public class Repository {
     private final NoSurfAuthenticator authenticator;
 
 
+
+    private Flowable<String[]> clickedPostIds;
+    private Maybe<CommentsViewState> cleanedComments;
+    private Maybe<PostsViewState> cleanedAllPosts;
+    private Maybe<PostsViewState> cleanedSubscribedPosts;
+
+
+
     public Repository(Retrofit retrofit,
                       ClickedPostIdRoomDatabase db,
                       ExecutorService executor,
@@ -76,7 +88,6 @@ public class Repository {
         isUserLoggedInLiveData = authenticator.isUserLoggedInLiveData;
         ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
-        clickedPostIdsLiveData = clickedPostIdDao.getAllClickedPostIds();
         allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
         subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
 
@@ -84,6 +95,7 @@ public class Repository {
         checkIfLoginCredentialsAlreadyExist();
         fetchAllPostsASync();
         fetchSubscribedPostsASync();
+        fetchClickedPostIds();
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -135,23 +147,11 @@ public class Repository {
          * I use callbacks this way to "react" to expired tokens instead of running some
          * background timer task that refreshes them every X minutes */
 
-        ri.fetchAllPostsASync(bearerAuth)
+        cleanedAllPosts = ri.fetchAllPostsASync(bearerAuth)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        allPostsRawLiveData::setValue,
-                        error -> {
-                            Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
+                .map(input -> cleanRawPostsRx(false));
 
-                            setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
-
-                            if (401 == ((HttpException) error).code() && authenticator.isUserLoggedInCache()) {
-                                authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
-                            } else if (401 == ((HttpException) error).code()) {
-                                authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_ALL_POSTS_ASYNC, "");
-                            }
-                        }
-                );
     }
 
     //TODO clean up this formatting /\  \/
@@ -165,21 +165,11 @@ public class Repository {
         //noinspection StatementWithEmptyBody
         if (authenticator.isUserLoggedInCache()) {
 
-            ri.fetchSubscribedPostsASync(bearerAuth)
+            cleanedSubscribedPosts = ri.fetchSubscribedPostsASync(bearerAuth)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            subscribedPostsRawLiveData::setValue,
-                            error -> {
-                                Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
+                    .map(input -> cleanRawPostsRx(true));
 
-                                setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
-
-                                if (401 == ((HttpException) error).code()) {
-                                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_ASYNC, "");
-                                }
-                            }
-                    );
         } else {
             // do nothing if user is logged out, as subscribed posts are only for logged-in users
         }
@@ -203,24 +193,13 @@ public class Repository {
 
             bearerAuth = BEARER + accessToken;
 
-            ri.fetchPostCommentsASync(bearerAuth, id)
+
+            cleanedComments = ri.fetchPostCommentsASync(bearerAuth, id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(this::cleanCommentsRawDataRx)
-                    .subscribe(
-                            commentsViewStateLiveData::setValue,
-                            error -> {
-                                Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED + " " + "HTTP error code: " + error.toString());
+                    .map(this::cleanCommentsRawDataRx);
 
-                                setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
 
-                                if (401 == ((HttpException) error).code() && authenticator.isUserLoggedInCache()) {
-                                    authenticator.refreshExpiredUserOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
-                                } else if (401 == ((HttpException) error).code()) {
-                                    authenticator.fetchAppOnlyOAuthTokenASync(NetworkCallbacks.FETCH_POST_COMMENTS_ASYNC, id);
-                                }
-                            }
-                    );
         } else {
             // do nothing if blank id is passed
         }
@@ -292,49 +271,70 @@ public class Repository {
      * Instead the result here is piped into mergeClickedPostIdsWithCleanedPostsRawLiveData, which
      * is"stage 2" and creates a UI-ready object that knows which posts have already been
      *  clicked */
-    private LiveData<PostsViewState> cleanPostsRawLiveData(boolean isSubscribedPosts) {
-        LiveData<Listing> postsLiveData;
+    private PostsViewState cleanRawPostsRx(boolean isSubscribedPosts) {
+        Listing input;
 
         if (isSubscribedPosts) {
-            postsLiveData = subscribedPostsRawLiveData;
+            input = subscribedPostsRawLiveData.getValue();
         } else {
-            postsLiveData = allPostsRawLiveData;
+            input = allPostsRawLiveData.getValue();
         }
 
-        return Transformations.map(postsLiveData, input -> {
-            PostsViewState postsViewState = new PostsViewState();
+        PostsViewState postsViewState = new PostsViewState();
 
-            for (int i = 0; i < 25; i++) {
-                PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+        for (int i = 0; i < 25; i++) {
+            PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
 
-                Data_ data = input.getData().getChildren().get(i).getData();
+            Data_ data = input.getData().getChildren().get(i).getData();
 
-                // both link posts and self posts share these attributes
-                postDatum.isSelf = data.isIsSelf();
-                postDatum.id = data.getId();
-                postDatum.title = input.decodeHtml(data.getTitle()).toString(); // some titles contain HTML special entities
-                postDatum.author = data.getAuthor();
-                postDatum.subreddit = data.getSubreddit();
-                postDatum.score = data.getScore();
-                postDatum.numComments = data.getNumComments();
-                postDatum.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
-                postDatum.isNsfw = data.isNsfw();
-                postDatum.permalink = data.getPermalink();
+            // both link posts and self posts share these attributes
+            postDatum.isSelf = data.isIsSelf();
+            postDatum.id = data.getId();
+            postDatum.title = input.decodeHtml(data.getTitle()).toString(); // some titles contain HTML special entities
+            postDatum.author = data.getAuthor();
+            postDatum.subreddit = data.getSubreddit();
+            postDatum.score = data.getScore();
+            postDatum.numComments = data.getNumComments();
+            postDatum.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
+            postDatum.isNsfw = data.isNsfw();
+            postDatum.permalink = data.getPermalink();
 
-                // assign link- and self-post specific attributes
-                if (postDatum.isSelf) {
-                    postDatum.selfTextHtml = input.formatSelfPostSelfTextHtml(data.getSelfTextHtml());
-                } else {
-                    postDatum.url = input.decodeHtml(data.getUrl()).toString();
-                    postDatum.imageUrl = input.decodeHtml(input.pickImageUrl(i)).toString();
-                }
-
-                postsViewState.postData.set(i, postDatum);
+            // assign link- and self-post specific attributes
+            if (postDatum.isSelf) {
+                postDatum.selfTextHtml = input.formatSelfPostSelfTextHtml(data.getSelfTextHtml());
+            } else {
+                postDatum.url = input.decodeHtml(data.getUrl()).toString();
+                postDatum.imageUrl = input.decodeHtml(input.pickImageUrl(i)).toString();
             }
 
-            return postsViewState;
+            postsViewState.postData.set(i, postDatum);
+        }
+
+        return postsViewState;
+    }
+
+
+
+
+
+
+    //TODO get rid of fetchClickedPostIds() and perform its role as a transformation in the chain
+    private Flowable<PostsViewState> zipCleanedAllPostsWithClickedPostIds() {
+        return Flowable.zip(cleanedAllPosts.toFlowable(), clickedPostIds,
+                new BiFunction<PostsViewState, String[], PostsViewState>() {
+            @Override
+            public PostsViewState apply(PostsViewState t1, String[] t2) throws Exception {
+                return new PostsViewState();
+            }
         });
     }
+
+
+
+
+
+
+
 
     /* "Stage 2" of viewstate preparation, in which cleaned post data returned by
      * cleanPostsRawLiveData is merged into a new object that also knows which posts have
@@ -439,19 +439,31 @@ public class Repository {
         executor.execute(runnable);
     }
 
+
+
+
+    private void fetchClickedPostIds() {
+        clickedPostIds =
+                clickedPostIdDao
+                        .getAllClickedPostIds()
+                        .observeOn(Schedulers.io())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .map(this::convertClickedPostIdsRx);
+    }
+
+
     // returns the list of clicked post IDs stored in the Room database
-    private LiveData<String[]> getClickedPostIdsLiveData() {
-        return Transformations.map(clickedPostIdsLiveData, input -> {
-            int size = input.size();
+    private String[] convertClickedPostIdsRx(List<ClickedPostId> input) {
 
-            String[] clickedPostIds = new String[size];
+        int size = input.size();
 
-            for (int i = 0; i < size; i++) {
-                clickedPostIds[i] = input.get(i).getClickedPostId();
-            }
+        String[] clickedPostIds = new String[size];
 
-            return clickedPostIds;
-        });
+        for (int i = 0; i < size; i++) {
+            clickedPostIds[i] = input.get(i).getClickedPostId();
+        }
+
+        return clickedPostIds;
     }
 
     // endregion room methods and classes ----------------------------------------------------------
