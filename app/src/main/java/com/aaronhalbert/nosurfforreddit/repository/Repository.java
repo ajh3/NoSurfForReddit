@@ -1,7 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
@@ -12,27 +11,18 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.HttpException;
 import retrofit2.Retrofit;
-
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 
 public class Repository {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
@@ -40,21 +30,17 @@ public class Repository {
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
-    private static final int RESPONSE_CODE_401 = 401;
 
     // these 3 "raw" LiveData come straight from the Reddit API; only used internally in repo
     private final MutableLiveData<Listing> allPostsRawLiveData = new MutableLiveData<>();
     private final MutableLiveData<Listing> subscribedPostsRawLiveData = new MutableLiveData<>();
 
     // helper fields used to clean raw LiveData; only used internally in repo
-    private final LiveData<List<ClickedPostId>> clickedPostIdsLiveData;
-    private final PostsViewState mergedAllPostsCache = new PostsViewState();
-    private final PostsViewState mergedSubscribedPostsCache = new PostsViewState();
-    private String[] clickedPostIdsCache = new String[25];
+
 
     // these 3 "cleaned" LiveData feed the UI directly and have public getters
-    private final LiveData<PostsViewState> allPostsViewStateLiveData;
-    private final LiveData<PostsViewState> subscribedPostsViewStateLiveData;
+    private final MutableLiveData<PostsViewState> allPostsViewStateLiveData = new MutableLiveData<>();
+    private final MutableLiveData<PostsViewState> subscribedPostsViewStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<CommentsViewState> commentsViewStateLiveData = new MutableLiveData<>();
 
     // user login status
@@ -70,7 +56,8 @@ public class Repository {
     private final NoSurfAuthenticator authenticator;
 
 
-
+    private Flowable<PostsViewState> zippedAllPosts = zipCleanedPostsWithClickedPostIds(false);
+    private Flowable<PostsViewState> zippedSubscribedPosts = zipCleanedPostsWithClickedPostIds(true);
     private Flowable<String[]> clickedPostIds;
     private Maybe<CommentsViewState> cleanedComments;
     private Maybe<PostsViewState> cleanedAllPosts;
@@ -78,6 +65,8 @@ public class Repository {
 
 
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public Repository(Retrofit retrofit,
                       ClickedPostIdRoomDatabase db,
                       ExecutorService executor,
@@ -88,14 +77,23 @@ public class Repository {
         isUserLoggedInLiveData = authenticator.isUserLoggedInLiveData;
         ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
-        allPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(false);
-        subscribedPostsViewStateLiveData = mergeClickedPostIdsWithCleanedPostsRawLiveData(true);
+
 
         // initialize self
         checkIfLoginCredentialsAlreadyExist();
         fetchAllPostsASync();
         fetchSubscribedPostsASync();
-        fetchClickedPostIds();
+
+
+        cleanedAllPosts
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(allPostsViewStateLiveData::setValue);
+
+        cleanedSubscribedPosts
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscribedPostsViewStateLiveData::setValue);
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -162,7 +160,6 @@ public class Repository {
     public void fetchSubscribedPostsASync() {
         String bearerAuth = BEARER + authenticator.getUserOAuthAccessTokenCache();
 
-        //noinspection StatementWithEmptyBody
         if (authenticator.isUserLoggedInCache()) {
 
             cleanedSubscribedPosts = ri.fetchSubscribedPostsASync(bearerAuth)
@@ -170,9 +167,7 @@ public class Repository {
                     .observeOn(AndroidSchedulers.mainThread())
                     .map(input -> cleanRawPostsRx(true));
 
-        } else {
-            // do nothing if user is logged out, as subscribed posts are only for logged-in users
-        }
+        } // do nothing if user is logged out, as subscribed posts are only for logged-in users
     }
 
     /* get a post's comments; works for both logged-in and logged-out users */
@@ -180,7 +175,6 @@ public class Repository {
     @SuppressLint("CheckResult")
     public void fetchPostCommentsASync(final String id) {
 
-        //noinspection StatementWithEmptyBody
         if (!"".equals(id)) {
             String accessToken;
             String bearerAuth;
@@ -200,9 +194,7 @@ public class Repository {
                     .map(this::cleanCommentsRawDataRx);
 
 
-        } else {
-            // do nothing if blank id is passed
-        }
+        } // do nothing if blank id is passed
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -317,85 +309,41 @@ public class Repository {
 
 
 
-
-    //TODO get rid of fetchClickedPostIds() and perform its role as a transformation in the chain
-    private Flowable<PostsViewState> zipCleanedAllPostsWithClickedPostIds() {
-        return Flowable.zip(cleanedAllPosts.toFlowable(), clickedPostIds,
-                new BiFunction<PostsViewState, String[], PostsViewState>() {
-            @Override
-            public PostsViewState apply(PostsViewState t1, String[] t2) throws Exception {
-                return new PostsViewState();
-            }
-        });
-    }
-
-
-
-
-
-
-
-
     /* "Stage 2" of viewstate preparation, in which cleaned post data returned by
      * cleanPostsRawLiveData is merged into a new object that also knows which posts have
      * been clicked (accomplished by checking post IDs against post IDs that have already
      * been written into the Room database */
-    private LiveData<PostsViewState> mergeClickedPostIdsWithCleanedPostsRawLiveData(boolean isSubscribedPosts){
-        final MediatorLiveData<PostsViewState> mediator = new MediatorLiveData<>();
+    //TODO get rid of fetchClickedPostIds() and perform its role as a transformation in the chain
+    private Flowable<PostsViewState> zipCleanedPostsWithClickedPostIds(boolean isSubscribedPosts) {
 
-        LiveData<PostsViewState> postsViewStateLiveData;
-        PostsViewState postsViewStateCache;
+        Flowable<PostsViewState> posts;
 
         if (isSubscribedPosts) {
-            postsViewStateLiveData = cleanPostsRawLiveData(true);
-            postsViewStateCache = mergedSubscribedPostsCache;
+            posts = cleanedAllPosts.toFlowable();
         } else {
-            postsViewStateLiveData = cleanPostsRawLiveData(false);
-            postsViewStateCache = mergedAllPostsCache;
+            posts = cleanedSubscribedPosts.toFlowable();
         }
 
-        /* whenever a new PostsViewState object arrives, cache it, update the cache with
-         * the latest list of clicked post IDs, and emit the result. Note that when a new
-         * PostsViewState object arrives, it is because the list of posts in the app has
-         * been reloaded. Thus, we emit a result every time the list is reloaded, and it
-         * always is checked against the most recent list of clicked post IDs, which
-         * is kept up to date by the other source LiveData. */
-        mediator.addSource(postsViewStateLiveData, postsViewState -> {
-            for (int i = 0; i < 25; i++) {
-                postsViewStateCache.postData.set(i, postsViewState.postData.get(i));
-
-                updatePostsViewStateCacheWithLatestClickedPostIds(postsViewStateCache, i);
-            }
-
-            mediator.setValue(postsViewStateCache);
-        });
-
-        /* whenever a new list of clicked post IDs arrives, cache it and update the latest
-         * PostsViewState cache, so it is ready to be emitted the next time a PostsViewState
-         * object arrives to the other source LiveData. Here we do NOT set a result on the
-         * mediator, as we never want to emit a result that has clicked post IDs but no
-         * PostsViewState. In other words, whatever arrives here is prepared and stashed in
-         * postsViewStateCache, and there it sits until the next PostsViewState arrives to the
-         * other source LiveData, and then the whole bundle is emitted. */
-        mediator.addSource(getClickedPostIdsLiveData(), strings -> {
-            clickedPostIdsCache = strings;
+        return Flowable.zip(posts, clickedPostIds, (t1, t2) -> {
+            List list = Arrays.asList(t2);
 
             for (int i = 0; i < 25; i++) {
-                updatePostsViewStateCacheWithLatestClickedPostIds(postsViewStateCache, i);
+                if (list.contains(t1.postData.get(i).id)) {
+                    t1.hasBeenClicked[i] = true;
+                }
             }
-        });
 
-        return mediator;
+            return t1;
+        });
     }
+
+
 
     // endregion viewstate Transformations ---------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void updatePostsViewStateCacheWithLatestClickedPostIds(PostsViewState postsViewStateCache, int i) {
-        postsViewStateCache.hasBeenClicked[i] =
-                Arrays.asList(clickedPostIdsCache).contains(postsViewStateCache.postData.get(i).id);
-    }
+
 
     // endregion helper methods --------------------------------------------------------------------
 
