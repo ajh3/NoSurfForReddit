@@ -13,17 +13,12 @@ import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
 import java.util.UUID;
 
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
@@ -98,13 +93,13 @@ public class NoSurfAuthenticator {
                             // don't bother saving this ephemeral token into sharedprefs
 
                             switch (callback) {
-                                case FETCH_ALL_POSTS_ASYNC:
+                                case FETCH_ALL_POSTS_CALLBACK_ASYNC:
                                     repository.fetchAllPostsASync();
                                     break;
-                                case FETCH_POST_COMMENTS_ASYNC:
+                                case FETCH_POST_COMMENTS_CALLBACK_ASYNC:
                                     repository.fetchPostCommentsASync(id);
                                     break;
-                                case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                                case FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC:
                                     // do nothing, as an app-only token is for logged-out users only
                                     break;
                                 default:
@@ -174,13 +169,13 @@ public class NoSurfAuthenticator {
                             tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
 
                             switch (callback) {
-                                case FETCH_ALL_POSTS_ASYNC:
+                                case FETCH_ALL_POSTS_CALLBACK_ASYNC:
                                     repository.fetchAllPostsASync();
                                     break;
-                                case FETCH_SUBSCRIBED_POSTS_ASYNC:
+                                case FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC:
                                     repository.fetchSubscribedPostsASync();
                                     break;
-                                case FETCH_POST_COMMENTS_ASYNC:
+                                case FETCH_POST_COMMENTS_CALLBACK_ASYNC:
                                     repository.fetchPostCommentsASync(id);
                                     break;
                                 default:
@@ -213,6 +208,7 @@ public class NoSurfAuthenticator {
             setUserLoggedIn();
         } else {
             // need to explicitly call this here to help ContainerFragment set itself up
+            Log.e(getClass().toString(), "logged out");
             setUserLoggedOut();
         }
     }

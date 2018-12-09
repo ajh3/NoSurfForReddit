@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
@@ -18,11 +19,14 @@ import java.util.concurrent.ExecutorService;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 import retrofit2.Retrofit;
+
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkCallbacks.FETCH_ALL_POSTS_CALLBACK_ASYNC;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.*;
 
 public class Repository {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
@@ -30,12 +34,6 @@ public class Repository {
     private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
-
-    // these 3 "raw" LiveData come straight from the Reddit API; only used internally in repo
-    private final MutableLiveData<Listing> allPostsRawLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Listing> subscribedPostsRawLiveData = new MutableLiveData<>();
-
-    // helper fields used to clean raw LiveData; only used internally in repo
 
 
     // these 3 "cleaned" LiveData feed the UI directly and have public getters
@@ -54,15 +52,6 @@ public class Repository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
-
-
-    private Flowable<PostsViewState> zippedAllPosts = zipCleanedPostsWithClickedPostIds(false);
-    private Flowable<PostsViewState> zippedSubscribedPosts = zipCleanedPostsWithClickedPostIds(true);
-    private Flowable<String[]> clickedPostIds;
-    private Maybe<CommentsViewState> cleanedComments;
-    private Maybe<PostsViewState> cleanedAllPosts;
-    private Maybe<PostsViewState> cleanedSubscribedPosts;
-
 
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -85,15 +74,6 @@ public class Repository {
         fetchSubscribedPostsASync();
 
 
-        cleanedAllPosts
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(allPostsViewStateLiveData::setValue);
-
-        cleanedSubscribedPosts
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscribedPostsViewStateLiveData::setValue);
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -108,6 +88,7 @@ public class Repository {
 
     /* gets posts from r/all, using either a user or anonymous token based on the user's
        login status. Works for both logged-in and logged-out users */
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public void fetchAllPostsASync() {
@@ -145,12 +126,39 @@ public class Repository {
          * I use callbacks this way to "react" to expired tokens instead of running some
          * background timer task that refreshes them every X minutes */
 
-        cleanedAllPosts = ri.fetchAllPostsASync(bearerAuth)
+        ri.fetchAllPostsASync(bearerAuth)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(input -> cleanRawPostsRx(false));
+                .map(this::cleanRawPosts)
+                .zipWith(fetchClickedPostIds().firstElement(), setClickedPosts)
+                .subscribe(
+                        allPostsViewStateLiveData::setValue,
+                        error -> {
+                            setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
+                            Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED);
 
+                            if (((HttpException) error).code() == 401 && (authenticator.isUserLoggedInCache())) {
+                                authenticator.refreshExpiredUserOAuthTokenASync(FETCH_ALL_POSTS_CALLBACK_ASYNC, "");
+                            } else if (((HttpException) error).code() == 401) {
+                                authenticator.fetchAppOnlyOAuthTokenASync(FETCH_ALL_POSTS_CALLBACK_ASYNC, "");
+                            }
+                        });
     }
+
+    private final BiFunction<PostsViewState, String[], PostsViewState> setClickedPosts
+            = (postsViewState, ids) -> {
+        List list = Arrays.asList(ids);
+
+        for (int i = 0; i < 25; i++) {
+            if (list.contains(postsViewState.postData.get(i).id)) {
+                postsViewState.hasBeenClicked[i] = true;
+            }
+        }
+
+        return postsViewState;
+    };
+
+
 
     //TODO clean up this formatting /\  \/
 
@@ -162,10 +170,17 @@ public class Repository {
 
         if (authenticator.isUserLoggedInCache()) {
 
-            cleanedSubscribedPosts = ri.fetchSubscribedPostsASync(bearerAuth)
+            ri.fetchSubscribedPostsASync(bearerAuth)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(input -> cleanRawPostsRx(true));
+                    .map(this::cleanRawPosts)
+                    .zipWith(fetchClickedPostIds().firstElement(), setClickedPosts)
+                    .subscribe(
+                            subscribedPostsViewStateLiveData::setValue,
+                            error -> {
+                                setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
+                                Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED);
+                            });
 
         } // do nothing if user is logged out, as subscribed posts are only for logged-in users
     }
@@ -187,73 +202,25 @@ public class Repository {
 
             bearerAuth = BEARER + accessToken;
 
-
-            cleanedComments = ri.fetchPostCommentsASync(bearerAuth, id)
+            ri.fetchPostCommentsASync(bearerAuth, id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(this::cleanCommentsRawDataRx);
-
+                    .map(this::cleanRawComments)
+                    .subscribe(
+                            commentsViewStateLiveData::setValue,
+                            error -> {
+                                setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
+                                Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED);
+                            });
 
         } // do nothing if blank id is passed
     }
 
     // endregion network data calls ----------------------------------------------------------------
 
-    // region init/de-init methods -----------------------------------------------------------------
 
-    private void checkIfLoginCredentialsAlreadyExist() {
-        authenticator.checkIfLoginCredentialsAlreadyExist();
-    }
-
-    void setUserLoggedIn() {
-        authenticator.setUserLoggedIn();
-    }
-
-    public void setUserLoggedOut() {
-        authenticator.setUserLoggedOut();
-    }
-
-    // endregion init/de-init methods --------------------------------------------------------------
 
     // region viewstate Transformations ------------------------------------------------------------
-
-
-
-
-    //TODO rename
-    private CommentsViewState cleanCommentsRawDataRx(List<Listing> input) {
-        CommentsViewState commentsViewState;
-        int autoModOffset;
-
-        //check if there is at least 1 comment
-        if (input.get(1).getNumTopLevelComments() > 0) {
-
-            //calculate the number of valid comments after checking for & excluding AutoMod
-            autoModOffset = input.get(1).calculateAutoModOffset();
-            int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
-
-            // only display first 3 top-level comments
-            if (numComments > 3) numComments = 3;
-
-            commentsViewState = new CommentsViewState(numComments, input.get(0).getCommentId());
-
-            // construct the viewstate object
-            for (int i = 0; i < numComments; i++) {
-                String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
-                int commentScore = input.get(1).getCommentScore(autoModOffset, i);
-
-                commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
-                commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
-            }
-        } else { //if zero comments
-            commentsViewState = new CommentsViewState(0, ZERO);
-        }
-
-        return commentsViewState;
-    }
-
-
-
 
 
 
@@ -263,14 +230,7 @@ public class Repository {
      * Instead the result here is piped into mergeClickedPostIdsWithCleanedPostsRawLiveData, which
      * is"stage 2" and creates a UI-ready object that knows which posts have already been
      *  clicked */
-    private PostsViewState cleanRawPostsRx(boolean isSubscribedPosts) {
-        Listing input;
-
-        if (isSubscribedPosts) {
-            input = subscribedPostsRawLiveData.getValue();
-        } else {
-            input = allPostsRawLiveData.getValue();
-        }
+    private PostsViewState cleanRawPosts(Listing input) {
 
         PostsViewState postsViewState = new PostsViewState();
 
@@ -305,7 +265,37 @@ public class Repository {
         return postsViewState;
     }
 
+    //TODO rename
+    private CommentsViewState cleanRawComments(List<Listing> input) {
+        CommentsViewState commentsViewState;
+        int autoModOffset;
 
+        //check if there is at least 1 comment
+        if (input.get(1).getNumTopLevelComments() > 0) {
+
+            //calculate the number of valid comments after checking for & excluding AutoMod
+            autoModOffset = input.get(1).calculateAutoModOffset();
+            int numComments = input.get(1).getNumTopLevelComments() - autoModOffset;
+
+            // only display first 3 top-level comments
+            if (numComments > 3) numComments = 3;
+
+            commentsViewState = new CommentsViewState(numComments, input.get(0).getCommentId());
+
+            // construct the viewstate object
+            for (int i = 0; i < numComments; i++) {
+                String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
+                int commentScore = input.get(1).getCommentScore(autoModOffset, i);
+
+                commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
+                commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
+            }
+        } else { //if zero comments
+            commentsViewState = new CommentsViewState(0, ZERO);
+        }
+
+        return commentsViewState;
+    }
 
 
 
@@ -314,28 +304,6 @@ public class Repository {
      * been clicked (accomplished by checking post IDs against post IDs that have already
      * been written into the Room database */
     //TODO get rid of fetchClickedPostIds() and perform its role as a transformation in the chain
-    private Flowable<PostsViewState> zipCleanedPostsWithClickedPostIds(boolean isSubscribedPosts) {
-
-        Flowable<PostsViewState> posts;
-
-        if (isSubscribedPosts) {
-            posts = cleanedAllPosts.toFlowable();
-        } else {
-            posts = cleanedSubscribedPosts.toFlowable();
-        }
-
-        return Flowable.zip(posts, clickedPostIds, (t1, t2) -> {
-            List list = Arrays.asList(t2);
-
-            for (int i = 0; i < 25; i++) {
-                if (list.contains(t1.postData.get(i).id)) {
-                    t1.hasBeenClicked[i] = true;
-                }
-            }
-
-            return t1;
-        });
-    }
 
 
 
@@ -346,6 +314,57 @@ public class Repository {
 
 
     // endregion helper methods --------------------------------------------------------------------
+
+
+
+    // region room methods and classes -------------------------------------------------------------
+
+    public void insertClickedPostId(ClickedPostId id) {
+        Runnable runnable = () -> clickedPostIdDao.insertClickedPostId(id);
+
+        executor.execute(runnable);
+    }
+
+
+
+
+    private Flowable<String[]> fetchClickedPostIds() {
+        return clickedPostIdDao
+                .getAllClickedPostIds()
+                .map(this::convertClickedPostIdsRx);
+    }
+
+    // returns the list of clicked post IDs stored in the Room database
+    private String[] convertClickedPostIdsRx(List<ClickedPostId> input) {
+
+        int size = input.size();
+
+        String[] clickedPostIds = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            clickedPostIds[i] = input.get(i).getClickedPostId();
+        }
+
+        return clickedPostIds;
+    }
+
+    // endregion room methods and classes ----------------------------------------------------------
+
+    // region init/de-init methods -----------------------------------------------------------------
+
+    private void checkIfLoginCredentialsAlreadyExist() {
+        authenticator.checkIfLoginCredentialsAlreadyExist();
+    }
+
+    void setUserLoggedIn() {
+        authenticator.setUserLoggedIn();
+    }
+
+    public void setUserLoggedOut() {
+        authenticator.setUserLoggedOut();
+    }
+
+    // endregion init/de-init methods --------------------------------------------------------------
 
     // region event handling -----------------------------------------------------------------------
 
@@ -379,49 +398,12 @@ public class Repository {
 
     // endregion getter methods --------------------------------------------------------------------
 
-    // region room methods and classes -------------------------------------------------------------
-
-    public void insertClickedPostId(ClickedPostId id) {
-        Runnable runnable = () -> clickedPostIdDao.insertClickedPostId(id);
-
-        executor.execute(runnable);
-    }
-
-
-
-
-    private void fetchClickedPostIds() {
-        clickedPostIds =
-                clickedPostIdDao
-                        .getAllClickedPostIds()
-                        .observeOn(Schedulers.io())
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .map(this::convertClickedPostIdsRx);
-    }
-
-
-    // returns the list of clicked post IDs stored in the Room database
-    private String[] convertClickedPostIdsRx(List<ClickedPostId> input) {
-
-        int size = input.size();
-
-        String[] clickedPostIds = new String[size];
-
-        for (int i = 0; i < size; i++) {
-            clickedPostIds[i] = input.get(i).getClickedPostId();
-        }
-
-        return clickedPostIds;
-    }
-
-    // endregion room methods and classes ----------------------------------------------------------
-
     // region enums --------------------------------------------------------------------------------
 
     enum NetworkCallbacks {
-        FETCH_ALL_POSTS_ASYNC,
-        FETCH_POST_COMMENTS_ASYNC,
-        FETCH_SUBSCRIBED_POSTS_ASYNC
+        FETCH_ALL_POSTS_CALLBACK_ASYNC,
+        FETCH_POST_COMMENTS_CALLBACK_ASYNC,
+        FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC
     }
 
     public enum NetworkErrors {
