@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
@@ -27,6 +28,8 @@ import retrofit2.HttpException;
 import retrofit2.Retrofit;
 
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkCallbacks.FETCH_ALL_POSTS_CALLBACK_ASYNC;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkCallbacks.FETCH_POST_COMMENTS_CALLBACK_ASYNC;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkCallbacks.FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC;
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
@@ -38,6 +41,7 @@ public class Repository {
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
 
+    private Flowable<PostsViewState> allPosts;
 
     // these 3 "cleaned" LiveData feed the UI directly and have public getters
     private final MutableLiveData<PostsViewState> allPostsViewStateLiveData = new MutableLiveData<>();
@@ -128,12 +132,12 @@ public class Repository {
          * I use callbacks this way to "react" to expired tokens instead of running some
          * background timer task that refreshes them every X minutes */
 
+        //TODO: does this need the subscribeOn call? Does it happen on the IO thread regardless?
         Maybe<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map(this::cleanRawPosts);
 
         Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
-                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         allPostsViewStateLiveData::setValue,
@@ -175,17 +179,20 @@ public class Repository {
         if (authenticator.isUserLoggedInCache()) {
 
             Maybe<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
                     .map(this::cleanRawPosts);
 
             Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
-                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             subscribedPostsViewStateLiveData::setValue,
                             error -> {
                                 setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
                                 Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED);
+
+                                if (((HttpException) error).code() == 401) {
+                                    authenticator.refreshExpiredUserOAuthTokenASync(FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC, "");
+                                }
                             });
 
         } // do nothing if user is logged out, as subscribed posts are only for logged-in users
@@ -209,14 +216,20 @@ public class Repository {
             bearerAuth = BEARER + accessToken;
 
             ri.fetchPostCommentsASync(bearerAuth, id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .map(this::cleanRawComments)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             commentsViewStateLiveData::setValue,
                             error -> {
                                 setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
                                 Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED);
+
+                                if (((HttpException) error).code() == 401 && (authenticator.isUserLoggedInCache())) {
+                                    authenticator.refreshExpiredUserOAuthTokenASync(FETCH_POST_COMMENTS_CALLBACK_ASYNC, id);
+                                } else if (((HttpException) error).code() == 401) {
+                                    authenticator.fetchAppOnlyOAuthTokenASync(FETCH_POST_COMMENTS_CALLBACK_ASYNC, id);
+                                }
                             });
 
         } // do nothing if blank id is passed

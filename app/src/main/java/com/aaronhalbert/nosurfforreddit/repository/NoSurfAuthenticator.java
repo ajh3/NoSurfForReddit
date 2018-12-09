@@ -84,7 +84,6 @@ public class NoSurfAuthenticator {
                 BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
@@ -128,7 +127,6 @@ public class NoSurfAuthenticator {
                 code,
                 BuildConfig.REDIRECT_URI,
                 AUTH_HEADER)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
@@ -160,8 +158,7 @@ public class NoSurfAuthenticator {
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             userOAuthAccessTokenCache = data.getAccessToken();
