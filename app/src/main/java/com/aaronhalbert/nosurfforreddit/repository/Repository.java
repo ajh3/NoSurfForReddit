@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
@@ -26,7 +27,9 @@ import retrofit2.HttpException;
 import retrofit2.Retrofit;
 
 import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkCallbacks.FETCH_ALL_POSTS_CALLBACK_ASYNC;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.*;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 
 public class Repository {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
@@ -72,7 +75,6 @@ public class Repository {
         checkIfLoginCredentialsAlreadyExist();
         fetchAllPostsASync();
         fetchSubscribedPostsASync();
-
 
     }
 
@@ -126,11 +128,13 @@ public class Repository {
          * I use callbacks this way to "react" to expired tokens instead of running some
          * background timer task that refreshes them every X minutes */
 
-        ri.fetchAllPostsASync(bearerAuth)
+        Maybe<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
                 .subscribeOn(Schedulers.io())
+                .map(this::cleanRawPosts);
+
+        Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(this::cleanRawPosts)
-                .zipWith(fetchClickedPostIds().firstElement(), setClickedPosts)
                 .subscribe(
                         allPostsViewStateLiveData::setValue,
                         error -> {
@@ -170,11 +174,13 @@ public class Repository {
 
         if (authenticator.isUserLoggedInCache()) {
 
-            ri.fetchSubscribedPostsASync(bearerAuth)
+            Maybe<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
                     .subscribeOn(Schedulers.io())
+                    .map(this::cleanRawPosts);
+
+            Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(this::cleanRawPosts)
-                    .zipWith(fetchClickedPostIds().firstElement(), setClickedPosts)
                     .subscribe(
                             subscribedPostsViewStateLiveData::setValue,
                             error -> {
@@ -331,11 +337,11 @@ public class Repository {
     private Flowable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
-                .map(this::convertClickedPostIdsRx);
+                .map(this::getArrayOfClickedPostIds);
     }
 
     // returns the list of clicked post IDs stored in the Room database
-    private String[] convertClickedPostIdsRx(List<ClickedPostId> input) {
+    private String[] getArrayOfClickedPostIds(List<ClickedPostId> input) {
 
         int size = input.size();
 
