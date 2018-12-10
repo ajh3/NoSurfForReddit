@@ -10,7 +10,6 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
@@ -21,13 +20,7 @@ import java.util.UUID;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
-
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.APP_ONLY_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.REFRESH_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.USER_AUTH_CALL_ERROR;
 
 /* see https://github.com/reddit-archive/reddit/wiki/OAuth2 for Reddit login API documentation */
 
@@ -81,22 +74,15 @@ public class NoSurfAuthenticator {
 
 
     Maybe<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
-        Log.e(getClass().toString(), "fetching app token...");
 
         return ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
-                .doOnError(throwable -> {
-                    //repository.setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
-                    Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
-                })
-                .doAfterSuccess(appOnlyOAuthToken -> {
-                    Log.e(getClass().toString(), "fetched app only token");
-
+                .doOnError(throwable -> Log.d(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED, throwable))
+                .doOnSuccess(appOnlyOAuthToken -> {
                     appOnlyOAuthTokenCache = appOnlyOAuthToken.getAccessToken();
-
                     // don't bother saving this ephemeral token into sharedprefs
                 });
     }
@@ -107,6 +93,7 @@ public class NoSurfAuthenticator {
      * Note that after the user is logged in, their user token is now also used for viewing
      * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
 
+    //TODO: make this return?
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     void fetchUserOAuthTokenASync(String code) {
@@ -129,10 +116,7 @@ public class NoSurfAuthenticator {
                             repository.fetchAllPostsASync();
                             repository.fetchSubscribedPostsASync();
                         },
-                        error -> {
-                            //repository.setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
-                            Log.e(getClass().toString(), USER_AUTH_CALL_FAILED);
-                        });
+                        throwable -> Log.d(getClass().toString(), USER_AUTH_CALL_FAILED, throwable));
     }
 
 
@@ -143,11 +127,8 @@ public class NoSurfAuthenticator {
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .doOnError(throwable -> {
-                    //repository.setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
-                    Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
-                })
-                .doAfterSuccess(userOAuthToken -> {
+                .doOnError(throwable -> Log.d(getClass().toString(), REFRESH_AUTH_CALL_FAILED, throwable))
+                .doOnSuccess(userOAuthToken -> {
                     userOAuthAccessTokenCache = userOAuthToken.getAccessToken();
                     tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
                 });
@@ -171,7 +152,6 @@ public class NoSurfAuthenticator {
             setUserLoggedIn();
         } else {
             // need to explicitly call this here to help ContainerFragment set itself up
-            Log.e(getClass().toString(), "logged out");
             setUserLoggedOut();
         }
     }
