@@ -13,11 +13,15 @@ import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
 import java.util.UUID;
 
 import androidx.lifecycle.MutableLiveData;
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
@@ -75,41 +79,26 @@ public class NoSurfAuthenticator {
      *
      *  Also called to refresh this anonymous token when it expires */
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    void fetchAppOnlyOAuthTokenASync(final Repository.NetworkCallbacks callback, final String id) {
 
-        ri.fetchAppOnlyOAuthTokenASync(
+    Maybe<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
+        Log.e(getClass().toString(), "fetching app token...");
+
+        return ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            appOnlyOAuthTokenCache = data.getAccessToken();
+                .doOnError(throwable -> {
+                    //repository.setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
+                    Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
+                })
+                .doAfterSuccess(appOnlyOAuthToken -> {
+                    Log.e(getClass().toString(), "fetched app only token");
 
-                            // don't bother saving this ephemeral token into sharedprefs
+                    appOnlyOAuthTokenCache = appOnlyOAuthToken.getAccessToken();
 
-                            switch (callback) {
-                                case FETCH_ALL_POSTS_CALLBACK_ASYNC:
-                                    repository.fetchAllPostsASync();
-                                    break;
-                                case FETCH_POST_COMMENTS_CALLBACK_ASYNC:
-                                    repository.fetchPostCommentsASync(id);
-                                    break;
-                                case FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC:
-                                    // do nothing, as an app-only token is for logged-out users only
-                                    break;
-                                default:
-                                    break;
-                            }
-                        },
-                        error -> {
-                            Log.e(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED);
-                            repository.setNetworkErrorsLiveData(new Event<>(APP_ONLY_AUTH_CALL_ERROR));
-                        }
-                );
+                    // don't bother saving this ephemeral token into sharedprefs
+                });
     }
 
     /* Logged-in users can view posts from their subscribed subreddits in addition to r/all,
@@ -141,50 +130,27 @@ public class NoSurfAuthenticator {
                             repository.fetchSubscribedPostsASync();
                         },
                         error -> {
+                            //repository.setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
                             Log.e(getClass().toString(), USER_AUTH_CALL_FAILED);
-                            repository.setNetworkErrorsLiveData(new Event<>(USER_AUTH_CALL_ERROR));
-                        }
-                );
-
-
+                        });
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    void refreshExpiredUserOAuthTokenASync(final Repository.NetworkCallbacks callback, final String id) {
 
-        ri.refreshExpiredUserOAuthTokenASync(
+    Maybe<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
+
+        return ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            userOAuthAccessTokenCache = data.getAccessToken();
-
-                            tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-
-                            switch (callback) {
-                                case FETCH_ALL_POSTS_CALLBACK_ASYNC:
-                                    repository.fetchAllPostsASync();
-                                    break;
-                                case FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC:
-                                    repository.fetchSubscribedPostsASync();
-                                    break;
-                                case FETCH_POST_COMMENTS_CALLBACK_ASYNC:
-                                    repository.fetchPostCommentsASync(id);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        },
-                        error -> {
-                            Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
-                            repository.setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
-                        }
-                );
-
+                .doOnError(throwable -> {
+                    //repository.setNetworkErrorsLiveData(new Event<>(REFRESH_AUTH_CALL_ERROR));
+                    Log.e(getClass().toString(), REFRESH_AUTH_CALL_FAILED);
+                })
+                .doAfterSuccess(userOAuthToken -> {
+                    userOAuthAccessTokenCache = userOAuthToken.getAccessToken();
+                    tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
+                });
     }
 
     // endregion network auth calls ----------------------------------------------------------------

@@ -6,23 +6,30 @@ import android.util.Log;
 import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import org.reactivestreams.Publisher;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.MaybeSource;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
@@ -59,6 +66,8 @@ public class Repository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
+
+    private String bearerAuth;
 
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -98,9 +107,171 @@ public class Repository {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public void fetchAllPostsASync() {
+        bearerAuth = selectAllPostsBearerAuth();
+        Log.e(getClass().toString(), "all bearer auth: " + bearerAuth);
+
+        //TODO: update these comments for RxJava implmentation
+        /* conditional logic here fetches or refreshes expired tokens if there's a 401
+         * error, and passes itself as a callback to try fetching posts once again after the
+         * token has been refreshed
+         *
+         * I use callbacks this way to "react" to expired tokens instead of running some
+         * background timer task that refreshes them every X minutes */
+
+        //TODO: does this need the subscribeOn call? Does it happen on the IO thread regardless?
+        Maybe<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
+                .doOnError(throwable -> {
+                    //setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
+                    Log.e(getClass().toString(), "retrying FETCH_ALL_POSTS_CALL", throwable);
+                })
+                .retryWhen(throwableFlowable -> throwableFlowable.flatMap(throwable -> {
+                    if (throwable instanceof HttpException) {
+                        if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
+                            return authenticator.refreshExpiredUserOAuthTokenASync()
+                                    .toFlowable()
+                                    .flatMap(userOAuthToken -> {
+                                        bearerAuth = selectAllPostsBearerAuth();
+                                        Log.e(getClass().toString(), "now bearer auth is: " + bearerAuth);
+                                        return Flowable.just("");
+                                    });
+                        } else if (((HttpException) throwable).code() == 401) {
+                            Log.e(getClass().toString(), "b");
+                            return authenticator.fetchAppOnlyOAuthTokenASync()
+                                    .toFlowable()
+                                    .flatMap(appOnlyOAuthToken -> {
+                                        bearerAuth = selectAllPostsBearerAuth();
+                                        Log.e(getClass().toString(), "now bearer auth2 is: " + bearerAuth);
+                                        return Flowable.just("");
+                                    });
+                        }
+                    }
+
+                    return Flowable.error(throwable);
+                }))
+                .observeOn(Schedulers.computation())
+                .map(this::cleanRawPosts);
+
+
+        Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        allPostsViewStateLiveData::setValue,
+                        error -> {
+                            //setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
+                            Log.e(getClass().toString(), "FETCH_ALL_POSTS_CALL total failure");
+                        });
+    }
+
+
+
+
+
+    //TODO clean up this formatting /\  \/
+
+    /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
+    public void fetchSubscribedPostsASync() {
+        String bearerAuth = selectSubscribedPostsBearerAuth();
+        //Log.e(getClass().toString(), "bearer auth: " + bearerAuth);
+
+        if (authenticator.isUserLoggedInCache()) {
+
+            Maybe<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
+                    .doOnError(throwable -> {
+                        //setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
+                        Log.e(getClass().toString(), "retrying FETCH_SUBSCRIBED_POSTS_CALL");
+                    })
+                    .retryWhen(throwableFlowable -> throwableFlowable.flatMap(throwable -> {
+                        if (throwable instanceof HttpException) {
+                            if (((HttpException) throwable).code() == 401) {
+                                return authenticator.refreshExpiredUserOAuthTokenASync()
+                                        .toFlowable()
+                                        .flatMap(userOAuthToken -> Flowable.just(""));
+                            }
+                        }
+                        return Flowable.error(throwable);
+                    }))
+                    .observeOn(Schedulers.computation())
+                    .map(this::cleanRawPosts);
+
+            Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            subscribedPostsViewStateLiveData::setValue,
+                            error -> {
+                                //setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
+                                Log.e(getClass().toString(), "FETCH_SUBSCRIBED_POSTS_CALL total failure");
+                            });
+
+        } // do nothing if user is logged out, as subscribed posts are only for logged-in users
+    }
+
+
+
+
+
+
+    /* get a post's comments; works for both logged-in and logged-out users */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
+    public void fetchPostCommentsASync(final String id) {
+
+        if (!"".equals(id)) {
+            String accessToken;
+            String bearerAuth;
+
+            if (authenticator.isUserLoggedInCache()) {
+                accessToken = authenticator.getUserOAuthAccessTokenCache();
+            } else {
+                accessToken = authenticator.getAppOnlyOAuthTokenCache();
+            }
+
+            bearerAuth = BEARER + accessToken;
+
+            ri.fetchPostCommentsASync(bearerAuth, id)
+                    .doOnError(throwable -> {
+                        //setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
+                        Log.e(getClass().toString(), "retrying FETCH_POST_COMMENTS_CALL");
+                    })
+                    .retryWhen(throwableFlowable -> throwableFlowable.flatMap(throwable -> {
+                        if (throwable instanceof HttpException) {
+                            if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
+                                return authenticator.refreshExpiredUserOAuthTokenASync()
+                                        .toFlowable()
+                                        .flatMap(userOAuthToken -> Flowable.just(""));
+                            } else if (((HttpException) throwable).code() == 401) {
+                                return authenticator.fetchAppOnlyOAuthTokenASync()
+                                        .toFlowable()
+                                        .flatMap(appOnlyOAuthToken -> Flowable.just(""));
+                            }
+                        }
+                        return Flowable.error(throwable);
+                    }))
+                    .observeOn(Schedulers.computation())
+                    .map(this::cleanRawComments)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            commentsViewStateLiveData::setValue,
+                            error -> {
+                                //setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
+                                Log.e(getClass().toString(), "FETCH_POST_COMMENTS_CALL total failure");
+                            });
+
+        } // do nothing if blank id is passed
+    }
+
+
+
+
+
+
+
+
+
+    private String selectAllPostsBearerAuth() {
         String accessToken;
         String bearerAuth;
-
         if (authenticator.isUserLoggedInCache()) {
             accessToken = authenticator.getUserOAuthAccessTokenCache();
         } else {
@@ -123,34 +294,11 @@ public class Repository {
         }
 
         bearerAuth = BEARER + accessToken;
+        return bearerAuth;
+    }
 
-        //TODO: update these comments for RxJava implmentation
-        /* conditional logic here fetches or refreshes expired tokens if there's a 401
-         * error, and passes itself as a callback to try fetching posts once again after the
-         * token has been refreshed
-         *
-         * I use callbacks this way to "react" to expired tokens instead of running some
-         * background timer task that refreshes them every X minutes */
-
-        //TODO: does this need the subscribeOn call? Does it happen on the IO thread regardless?
-        Maybe<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
-                .observeOn(Schedulers.computation())
-                .map(this::cleanRawPosts);
-
-        Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        allPostsViewStateLiveData::setValue,
-                        error -> {
-                            setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
-                            Log.e(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED);
-
-                            if (((HttpException) error).code() == 401 && (authenticator.isUserLoggedInCache())) {
-                                authenticator.refreshExpiredUserOAuthTokenASync(FETCH_ALL_POSTS_CALLBACK_ASYNC, "");
-                            } else if (((HttpException) error).code() == 401) {
-                                authenticator.fetchAppOnlyOAuthTokenASync(FETCH_ALL_POSTS_CALLBACK_ASYNC, "");
-                            }
-                        });
+    private String selectSubscribedPostsBearerAuth() {
+        return BEARER + authenticator.getUserOAuthAccessTokenCache();
     }
 
     private final BiFunction<PostsViewState, String[], PostsViewState> setClickedPosts
@@ -165,75 +313,6 @@ public class Repository {
 
         return postsViewState;
     };
-
-
-
-    //TODO clean up this formatting /\  \/
-
-    /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public void fetchSubscribedPostsASync() {
-        String bearerAuth = BEARER + authenticator.getUserOAuthAccessTokenCache();
-
-        if (authenticator.isUserLoggedInCache()) {
-
-            Maybe<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
-                    .observeOn(Schedulers.computation())
-                    .map(this::cleanRawPosts);
-
-            Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), setClickedPosts)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            subscribedPostsViewStateLiveData::setValue,
-                            error -> {
-                                setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
-                                Log.e(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED);
-
-                                if (((HttpException) error).code() == 401) {
-                                    authenticator.refreshExpiredUserOAuthTokenASync(FETCH_SUBSCRIBED_POSTS_CALLBACK_ASYNC, "");
-                                }
-                            });
-
-        } // do nothing if user is logged out, as subscribed posts are only for logged-in users
-    }
-
-    /* get a post's comments; works for both logged-in and logged-out users */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public void fetchPostCommentsASync(final String id) {
-
-        if (!"".equals(id)) {
-            String accessToken;
-            String bearerAuth;
-
-            if (authenticator.isUserLoggedInCache()) {
-                accessToken = authenticator.getUserOAuthAccessTokenCache();
-            } else {
-                accessToken = authenticator.getAppOnlyOAuthTokenCache();
-            }
-
-            bearerAuth = BEARER + accessToken;
-
-            ri.fetchPostCommentsASync(bearerAuth, id)
-                    .observeOn(Schedulers.computation())
-                    .map(this::cleanRawComments)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            commentsViewStateLiveData::setValue,
-                            error -> {
-                                setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
-                                Log.e(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED);
-
-                                if (((HttpException) error).code() == 401 && (authenticator.isUserLoggedInCache())) {
-                                    authenticator.refreshExpiredUserOAuthTokenASync(FETCH_POST_COMMENTS_CALLBACK_ASYNC, id);
-                                } else if (((HttpException) error).code() == 401) {
-                                    authenticator.fetchAppOnlyOAuthTokenASync(FETCH_POST_COMMENTS_CALLBACK_ASYNC, id);
-                                }
-                            });
-
-        } // do nothing if blank id is passed
-    }
 
     // endregion network data calls ----------------------------------------------------------------
 
