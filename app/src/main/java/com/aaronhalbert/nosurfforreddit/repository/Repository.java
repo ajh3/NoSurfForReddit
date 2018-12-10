@@ -38,24 +38,19 @@ public class Repository {
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
 
-    // these 3 "cleaned" LiveData feed the UI directly and have public getters
     private final MutableLiveData<PostsViewState> allPostsViewStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<PostsViewState> subscribedPostsViewStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<CommentsViewState> commentsViewStateLiveData = new MutableLiveData<>();
 
-    // user login status
     private final LiveData<Boolean> isUserLoggedInLiveData;
-
-    // event feeds
     private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
 
-    // other
     private final RetrofitContentInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
 
-
+    //TODO: update all comments in this class for RxJava implementation
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
@@ -69,7 +64,6 @@ public class Repository {
         isUserLoggedInLiveData = authenticator.isUserLoggedInLiveData;
         ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
-
 
         // initialize self
         checkIfLoginCredentialsAlreadyExist();
@@ -96,7 +90,6 @@ public class Repository {
     public void fetchAllPostsASync() {
         String bearerAuth = selectAllPostsAndCommentsBearerAuth();
 
-        //TODO: update these comments for RxJava implmentation
         /* conditional logic here fetches or refreshes expired tokens if there's a 401
          * error, and passes itself as a callback to try fetching posts once again after the
          * token has been refreshed
@@ -105,7 +98,6 @@ public class Repository {
          * background timer task that refreshes them every X minutes */
 
         Maybe<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
-                .doOnError(throwable -> Log.d(getClass().toString(), "retrying FETCH_ALL_POSTS_CALL", throwable))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof HttpException) {
                         if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
@@ -131,8 +123,6 @@ public class Repository {
                         });
     }
 
-
-
     /* gets posts from the user's subscribed subreddits; only applicable to logged-in users */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
@@ -141,7 +131,6 @@ public class Repository {
             String bearerAuth = selectSubscribedPostsBearerAuth();
 
             Maybe<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
-                    .doOnError(throwable -> Log.d(getClass().toString(), "retrying FETCH_SUBSCRIBED_POSTS_CALL", throwable))
                     .onErrorResumeNext(throwable -> {
                         if (throwable instanceof HttpException) {
                             if (((HttpException) throwable).code() == 401) {
@@ -166,11 +155,6 @@ public class Repository {
         } // do nothing if user is logged out, as subscribed posts are only for logged-in users
     }
 
-
-
-
-
-
     /* get a post's comments; works for both logged-in and logged-out users */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
@@ -179,7 +163,6 @@ public class Repository {
             String bearerAuth = selectAllPostsAndCommentsBearerAuth();
 
             ri.fetchPostCommentsASync(bearerAuth, id)
-                    .doOnError(throwable -> Log.d(getClass().toString(), "retrying FETCH_POST_COMMENTS_CALL", throwable))
                     .onErrorResumeNext(throwable -> {
                         if (throwable instanceof HttpException) {
                             if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
@@ -205,79 +188,9 @@ public class Repository {
         }
     }
 
-    private MaybeSource<? extends Listing> retryFetchAllPostsASync() {
-        String bearerAuth = selectAllPostsAndCommentsBearerAuth();
-        return ri.fetchAllPostsASync(bearerAuth);
-    }
-
-    private MaybeSource<? extends Listing> retryFetchSubscribedPostsASync() {
-        String bearerAuth = selectSubscribedPostsBearerAuth();
-        return ri.fetchSubscribedPostsASync(bearerAuth);
-    }
-
-    private MaybeSource<? extends List<Listing>> retryFetchPostCommentsASync(String id) {
-        String bearerAuth = selectAllPostsAndCommentsBearerAuth();
-        return ri.fetchPostCommentsASync(bearerAuth, id);
-    }
-
-
-    private String selectAllPostsAndCommentsBearerAuth() {
-        String accessToken;
-        String bearerAuth;
-
-        if (authenticator.isUserLoggedInCache()) {
-            accessToken = authenticator.getUserOAuthAccessTokenCache();
-        } else {
-            if (!"".equals(authenticator.getAppOnlyOAuthTokenCache())) {
-                accessToken = authenticator.getAppOnlyOAuthTokenCache();
-            } else {
-                /* If user is logged out and there's no app only OAuth token in the cache,
-                 * we need to fetch one.
-                 *
-                 * However, if a blank accessToken is sent to the server, we get back a 200 (OK)
-                 * status code but with no data, which results in onFailure. To hack around this,
-                 * we assign a garbage value to accessToken which ensures the below call gets a 401
-                 * error instead of 200 and thus executes fetchAppOnlyOAuthTokenASync and its
-                 * callback in the right order, instead of the call failing
-                 *
-                 * Dirty hack but simplifies the logic in onResponse */
-                //TODO: fix this w/ RxJava
-                accessToken = "xyz";
-            }
-        }
-
-        bearerAuth = BEARER + accessToken;
-        return bearerAuth;
-    }
-
-
-
-    private String selectSubscribedPostsBearerAuth() {
-        return BEARER + authenticator.getUserOAuthAccessTokenCache();
-    }
-
-
-
-    private final BiFunction<PostsViewState, String[], PostsViewState> setClickedPosts
-            = (postsViewState, ids) -> {
-        List list = Arrays.asList(ids);
-
-        for (int i = 0; i < 25; i++) {
-            if (list.contains(postsViewState.postData.get(i).id)) {
-                postsViewState.hasBeenClicked[i] = true;
-            }
-        }
-
-        return postsViewState;
-    };
-
     // endregion network data calls ----------------------------------------------------------------
 
-
-
     // region viewstate Transformations ------------------------------------------------------------
-
-
 
     /* Cleans dirty/raw post data from the Reddit API
      *
@@ -320,7 +233,6 @@ public class Repository {
         return postsViewState;
     }
 
-    //TODO rename
     private CommentsViewState cleanRawComments(List<Listing> input) {
         CommentsViewState commentsViewState;
         int autoModOffset;
@@ -352,8 +264,6 @@ public class Repository {
         return commentsViewState;
     }
 
-
-
     /* "Stage 2" of viewstate preparation, in which cleaned post data returned by
      * cleanPostsRawLiveData is merged into a new object that also knows which posts have
      * been clicked (accomplished by checking post IDs against post IDs that have already
@@ -364,11 +274,68 @@ public class Repository {
 
     // region helper methods -----------------------------------------------------------------------
 
+    private MaybeSource<? extends Listing> retryFetchAllPostsASync() {
+        String bearerAuth = selectAllPostsAndCommentsBearerAuth();
+        return ri.fetchAllPostsASync(bearerAuth);
+    }
 
+    private MaybeSource<? extends Listing> retryFetchSubscribedPostsASync() {
+        String bearerAuth = selectSubscribedPostsBearerAuth();
+        return ri.fetchSubscribedPostsASync(bearerAuth);
+    }
+
+    private MaybeSource<? extends List<Listing>> retryFetchPostCommentsASync(String id) {
+        String bearerAuth = selectAllPostsAndCommentsBearerAuth();
+        return ri.fetchPostCommentsASync(bearerAuth, id);
+    }
+
+    private String selectAllPostsAndCommentsBearerAuth() {
+        String accessToken;
+        String bearerAuth;
+
+        if (authenticator.isUserLoggedInCache()) {
+            accessToken = authenticator.getUserOAuthAccessTokenCache();
+        } else {
+            if (!"".equals(authenticator.getAppOnlyOAuthTokenCache())) {
+                accessToken = authenticator.getAppOnlyOAuthTokenCache();
+            } else {
+                /* If user is logged out and there's no app only OAuth token in the cache,
+                 * we need to fetch one.
+                 *
+                 * However, if a blank accessToken is sent to the server, we get back a 200 (OK)
+                 * status code but with no data, which results in onFailure. To hack around this,
+                 * we assign a garbage value to accessToken which ensures the below call gets a 401
+                 * error instead of 200 and thus executes fetchAppOnlyOAuthTokenASync and its
+                 * callback in the right order, instead of the call failing
+                 *
+                 * Dirty hack but simplifies the logic in onResponse */
+
+                accessToken = "xyz";
+            }
+        }
+
+        bearerAuth = BEARER + accessToken;
+        return bearerAuth;
+    }
+
+    private String selectSubscribedPostsBearerAuth() {
+        return BEARER + authenticator.getUserOAuthAccessTokenCache();
+    }
+
+    private final BiFunction<PostsViewState, String[], PostsViewState> setClickedPosts
+            = (postsViewState, ids) -> {
+        List list = Arrays.asList(ids);
+
+        for (int i = 0; i < 25; i++) {
+            if (list.contains(postsViewState.postData.get(i).id)) {
+                postsViewState.hasBeenClicked[i] = true;
+            }
+        }
+
+        return postsViewState;
+    };
 
     // endregion helper methods --------------------------------------------------------------------
-
-
 
     // region room methods and classes -------------------------------------------------------------
 
@@ -377,9 +344,6 @@ public class Repository {
 
         executor.execute(runnable);
     }
-
-
-
 
     private Flowable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
@@ -421,7 +385,7 @@ public class Repository {
 
     // region event handling -----------------------------------------------------------------------
 
-    void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
+    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
         networkErrorsLiveData.setValue(n);
     }
 

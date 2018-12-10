@@ -72,9 +72,7 @@ public class NoSurfAuthenticator {
      *
      *  Also called to refresh this anonymous token when it expires */
 
-
     Maybe<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
-
         return ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
@@ -93,7 +91,6 @@ public class NoSurfAuthenticator {
      * Note that after the user is logged in, their user token is now also used for viewing
      * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
 
-    //TODO: make this return?
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     void fetchUserOAuthTokenASync(String code) {
@@ -121,7 +118,6 @@ public class NoSurfAuthenticator {
 
 
     Maybe<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
-
         return ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
