@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
@@ -118,8 +118,8 @@ public class Repository {
 
         /* combines the results of the above call with the latest list of clicked post IDs from
          * the Room database, so the UI knows which posts to gray/X-out. The list of posts is a
-         * Flowable, so we have to convert the Single network call to a Flowable as well. */
-        Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), mergeClickedPosts)
+         * Observable, so we have to convert the Single network call to a Observable as well. */
+        Observable.combineLatest(call.toObservable(), fetchClickedPostIds(), mergeClickedPosts)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         allPostsViewStateLiveData::setValue,
@@ -151,7 +151,7 @@ public class Repository {
                     .observeOn(Schedulers.computation())
                     .map(this::cleanRawPosts);
 
-            Flowable.combineLatest(call.toFlowable(), fetchClickedPostIds(), mergeClickedPosts)
+            Observable.combineLatest(call.toObservable(), fetchClickedPostIds(), mergeClickedPosts)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             subscribedPostsViewStateLiveData::setValue,
@@ -320,8 +320,8 @@ public class Repository {
         executor.execute(runnable);
     }
 
-    /* stream of clicked post IDs, this Flowable is merged into PostsViewState objects */
-    private Flowable<String[]> fetchClickedPostIds() {
+    /* stream of clicked post IDs, this Observable is merged into PostsViewState objects */
+    private Observable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
                 .map(this::getArrayOfClickedPostIds);

@@ -6,14 +6,14 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 @Dao
 public interface ClickedPostIdDao {
 
     //specifying the return type is all that's needed, Room does the rest
     @Query("SELECT * from clicked_post_id_table")
-    Flowable<List<ClickedPostId>> getAllClickedPostIds();
+    Observable<List<ClickedPostId>> getAllClickedPostIds();
 
     // this is a convenience annotation, not necessary to write any SQL for a basic insert
     @Insert(onConflict = OnConflictStrategy.REPLACE)
