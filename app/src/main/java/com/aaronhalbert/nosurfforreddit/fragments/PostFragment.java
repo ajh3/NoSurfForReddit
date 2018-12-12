@@ -1,6 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;

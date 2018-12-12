@@ -11,7 +11,7 @@ import static com.aaronhalbert.nosurfforreddit.BuildConfig.REDDIT_URL_BASE;
 public class ShareHelper {
     private static final String SHARE_POST = "Share post...";
 
-    private Context context;
+    private final Context context;
     private Intent intent;
 
     public ShareHelper(Context context) {

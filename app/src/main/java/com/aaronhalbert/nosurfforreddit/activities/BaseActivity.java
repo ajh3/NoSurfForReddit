@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public abstract class BaseActivity extends AppCompatActivity {
     private boolean isInjectorUsed;
 
+    @SuppressWarnings("EmptyMethod")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
