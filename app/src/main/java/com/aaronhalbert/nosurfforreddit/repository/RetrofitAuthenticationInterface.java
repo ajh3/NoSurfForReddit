@@ -4,8 +4,7 @@ import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.AppOnlyOAuthToken;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
-import io.reactivex.Maybe;
-import retrofit2.Call;
+import io.reactivex.Single;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Header;
@@ -18,7 +17,7 @@ interface RetrofitAuthenticationInterface {
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST   // can't provide a relative URL here when using @Url
-    Maybe<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync(
+    Single<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("device_id") String deviceId,
@@ -27,7 +26,7 @@ interface RetrofitAuthenticationInterface {
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
-    Maybe<UserOAuthToken> fetchUserOAuthTokenASync(
+    Single<UserOAuthToken> fetchUserOAuthTokenASync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("code") String code,
@@ -37,7 +36,7 @@ interface RetrofitAuthenticationInterface {
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
-    Maybe<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
+    Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
             @Url String baseUrl,
             @Field("grant_type") String grantType,
             @Field("refresh_token") String refreshToken,

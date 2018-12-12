@@ -18,7 +18,7 @@ import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 import java.util.UUID;
 
 import androidx.lifecycle.MutableLiveData;
-import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Retrofit;
 
@@ -71,8 +71,7 @@ public class NoSurfAuthenticator {
      * fetchAppOnlyOAuthTokenASync() and does not require any user credentials.
      *
      *  Also called to refresh this anonymous token when it expires */
-
-    Maybe<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
+    Single<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
         return ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
@@ -89,8 +88,10 @@ public class NoSurfAuthenticator {
      * but this requires a user OAuth token, which is provided by fetchUserOAuthTokenASync().
      *
      * Note that after the user is logged in, their user token is now also used for viewing
-     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync */
-
+     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync.
+     *
+     * returns void, as it is never chained inside an Rx call, and does not need to return a
+     * stream. */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     void fetchUserOAuthTokenASync(String code) {
@@ -116,8 +117,7 @@ public class NoSurfAuthenticator {
                         throwable -> Log.d(getClass().toString(), USER_AUTH_CALL_FAILED, throwable));
     }
 
-
-    Maybe<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
+    Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
         return ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
@@ -136,10 +136,10 @@ public class NoSurfAuthenticator {
 
     /* login credentials are stored in SharedPreferences to survive not only config changes,
      *  but process termination and reboots, so user doesn't have to re-login every time the app
-     *  exits
+     *  exits.
      *
      *  This method should run on app initialization, to see if the user's credentials have been
-     *  previously saved */
+     *  previously saved. */
     void checkIfLoginCredentialsAlreadyExist() {
         userOAuthAccessTokenCache = tokenStore.getUserOAuthAccessToken();
         userOAuthRefreshTokenCache = tokenStore.getUserOAuthRefreshToken();

@@ -5,7 +5,7 @@ import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
 
 import java.util.List;
 
-import io.reactivex.Maybe;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -15,17 +15,17 @@ interface RetrofitContentInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("r/all/hot")
-    Maybe<Listing> fetchAllPostsASync(
+    Single<Listing> fetchAllPostsASync(
             @Header("Authorization") String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("hot")
-    Maybe<Listing> fetchSubscribedPostsASync(
+    Single<Listing> fetchSubscribedPostsASync(
             @Header("Authorization") String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("comments/{article}")
-    Maybe<List<Listing>> fetchPostCommentsASync(
+    Single<List<Listing>> fetchPostCommentsASync(
             @Header("Authorization") String authorization,
             @Path("article") String article);
 }
