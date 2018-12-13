@@ -9,7 +9,7 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.*;
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors;
 
 public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
