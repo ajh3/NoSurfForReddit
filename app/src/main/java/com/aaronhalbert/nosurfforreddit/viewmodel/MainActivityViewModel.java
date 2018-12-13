@@ -9,6 +9,8 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import static com.aaronhalbert.nosurfforreddit.repository.Repository.*;
+
 public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
     // caches a few key variables from the most recently clicked/viewed post
@@ -37,7 +39,7 @@ public class MainActivityViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
-    public LiveData<Event<Repository.NetworkErrors>> getNetworkErrorsLiveData() {
+    public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
         return repository.getNetworkErrorsLiveData();
     }
     /* no setter for network errors in ViewModel; they are set in repository */
