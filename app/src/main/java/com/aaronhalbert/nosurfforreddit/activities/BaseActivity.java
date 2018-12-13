@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.activities;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.NoSurfApplication;
@@ -16,7 +15,11 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
+    private static final String INJECTION_ALREADY_PERFORMED = "Injection already performed on this activity";
+
     private boolean isInjectorUsed;
+
+    // region lifecycle methods --------------------------------------------------------------------
 
     @SuppressWarnings("EmptyMethod")
     @Override
@@ -24,15 +27,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //setupStrictMode();
-        //setupCustomUncaughtExceptionHandler();
     }
+
+    // endregion lifecycle methods -----------------------------------------------------------------
 
     // region dagger -------------------------------------------------------------------------------
 
     @UiThread
     PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
-            throw new RuntimeException("Injection already performed on this activity");
+            throw new RuntimeException(INJECTION_ALREADY_PERFORMED);
         }
 
         isInjectorUsed = true;
@@ -59,17 +63,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         StrictMode.setThreadPolicy(builder.build());
-    }
-
-
-    //TODO: for when ACRA is implemented
-    private void setupCustomUncaughtExceptionHandler() {
-        // catch all uncaught exceptions and log them
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                Log.e(getClass().toString(), "Uncaught exception: ", e);
-            }
-        });
     }
 }

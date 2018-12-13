@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
@@ -71,7 +70,7 @@ public class MainActivity extends BaseActivity implements
             setupSplashAnimation();
         }
 
-        initNavigation();
+        initNavComponent();
         subscribeToNetworkErrors();
     }
 
@@ -129,20 +128,22 @@ public class MainActivity extends BaseActivity implements
         navController.navigateUp();
     }
 
-    private void initNavigation() {
+    private void initNavComponent() {
         navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment));
 
+        /* NavigationUI uses AppBarConfiguration to manage the "UP" button in top-left corner */
         AppBarConfiguration appBarConfiguration =
                 new AppBarConfiguration.Builder(navController.getGraph()).build();
 
         Toolbar t = findViewById(R.id.toolbar);
         setSupportActionBar(t);
 
-        // enables "Up" navigation button in toolbar
-        // TODO: set labels for nav destinations
         NavigationUI.setupWithNavController(t, navController, appBarConfiguration);
     }
 
+    /* we implement the splash animation as a View inside MainActivity rather than having a
+     * separate SplashActivity. The latter would be slower, and we don't want to display the
+     * splash for any longer than is necessary. */
     private void setupSplashAnimation() {
         Animator refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_animation);
         ImageView iv = findViewById(R.id.logo);
@@ -153,6 +154,7 @@ public class MainActivity extends BaseActivity implements
         setupSplashCanceler();
     }
 
+    /* clear the splash screen as soon as data have arrived */
     private void setupSplashCanceler() {
         viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState ->
                 findViewById(R.id.logo).setVisibility(View.GONE));
@@ -165,13 +167,11 @@ public class MainActivity extends BaseActivity implements
     /* TODO: is there a way to cleanly throw exceptions from the Repository up to the view layer
      * and show Toasts that way, so we don't need this observer? */
     private void subscribeToNetworkErrors() {
-        Context context = this;
-
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
-            Repository.NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
+            NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
 
             if (n != null) {
-                Toast.makeText(context, NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             }
         });
     }
