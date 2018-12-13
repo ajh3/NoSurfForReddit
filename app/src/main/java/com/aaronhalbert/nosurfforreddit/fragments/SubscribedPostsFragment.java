@@ -6,14 +6,13 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
  *
  * only used when user is logged in
  *
- * search for "subscribedposts" globally in this project for more comments about allposts
- * vs. subscribedposts
+ * search for "SubscribedPosts" globally in this project for more comments about SubscribedPosts
+ * vs. AllPosts
  *
  * also see AllPostsFragment*/
 
 public class SubscribedPostsFragment extends PostsFragment {
-
-    public static SubscribedPostsFragment newInstance() {
+    static SubscribedPostsFragment newInstance() {
         return new SubscribedPostsFragment();
     }
 

@@ -2,7 +2,6 @@ package com.aaronhalbert.nosurfforreddit.databinding;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.TextView;
 

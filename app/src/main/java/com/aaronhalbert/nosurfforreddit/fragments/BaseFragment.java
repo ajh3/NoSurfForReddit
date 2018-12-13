@@ -10,12 +10,14 @@ import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
 abstract class BaseFragment extends Fragment {
+    private static final String INJECTION_ALREADY_PERFORMED = "Injection already performed on this activity";
+
     private boolean isInjectorUsed;
 
     @UiThread
     PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
-            throw new RuntimeException("Injection already performed on this fragment");
+            throw new RuntimeException(INJECTION_ALREADY_PERFORMED);
         }
 
         isInjectorUsed = true;

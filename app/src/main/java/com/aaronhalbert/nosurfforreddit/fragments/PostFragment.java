@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
  *
- * PostsFragment contains the master view */
+ * PostsFragment is the master view */
 
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
@@ -37,9 +37,9 @@ abstract public class PostFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
 
-    private PostFragmentViewModel viewModel;
+    public PostFragmentViewModel viewModel;
     private MainActivityViewModel mainActivityViewModel;
-    LiveData<PostsViewState> postsViewStateLiveData;
+    public LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
     private TextView[] comments;
@@ -64,6 +64,7 @@ abstract public class PostFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+
         externalBrowser = settingsStore.isUseExternalBrowser();
 
         lookupPostMetadata();
@@ -85,7 +86,9 @@ abstract public class PostFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        // avoid leaking any of these views when fragment goes on backstack
+        /* avoid leaking any of these views when fragment goes on backstack
+         *
+         * see PostsFragment.onDestroyView() for a more detailed explanation of this leak */
         fragmentPostBinding = null;
         comments = null;
         commentsDetails = null;
@@ -105,7 +108,7 @@ abstract public class PostFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_share_action_provider, menu);
+        inflater.inflate(R.menu.menu_share, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -133,19 +136,6 @@ abstract public class PostFragment extends BaseFragment {
 
     // endregion listeners -------------------------------------------------------------------------
 
-    // region getter methods -----------------------------------------------------------------------
-
-    // expose these for the data binding class
-    public LiveData<PostsViewState> getPostsViewStateLiveData() {
-        return postsViewStateLiveData;
-    }
-
-    public PostFragmentViewModel getViewModel() {
-        return viewModel;
-    }
-
-    // endregion getter methods --------------------------------------------------------------------
-
     // region helper methods -----------------------------------------------------------------------
 
     private void setupBinding(ViewGroup container) {
@@ -153,7 +143,7 @@ abstract public class PostFragment extends BaseFragment {
                 container,
                 false);
         fragmentPostBinding.setPostFragment(this);
-        fragmentPostBinding.setLifecycleOwner(this);
+        fragmentPostBinding.setLifecycleOwner(getViewLifecycleOwner());
     }
 
     private void findPostViews() {
@@ -181,16 +171,6 @@ abstract public class PostFragment extends BaseFragment {
         dividers[1] = fragmentPostBinding.postFragmentDividerUnderSecondComment;
     }
 
-    private void observeCommentsFinishedLoadingLiveEvent() {
-        viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
-            if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
-                updateCommentViewVisibilities();
-
-                commentsAlreadyLoaded = true;
-            }
-        });
-    }
-
     private void setupComments() {
         /* To get the comments for a given post, we have to take the post's ID and make a separate
          * API call, which happens here. */
@@ -201,6 +181,16 @@ abstract public class PostFragment extends BaseFragment {
         } else {
             updateCommentViewVisibilities();
         }
+    }
+
+    private void observeCommentsFinishedLoadingLiveEvent() {
+        viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
+            if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
+                updateCommentViewVisibilities();
+
+                commentsAlreadyLoaded = true;
+            }
+        });
     }
 
     private void updateCommentViewVisibilities() {

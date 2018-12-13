@@ -4,8 +4,8 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 
 /* for the first page of the RecyclerView - posts from r/all
  *
- * search for "subscribedposts" globally in this project for more comments about allposts
- * vs. subscribedposts
+ * search for "AllPosts" globally in this project for more comments about AllPosts
+ * vs. SubscribedPosts
  *
  * also see SubscribedPostsFragment */
 

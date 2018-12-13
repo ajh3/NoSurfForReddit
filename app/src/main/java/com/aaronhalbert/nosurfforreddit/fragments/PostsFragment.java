@@ -64,14 +64,18 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     public void onDestroyView() {
         super.onDestroyView();
 
-        /* if we don't remove the adapter in onDestroyView(), we end up leaking a view to the
-         * data binding class. This happens because the binding class references
-         * PostsAdapter.RowHolder as its controller, and the adapter references this fragment
-         * to provide the data binding class access to a LifecycleOwner. Thus, when PostsFragment
-         * is replace()'d (detached but not destroyed), the adapter stays alive on the backstack
-         * due to the data binding class's reference to it, which in turn keeps a reference back to
-         * the fragment's view hierarchy, having prevented it from being properly destroyed in
-         * onDestroyView(). */
+        /* if we don't null out the adapter in onDestroyView(), we end up leaking a view to the
+         * data binding class when this fragment goes onto the backstack. This happens because the
+         * binding class references PostsAdapter.RowHolder as its controller, and the adapter
+         * references this fragment to provide the data binding class access to a LifecycleOwner.
+         * Thus, when PostsFragment is replace()'d (detached but not destroyed), the adapter stays
+         * alive on the backstack due to the data binding class's reference to it, which in turn
+         * keeps a reference back to the fragment and its view hierarchy, preventing it from being
+         * properly torn down in onDestroyView().
+         *
+         * Similar thing with the two instance variables that reference Views - if not nulled here,
+         * these will prevent the Views from being torn down when the fragment goes on the
+         * backstack. */
         rv.setAdapter(null);
         rv = null;
         swipeRefreshLayout = null;

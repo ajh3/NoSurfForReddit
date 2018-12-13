@@ -40,7 +40,6 @@ public class NoSurfWebViewFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NoSurfWebViewFragmentViewModel.class);
         mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-        setupObserverHack();
 
         url = NoSurfWebViewFragmentArgs.fromBundle(getArguments()).getUrl();
     }
@@ -71,7 +70,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_share_action_provider, menu);
+        inflater.inflate(R.menu.menu_share, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -92,21 +91,6 @@ public class NoSurfWebViewFragment extends BaseFragment {
     // endregion menu ------------------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
-
-    private void setupObserverHack() {
-        /* these observers are necessary to ensure that a post is properly displayed as read
-         * (i.e., struck/grayed-out) when the user clicks the image thumbnail to directly
-         * go to a link post's URL. Without them, when this fragment is added, no call to
-         * Repository.mergeClickedPostIdsWithCleanedPostsRawLiveData will be triggered, and
-         * so when the user goes BACK to the list of posts, the post that was just clicked
-         * will be incorrectly shown as unread. We don't do anything else with them. */
-        viewModel.getAllPostsViewStateLiveData().observe(this, postsViewState -> {
-            // do nothing
-        });
-        viewModel.getSubscribedPostsViewStateLiveData().observe(this, postsViewState -> {
-            // do nothing
-        });
-    }
 
     private String getLastClickedPostPermalink() {
         return mainActivityViewModel

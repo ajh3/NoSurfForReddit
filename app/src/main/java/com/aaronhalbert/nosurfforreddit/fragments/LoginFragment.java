@@ -16,7 +16,7 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 
 public class LoginFragment extends BaseFragment {
 
-    public static LoginFragment newInstance() {
+    static LoginFragment newInstance() {
         return new LoginFragment();
     }
 
