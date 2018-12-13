@@ -34,11 +34,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      *
      * any field/method referring to "AllPosts" refers to the former, and any field/method
      * referring to "SubscribedPosts" refers to the latter.
-     *        Log.e(getClass().toString(), "PostsFragment view destroyed");
+     *
      * Many components, such as this adapter, are easily reused for either feed. For example,
      * all that's necessary to configure this adapter is to pass it the boolean argument
      * isSubscribedPostsAdapter in the constructor, and it sets own its data source
-     * (postsViewStateLiveData) and functions accordingly. */
+     * (postsViewStateLiveData) and works accordingly. */
     private final boolean isSubscribedPostsAdapter;
 
     public PostsAdapter(PostsFragmentViewModel viewModel,
@@ -91,7 +91,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         RowHolder(RowBinding rowBinding) {
             super(rowBinding.getRoot());
             this.rowBinding = rowBinding;
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this); // itemView is the root View of the ViewHolder
         }
 
         void bindModel() {

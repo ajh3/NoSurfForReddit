@@ -1,11 +1,11 @@
 package com.aaronhalbert.nosurfforreddit.adapters;
 
+import com.aaronhalbert.nosurfforreddit.fragments.AllPostsFragment;
+import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-
-import com.aaronhalbert.nosurfforreddit.fragments.AllPostsFragment;
-import com.aaronhalbert.nosurfforreddit.fragments.ContainerFragment;
 
 public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final int NUM_ITEMS = 2;
