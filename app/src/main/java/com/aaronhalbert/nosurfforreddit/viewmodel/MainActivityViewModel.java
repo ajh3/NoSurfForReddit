@@ -13,7 +13,9 @@ import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErro
 
 public class MainActivityViewModel extends ViewModel {
     private final Repository repository;
+
     // caches a few key variables from the most recently clicked/viewed post
+    // TODO: pass this around as a fragment argument instead of sharing it via a ViewModel
     private LastClickedPostMetadata lastClickedPostMetadata;
 
     MainActivityViewModel(Repository repository) {
