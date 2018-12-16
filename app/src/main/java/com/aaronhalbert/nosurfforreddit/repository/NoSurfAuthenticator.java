@@ -124,7 +124,7 @@ public class NoSurfAuthenticator {
         }
     }
 
-    void setUserLoggedIn() {
+    private void setUserLoggedIn() {
         isUserLoggedInCache = true;
         isUserLoggedIn.onNext(true);
     }
