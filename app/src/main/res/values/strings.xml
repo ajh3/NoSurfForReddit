@@ -15,4 +15,6 @@
     <string name="logo_description">NoSurf logo</string>
     <string name="default_page_is_subscribed">\"Your subreddits\" is default screen</string>
     <string name="share">Share</string>
+    <string name="nsfw_filter">Mask NSFW posts</string>
+    <string name="nsfw_confirmation">&lt;b>%1$s&lt;/b>&lt;br /&gt;&lt;br /&gt;in /r/%2$s</string>
 </resources>

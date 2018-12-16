@@ -9,6 +9,7 @@ public class PreferenceSettingsStore implements SettingsStore {
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String KEY_DEFAULT_PAGE_IS_SUBSCRIBED = "defaultPageIsSubscribed";
+    private static final String KEY_NSFW_FILTER = "nsfwFilter";
 
     private final SharedPreferences preferences;
 
@@ -34,6 +35,11 @@ public class PreferenceSettingsStore implements SettingsStore {
     @Override
     public boolean isDefaultPageSubscribed() {
         return preferences.getBoolean(KEY_DEFAULT_PAGE_IS_SUBSCRIBED, false);
+    }
+
+    @Override
+    public boolean isNsfwFilter() {
+        return preferences.getBoolean(KEY_NSFW_FILTER, false);
     }
 
     @Override

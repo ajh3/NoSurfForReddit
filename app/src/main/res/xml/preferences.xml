@@ -17,4 +17,8 @@
         android:defaultValue="false"
         android:title="@string/default_page_is_subscribed"
         android:key="defaultPageIsSubscribed" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:title="@string/nsfw_filter"
+        android:key="nsfwFilter" />
 </PreferenceScreen>

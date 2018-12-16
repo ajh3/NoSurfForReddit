@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
+import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
@@ -28,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    @SuppressWarnings("WeakerAccess") @Inject public SettingsStore settingsStore;
     MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 

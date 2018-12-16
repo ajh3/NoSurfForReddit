@@ -43,6 +43,8 @@
                 android:id="@+id/title"
                 android:text="@{controller.postsViewStateLiveData.postData[controller.position].title}"
                 app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
+                app:nsfw="@{controller.postsViewStateLiveData.postData[controller.position].isNsfw}"
+                app:nsfwFilter="@{controller.isNsfwFilter}"
                 app:layout_constraintStart_toStartOf="@id/item_title_and_details"
                 app:layout_constraintEnd_toEndOf="@id/item_title_and_details"
                 app:layout_constraintTop_toTopOf="@id/item_title_and_details" />
@@ -52,6 +54,8 @@
                 android:id="@+id/details"
                 android:text="@{controller.postsViewStateLiveData.postData[controller.position].subreddit + ` • ` + controller.postsViewStateLiveData.postData[controller.position].score + ` • ` + controller.postsViewStateLiveData.postData[controller.position].numComments + ` comments`}"
                 app:strikethrough="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
+                app:nsfw="@{controller.postsViewStateLiveData.postData[controller.position].isNsfw}"
+                app:nsfwFilter="@{controller.isNsfwFilter}"
                 app:layout_constraintStart_toStartOf="@id/item_title_and_details"
                 app:layout_constraintEnd_toEndOf="@id/item_title_and_details"
                 app:layout_constraintTop_toBottomOf="@id/title" />

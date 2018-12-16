@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
@@ -11,6 +12,8 @@ import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -22,6 +25,7 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalA
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     // we only ever show the first page of posts, which is 25 by default
+    // TODO: write a post processing engine so the number of posts isn't hardcoded
     private static final int ITEM_COUNT = 25;
 
     private final MainActivityViewModel viewModel;
@@ -73,7 +77,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
          * being leaked */
         rowBinding.setLifecycleOwner(hostFragment.getViewLifecycleOwner());
 
-        return new RowHolder(rowBinding);
+        return new RowHolder(rowBinding, parent);
     }
 
     @Override
@@ -84,11 +88,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // region helper classes -----------------------------------------------------------------------
 
     public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private static final String VIEW_NSFW_POST = "View NSFW post";
+        private static final String GO_BACK = "Go back";
         private final RowBinding rowBinding;
+        private final NavController navController;
 
-        RowHolder(RowBinding rowBinding) {
+        RowHolder(RowBinding rowBinding, ViewGroup viewGroup) {
             super(rowBinding.getRoot());
             this.rowBinding = rowBinding;
+            navController = Navigation.findNavController(viewGroup);
             itemView.setOnClickListener(this); // itemView is the root View of the ViewHolder
         }
 
@@ -105,33 +113,42 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            NavController navController = Navigation.findNavController(v);
-
             setLastClickedPostMetadata(position);
-            viewModel.insertClickedPostId(postsViewStateLiveData.getValue().postData.get(position).id);
+            boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf);
 
-            /* if the clicked post is a link post and the user clicked directly on the image
-             * thumbnail, then shortcut to the link itself and skip showing the PostFragment */
-            if (v instanceof ImageView && !(postsViewStateLiveData.getValue().postData.get(position).isSelf)) {
-                gotoUrlDirectly(navController);
+            evaluateClick(v, isShortcutClick);
+        }
+
+        private void evaluateClick(View v, boolean isShortcutClick) {
+            if (isNsfwFilter() && viewModel.getLastClickedPostMetadata().lastClickedPostIsNsfw) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                builder
+                        .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPostMetadata().lastClickedPostTitle, viewModel.getLastClickedPostMetadata().lastClickedPostSubreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
+                        .setPositiveButton(VIEW_NSFW_POST, (dialog, id) -> {
+                            evaluateIfShortcutClick(isShortcutClick);
+                            viewModel.insertClickedPostId(viewModel.getLastClickedPostMetadata().lastClickedPostId);
+                        })
+                        .setNegativeButton(GO_BACK, (dialog, id) -> dialog.cancel())
+                        .show();
             } else {
-                launchPost(position, navController);
+                evaluateIfShortcutClick(isShortcutClick);
+                viewModel.insertClickedPostId(viewModel.getLastClickedPostMetadata().lastClickedPostId);
             }
         }
 
-        /* cache this information in the ViewModel, as it's used by various other components */
-        private void setLastClickedPostMetadata(int position) {
-            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
-                    position,
-                    postsViewStateLiveData.getValue().postData.get(position).id,
-                    postsViewStateLiveData.getValue().postData.get(position).isSelf,
-                    postsViewStateLiveData.getValue().postData.get(position).url,
-                    isSubscribedPostsAdapter,
-                    postsViewStateLiveData.getValue().postData.get(position).permalink));
+        /* if the clicked post is a link post and the user clicked directly on the image
+         * thumbnail, then shortcut to the link itself and skip showing the PostFragment */
+        private void evaluateIfShortcutClick(boolean isShortcutClick) {
+            if (isShortcutClick) {
+                gotoUrlDirectly();
+            } else {
+                launchPost();
+            }
         }
 
-        private void launchPost(int position, NavController navController) {
-            if (postsViewStateLiveData.getValue().postData.get(position).isSelf) {
+        private void launchPost() {
+            if (viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf) {
                 ViewPagerFragmentDirections.ClickSelfPostAction action
                         = ViewPagerFragmentDirections.clickSelfPostAction();
 
@@ -144,13 +161,31 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             }
         }
 
-        private void gotoUrlDirectly(NavController navController) {
+        private void gotoUrlDirectly() {
             String url = viewModel.getLastClickedPostMetadata().lastClickedPostUrl;
 
             GotoUrlGlobalAction action
                     = gotoUrlGlobalAction(url);
 
             navController.navigate(action);
+        }
+
+        public boolean isNsfwFilter() {
+            return hostFragment.settingsStore.isNsfwFilter();
+        }
+
+        /* cache this information in the ViewModel, as it's used by various other components */
+        private void setLastClickedPostMetadata(int position) {
+            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
+                    position,
+                    postsViewStateLiveData.getValue().postData.get(position).id,
+                    postsViewStateLiveData.getValue().postData.get(position).isSelf,
+                    postsViewStateLiveData.getValue().postData.get(position).url,
+                    isSubscribedPostsAdapter,
+                    postsViewStateLiveData.getValue().postData.get(position).permalink,
+                    postsViewStateLiveData.getValue().postData.get(position).isNsfw,
+                    postsViewStateLiveData.getValue().postData.get(position).title,
+                    postsViewStateLiveData.getValue().postData.get(position).subreddit));
         }
     }
     // endregion helper classes---------------------------------------------------------------------

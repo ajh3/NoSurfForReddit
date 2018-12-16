@@ -10,13 +10,19 @@ public class LastClickedPostMetadata {
     public final boolean lastClickedPostIsSubscribed;
     public final String lastClickedPostUrl;
     public final String lastClickedPostPermalink;
+    public final boolean lastClickedPostIsNsfw;
+    public final String lastClickedPostTitle;
+    public final String lastClickedPostSubreddit;
 
     public LastClickedPostMetadata(int lastClickedPostPosition,
                                    String lastClickedPostId,
                                    boolean lastClickedPostIsSelf,
                                    String lastClickedPostUrl,
                                    boolean lastClickedPostIsSubscribed,
-                                   String lastClickedPostPermalink) {
+                                   String lastClickedPostPermalink,
+                                   boolean lastClickedPostIsNsfw,
+                                   String lastClickedPostTitle,
+                                   String lastClickedPostSubreddit) {
 
         this.lastClickedPostPosition = lastClickedPostPosition;
         this.lastClickedPostId = lastClickedPostId;
@@ -24,5 +30,8 @@ public class LastClickedPostMetadata {
         this.lastClickedPostUrl = lastClickedPostUrl;
         this.lastClickedPostIsSubscribed = lastClickedPostIsSubscribed;
         this.lastClickedPostPermalink = lastClickedPostPermalink;
+        this.lastClickedPostIsNsfw = lastClickedPostIsNsfw;
+        this.lastClickedPostTitle = lastClickedPostTitle;
+        this.lastClickedPostSubreddit = lastClickedPostSubreddit;
     }
 }
