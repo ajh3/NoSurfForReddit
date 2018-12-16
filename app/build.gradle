@@ -8,8 +8,8 @@ android {
         applicationId "com.aaronhalbert.nosurfforreddit"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 4
-        versionName "4"
+        versionCode 5
+        versionName "5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.generatedDensities = ['hdpi', 'xxhdpi']
         javaCompileOptions {
@@ -25,7 +25,7 @@ android {
         buildConfigField "String", "API_BASE_URL", '"https://oauth.reddit.com/"'
         buildConfigField "String", "OAUTH_BASE_URL", '"https://www.reddit.com/api/v1/access_token"'
         buildConfigField "String", "APP_ONLY_GRANT_TYPE", '"https://oauth.reddit.com/grants/installed_client"'
-        buildConfigField "String", "USER_AGENT", '"User-Agent: android:com.aaronhalbert.nosurfforreddit:v4 (by /u/Suspicious_Advantage)"'
+        buildConfigField "String", "USER_AGENT", '"User-Agent: android:com.aaronhalbert.nosurfforreddit:v5 (by /u/Suspicious_Advantage)"'
     }
 
     buildTypes {
