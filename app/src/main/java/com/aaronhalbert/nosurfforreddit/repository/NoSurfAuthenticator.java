@@ -1,11 +1,9 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
@@ -17,9 +15,8 @@ import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 
 import java.util.UUID;
 
-import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import retrofit2.Retrofit;
 
 /* see https://github.com/reddit-archive/reddit/wiki/OAuth2 for Reddit login API documentation */
@@ -37,9 +34,6 @@ public class NoSurfAuthenticator {
     private static final String USER_REFRESH_GRANT_TYPE = "refresh_token";
     private static final String DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE";
     private static final String AUTH_HEADER = okhttp3.Credentials.basic(BuildConfig.CLIENT_ID, "");
-    private static final String APP_ONLY_AUTH_CALL_FAILED = "App-only auth call failed";
-    private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
-    private static final String REFRESH_AUTH_CALL_FAILED = "Refresh auth call failed";
 
     // caches to let us keep working during asynchronous writes to SharedPrefs
     private String userOAuthAccessTokenCache = "";
@@ -48,13 +42,12 @@ public class NoSurfAuthenticator {
     private boolean isUserLoggedInCache;
 
     // user login status
-    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+    private final BehaviorSubject<Boolean> isUserLoggedIn = BehaviorSubject.createDefault(false);
 
     // other
     private final Application application;
     private final RetrofitAuthenticationInterface ri;
     private final TokenStore tokenStore;
-    private Repository repository;
 
     public NoSurfAuthenticator(Application application,
                                Retrofit retrofit,
@@ -77,7 +70,6 @@ public class NoSurfAuthenticator {
                 BuildConfig.APP_ONLY_GRANT_TYPE,
                 DEVICE_ID,
                 AUTH_HEADER)
-                .doOnError(throwable -> Log.d(getClass().toString(), APP_ONLY_AUTH_CALL_FAILED, throwable))
                 .doOnSuccess(appOnlyOAuthToken -> {
                     appOnlyOAuthTokenCache = appOnlyOAuthToken.getAccessToken();
                     // don't bother saving this ephemeral token into sharedprefs
@@ -88,46 +80,26 @@ public class NoSurfAuthenticator {
      * but this requires a user OAuth token, which is provided by fetchUserOAuthTokenASync().
      *
      * Note that after the user is logged in, their user token is now also used for viewing
-     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync.
-     *
-     * returns void, as it is never chained inside an Rx call, and does not need to return a
-     * stream. */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    void fetchUserOAuthTokenASync(String code) {
-        ri.fetchUserOAuthTokenASync(
+     * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync. */
+    Single<UserOAuthToken> fetchUserOAuthTokenASync(String code) {
+        return ri.fetchUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_GRANT_TYPE,
                 code,
                 BuildConfig.REDIRECT_URI,
                 AUTH_HEADER)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            userOAuthAccessTokenCache = data.getAccessToken();
-                            userOAuthRefreshTokenCache = data.getRefreshToken();
-
-                            tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-                            tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
-
-                            setUserLoggedIn();
-                            repository.fetchAllPostsASync();
-                            repository.fetchSubscribedPostsASync();
-                        },
-                        throwable -> Log.d(getClass().toString(), USER_AUTH_CALL_FAILED, throwable));
+                .doOnSuccess(this::loginSuccess);
     }
 
+    /* unlike the app-only, logged-out auth token, user auth tokens require a special refresh
+     * call */
     Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
         return ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .doOnError(throwable -> Log.d(getClass().toString(), REFRESH_AUTH_CALL_FAILED, throwable))
-                .doOnSuccess(userOAuthToken -> {
-                    userOAuthAccessTokenCache = userOAuthToken.getAccessToken();
-                    tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
-                });
+                .doOnSuccess(this::loginSuccess);
     }
 
     // endregion network auth calls ----------------------------------------------------------------
@@ -152,22 +124,32 @@ public class NoSurfAuthenticator {
         }
     }
 
-    private void setUserLoggedIn() {
+    void setUserLoggedIn() {
         isUserLoggedInCache = true;
-        isUserLoggedInLiveData.setValue(true);
+        isUserLoggedIn.onNext(true);
     }
 
     void setUserLoggedOut() {
         clearCookies();
 
         isUserLoggedInCache = false;
-        isUserLoggedInLiveData.setValue(false);
+        isUserLoggedIn.onNext(false);
 
         userOAuthAccessTokenCache = "";
         userOAuthRefreshTokenCache = "";
 
         tokenStore.clearUserOAuthAccessTokenAsync();
         tokenStore.clearUserOAuthRefreshTokenAsync();
+    }
+
+    private void loginSuccess(UserOAuthToken userOAuthToken) {
+        userOAuthAccessTokenCache = userOAuthToken.getAccessToken();
+        userOAuthRefreshTokenCache = userOAuthToken.getRefreshToken();
+
+        tokenStore.setUserOAuthAccessTokenAsync(userOAuthToken.getAccessToken());
+        tokenStore.setUserOAuthRefreshTokenAsync(userOAuthToken.getRefreshToken());
+
+        setUserLoggedIn();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------
@@ -206,12 +188,8 @@ public class NoSurfAuthenticator {
         return isUserLoggedInCache;
     }
 
-    void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public MutableLiveData<Boolean> getIsUserLoggedInLiveData() {
-        return isUserLoggedInLiveData;
+    BehaviorSubject<Boolean> getIsUserLoggedIn() {
+        return isUserLoggedIn;
     }
 
     // endregion getters and setters ---------------------------------------------------------------

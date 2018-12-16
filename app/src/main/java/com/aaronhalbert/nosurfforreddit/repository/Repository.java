@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
+import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
@@ -15,19 +16,13 @@ import java.util.concurrent.ExecutorService;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.BehaviorSubject;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 
 public class Repository {
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
-
-    /* these PublishSubjects act as stable Observers for the ViewModel to subscribe to in order to
-     * combineLatest() post data with the list of clicked post IDs from Room. We feed the results
-     * of multiple, independent Single Retrofit calls into these */
-    private final PublishSubject<PostsViewState> allPosts = PublishSubject.create();
-    private final PublishSubject<PostsViewState> subscribedPosts = PublishSubject.create();
 
     private final RetrofitContentInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
@@ -40,22 +35,16 @@ public class Repository {
                       ClickedPostIdRoomDatabase db,
                       ExecutorService executor,
                       NoSurfAuthenticator authenticator) {
-        authenticator.setRepository(this);
         this.executor = executor;
         this.authenticator = authenticator;
         ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
-
-        // initialize self
-        checkIfLoginCredentialsAlreadyExist();
-        fetchAllPostsASync();
-        fetchSubscribedPostsASync();
     }
 
     // region network auth calls -------------------------------------------------------------------
 
-    public void fetchUserOAuthTokenASync(String code) {
-        authenticator.fetchUserOAuthTokenASync(code);
+    public Single<UserOAuthToken> fetchUserOAuthTokenASync(String code) {
+        return authenticator.fetchUserOAuthTokenASync(code);
     }
 
     // endregion network auth calls ----------------------------------------------------------------
@@ -65,9 +54,7 @@ public class Repository {
     /* gets posts from r/all, with either a user (logged-in) or anonymous (logged-out, aka
      * "app-only") token based on the user's login status. Works for both logged-in and logged-out
      * users. */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public void fetchAllPostsASync() {
+    public Single<PostsViewState> fetchAllPostsASync() {
         String bearerAuth = chooseAllPostsAndCommentsBearerAuth();
 
         /* fetches/refreshes expired auth tokens when there's a 401 error, and retries the request
@@ -75,7 +62,7 @@ public class Repository {
          *
          * We "react" to expired tokens dynamically with onErrorResumeNext() instead of calculating
          * the date/time of token expiration and trying to time refreshes pre-emptively. */
-        ri.fetchAllPostsASync(bearerAuth)
+        return ri.fetchAllPostsASync(bearerAuth)
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof HttpException) {
                         if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
@@ -90,19 +77,16 @@ public class Repository {
                     }
                     return Single.error(throwable);
                 })
-                .map(this::cleanRawPosts)
-                .subscribe(allPosts::onNext);
+                .map(this::cleanRawPosts);
     }
 
     /* gets posts from the user's subscribed subreddits; only works for logged-in users. See
      * fetchAllPostsASync() for more comments that also apply to this method. */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public void fetchSubscribedPostsASync() {
+    public Single<PostsViewState> fetchSubscribedPostsASync() {
         if (authenticator.isUserLoggedInCache()) {
             String bearerAuth = chooseSubscribedPostsBearerAuth();
 
-            ri.fetchSubscribedPostsASync(bearerAuth)
+            return ri.fetchSubscribedPostsASync(bearerAuth)
                     .onErrorResumeNext(throwable -> {
                         if (throwable instanceof HttpException) {
                             if (((HttpException) throwable).code() == 401) {
@@ -113,40 +97,35 @@ public class Repository {
                         }
                         return Single.error(throwable);
                     })
-                    .map(this::cleanRawPosts)
-                    .subscribe(subscribedPosts::onNext);
+                    .map(this::cleanRawPosts);
         }
 
         // do nothing if user is logged out, as subscribed posts are only for logged-in users
+        return Single.just(new PostsViewState());
     }
 
     /* get a post's comments. This is called every time a user clicks a post, and works for both
      * logged-in and logged-out users. Works the same regardless of whether the post is a
      * link post or a self post. */
     public Single<CommentsViewState> fetchPostCommentsASync(final String id) {
-        if (!"".equals(id)) {
-            String bearerAuth = chooseAllPostsAndCommentsBearerAuth();
+        String bearerAuth = chooseAllPostsAndCommentsBearerAuth();
 
-            return ri.fetchPostCommentsASync(bearerAuth, id)
-                    .onErrorResumeNext(throwable -> {
-                        if (throwable instanceof HttpException) {
-                            if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
-                                return authenticator.refreshExpiredUserOAuthTokenASync()
-                                        .flatMap(userOAuthToken ->
-                                                ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
-                            } else if (((HttpException) throwable).code() == 401) {
-                                return authenticator.fetchAppOnlyOAuthTokenASync()
-                                        .flatMap(appOnlyOAuthToken ->
-                                                ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
-                            }
+        return ri.fetchPostCommentsASync(bearerAuth, id)
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof HttpException) {
+                        if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
+                            return authenticator.refreshExpiredUserOAuthTokenASync()
+                                    .flatMap(userOAuthToken ->
+                                            ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
+                        } else if (((HttpException) throwable).code() == 401) {
+                            return authenticator.fetchAppOnlyOAuthTokenASync()
+                                    .flatMap(appOnlyOAuthToken ->
+                                            ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
                         }
-                        return Single.error(throwable);
-                    })
-                    .map(this::cleanRawComments);
-        }
-
-        // do nothing if id is empty
-        return Single.error(new Throwable());
+                    }
+                    return Single.error(throwable);
+                })
+                .map(this::cleanRawComments);
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -296,7 +275,7 @@ public class Repository {
 
     // region init/de-init methods -----------------------------------------------------------------
 
-    private void checkIfLoginCredentialsAlreadyExist() {
+    public void checkIfLoginCredentialsAlreadyExist() {
         authenticator.checkIfLoginCredentialsAlreadyExist();
     }
 
@@ -308,16 +287,8 @@ public class Repository {
 
     // region getter methods -----------------------------------------------------------------------
 
-    public PublishSubject<PostsViewState> getAllPosts() {
-        return allPosts;
-    }
-
-    public PublishSubject<PostsViewState> getSubscribedPosts() {
-        return subscribedPosts;
-    }
-
-    public NoSurfAuthenticator getAuthenticator() {
-        return authenticator;
+    public BehaviorSubject<Boolean> getIsUserLoggedIn() {
+        return authenticator.getIsUserLoggedIn();
     }
 
     // endregion getter methods --------------------------------------------------------------------

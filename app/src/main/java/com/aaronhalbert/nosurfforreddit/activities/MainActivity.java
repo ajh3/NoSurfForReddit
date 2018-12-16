@@ -164,8 +164,6 @@ public class MainActivity extends BaseActivity implements
 
     // region observers/listeners ------------------------------------------------------------------
 
-    /* TODO: is there a way to cleanly throw exceptions from the Repository up to the view layer
-     * and show Toasts that way, so we don't need this observer? */
     private void subscribeToNetworkErrors() {
         viewModel.getNetworkErrorsLiveData().observe(this, networkErrorsEvent -> {
             NetworkErrors n = networkErrorsEvent.getContentIfNotHandled();
