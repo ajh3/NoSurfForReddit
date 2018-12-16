@@ -32,24 +32,21 @@ public class MainActivityViewModel extends ViewModel {
 
     private final Repository repository;
 
-    private final CompositeDisposable disposables = new CompositeDisposable();
-
-    /* these MutableLiveData feed the UI directly. */
+    /* these 3 MutableLiveData feed the UI directly */
     private final MutableLiveData<PostsViewState> allPostsViewStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<PostsViewState> subscribedPostsViewStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<CommentsViewState> commentsViewStateLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     // caches a few key variables from the most recently clicked/viewed post
-    // TODO: pass this around as a fragment argument instead of sharing it via a ViewModel
+    // TODO: pass this around as a fragment argument instead of sharing it via the ViewModel?
     private LastClickedPostMetadata lastClickedPostMetadata;
 
     MainActivityViewModel(Repository repository) {
         this.repository = repository;
 
-        /* combines the latest list of all/subscribed posts with the latest list of clicked post
-         * IDs from Room, so the UI knows which posts to gray/X-out. */
         combinePostsWithClickedPostIds(
                 repository.getAllPosts(),
                 allPostsViewStateLiveData,
@@ -63,9 +60,8 @@ public class MainActivityViewModel extends ViewModel {
                 FETCH_SUBSCRIBED_POSTS_CALL_FAILED);
     }
 
-
-
-    /* NOTE: refer to Repository for documentation on all methods being called through to it */
+    /* NOTE: refer to Repository for additional documentation on methods being called through
+     * to it */
 
     // region login/logout -------------------------------------------------------------------------
 
@@ -75,7 +71,7 @@ public class MainActivityViewModel extends ViewModel {
 
     /* this ViewModel and the app in general continue to function normally while user is logged out,
      * but user is limited to viewing posts and comments from r/all. All functionality related
-     * to Subscribed posts is disabled */
+     * to Subscribed posts is unavailable */
     public void logUserOut() {
         repository.setUserLoggedOut();
     }
@@ -84,49 +80,17 @@ public class MainActivityViewModel extends ViewModel {
 
     // region event handling -----------------------------------------------------------------------
 
+    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
+        networkErrorsLiveData.setValue(n);
+    }
 
-    /* no setter for network errors in ViewModel; they are set in repository */
+    public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
+        return networkErrorsLiveData;
+    }
 
-    // endregion event handling --------------------------------------------------------------------
+    //endregion event handling ---------------------------------------------------------------------
 
     // region getter/setter methods ----------------------------------------------------------------
-
-    public LiveData<Boolean> getIsUserLoggedInLiveData() {
-        return repository.getIsUserLoggedInLiveData();
-    }
-
-
-
-    public LastClickedPostMetadata getLastClickedPostMetadata() {
-        return lastClickedPostMetadata;
-    }
-
-    public void setLastClickedPostMetadata(LastClickedPostMetadata lastClickedPostMetadata) {
-        this.lastClickedPostMetadata = lastClickedPostMetadata;
-    }
-
-    // endregion getter/setter methods -------------------------------------------------------------
-
-    // region misc ---------------------------------------------------------------------------------
-
-    public void insertClickedPostId(String id) {
-        repository.insertClickedPostId(new ClickedPostId(id));
-    }
-
-    // endregion misc ------------------------------------------------------------------------------
-
-    public void fetchPostCommentsASync(String id) {
-        disposables.add(
-                repository
-                .fetchPostCommentsASync(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        commentsViewStateLiveData::setValue,
-                        throwable -> {
-                            setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
-                            Log.d(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED, throwable);
-                        }));
-    }
 
     public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
         return allPostsViewStateLiveData;
@@ -140,6 +104,26 @@ public class MainActivityViewModel extends ViewModel {
         return commentsViewStateLiveData;
     }
 
+    public LiveData<Boolean> getIsUserLoggedInLiveData() {
+        return repository.getAuthenticator().getIsUserLoggedInLiveData();
+    }
+
+    public LastClickedPostMetadata getLastClickedPostMetadata() {
+        return lastClickedPostMetadata;
+    }
+
+    public void setLastClickedPostMetadata(LastClickedPostMetadata lastClickedPostMetadata) {
+        this.lastClickedPostMetadata = lastClickedPostMetadata;
+    }
+
+    // endregion getter/setter methods -------------------------------------------------------------
+
+    // region network calls ------------------------------------------------------------------------
+
+    /* we don't subscribe to fetchAllPostsASync() and fetchSubscribedPostsASync() in the ViewModel,
+     * as these calls update "backing", stable PublishSubjects in the repository that are piped
+     * into combinePostsWithClickedPostIds(). */
+
     public void fetchAllPostsASync() {
         repository.fetchAllPostsASync();
     }
@@ -148,7 +132,70 @@ public class MainActivityViewModel extends ViewModel {
         repository.fetchSubscribedPostsASync();
     }
 
-    /* see comments on Repository.getArrayOfClickedPostIds() */
+    /* on the other hand, fetchPostCommentsASync() doesn't need to be combined with anything,
+     * so we can directly subscribe to the results each time we call it. */
+    public void fetchPostCommentsASync(String id) {
+        disposables.add(
+                repository
+                .fetchPostCommentsASync(id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        commentsViewStateLiveData::setValue,
+                        throwable -> {
+                            setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
+                            Log.d(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED, throwable);
+                        }));
+    }
+
+    // endregion network calls ---------------------------------------------------------------------
+
+    // region helper methods -----------------------------------------------------------------------
+
+    /* combines the latest all/subscribed posts with the latest clicked post IDs from Room,
+     * so the UI knows which posts to gray/X-out. */
+    private void combinePostsWithClickedPostIds(
+            PublishSubject<PostsViewState> postsSource,
+            MutableLiveData<PostsViewState> postsTarget,
+            NetworkErrors networkError,
+            String errorMessage) {
+        disposables.add(Observable.combineLatest(
+                postsSource,
+                repository.fetchClickedPostIds(),
+                mergeClickedPosts)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        postsTarget::setValue,
+                        throwable -> {
+                            setNetworkErrorsLiveData(new Event<>(networkError));
+                            Log.d(getClass().toString(), errorMessage, throwable);
+                        }));
+    }
+
+    // endregion helper methods --------------------------------------------------------------------
+
+    // region enums --------------------------------------------------------------------------------
+
+    public enum NetworkErrors {
+        FETCH_ALL_POSTS_ERROR,
+        FETCH_POST_COMMENTS_ERROR,
+        FETCH_SUBSCRIBED_POSTS_ERROR,
+        APP_ONLY_AUTH_CALL_ERROR,
+        USER_AUTH_CALL_ERROR,
+        REFRESH_AUTH_CALL_ERROR
+    }
+
+    // endregion enums -----------------------------------------------------------------------------
+
+    // region misc ---------------------------------------------------------------------------------
+
+    public void insertClickedPostId(String id) {
+        repository.insertClickedPostId(new ClickedPostId(id));
+    }
+
+    /* used by combineLatest() to write the latest list of clicked post IDs into a PostsViewState
+     * object.
+     *
+     * see comments on Repository.getArrayOfClickedPostIds() */
     private final BiFunction<PostsViewState, String[], PostsViewState> mergeClickedPosts
             = (postsViewState, ids) -> {
         List list = Arrays.asList(ids);
@@ -169,50 +216,5 @@ public class MainActivityViewModel extends ViewModel {
         disposables.clear();
     }
 
-
-    // region enums --------------------------------------------------------------------------------
-
-    public enum NetworkErrors {
-        FETCH_ALL_POSTS_ERROR,
-        FETCH_POST_COMMENTS_ERROR,
-        FETCH_SUBSCRIBED_POSTS_ERROR,
-        APP_ONLY_AUTH_CALL_ERROR,
-        USER_AUTH_CALL_ERROR,
-        REFRESH_AUTH_CALL_ERROR
-    }
-
-    // endregion enums -----------------------------------------------------------------------------
-
-    // region event handling -----------------------------------------------------------------------
-
-    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
-        networkErrorsLiveData.setValue(n);
-    }
-
-    public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
-        return networkErrorsLiveData;
-    }
-
-    //endregion event handling ---------------------------------------------------------------------
-
-    private void combinePostsWithClickedPostIds(
-            PublishSubject<PostsViewState> postsSource,
-            MutableLiveData<PostsViewState> postsTarget,
-            NetworkErrors networkError,
-            String errorMessage) {
-        disposables.add(Observable.combineLatest(
-                postsSource,
-                repository.fetchClickedPostIds(),
-                mergeClickedPosts)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        postsTarget::setValue,
-                        throwable -> {
-                            setNetworkErrorsLiveData(new Event<>(networkError));
-                            Log.d(getClass().toString(), errorMessage, throwable);
-                        }));
-    }
-
-
-
+    // endregion misc ------------------------------------------------------------------------------
 }

@@ -13,16 +13,13 @@ import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import androidx.lifecycle.LiveData;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 
-
 public class Repository {
-
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
 
@@ -31,11 +28,6 @@ public class Repository {
      * of multiple, independent Single Retrofit calls into these */
     private final PublishSubject<PostsViewState> allPosts = PublishSubject.create();
     private final PublishSubject<PostsViewState> subscribedPosts = PublishSubject.create();
-
-    private final LiveData<Boolean> isUserLoggedInLiveData;
-
-
-
 
     private final RetrofitContentInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
@@ -51,7 +43,6 @@ public class Repository {
         authenticator.setRepository(this);
         this.executor = executor;
         this.authenticator = authenticator;
-        isUserLoggedInLiveData = authenticator.isUserLoggedInLiveData;
         ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
 
@@ -77,24 +68,24 @@ public class Repository {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public void fetchAllPostsASync() {
-        String bearerAuth = createAllPostsAndCommentsBearerAuth();
+        String bearerAuth = chooseAllPostsAndCommentsBearerAuth();
 
-        /* fetches or refreshes expired tokens when there's a 401 error, and retries the request
+        /* fetches/refreshes expired auth tokens when there's a 401 error, and retries the request
          * after the token has been refreshed.
          *
-         * We "react" to expired tokens dynamically instead of calculating the date/time of token
-         * expiration and trying to time refreshes pre-emptively. */
+         * We "react" to expired tokens dynamically with onErrorResumeNext() instead of calculating
+         * the date/time of token expiration and trying to time refreshes pre-emptively. */
         ri.fetchAllPostsASync(bearerAuth)
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof HttpException) {
                         if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
                             return authenticator.refreshExpiredUserOAuthTokenASync()
                                     .flatMap(userOAuthToken ->
-                                            ri.fetchAllPostsASync(createAllPostsAndCommentsBearerAuth()));
+                                            ri.fetchAllPostsASync(chooseAllPostsAndCommentsBearerAuth()));
                         } else if (((HttpException) throwable).code() == 401) {
                             return authenticator.fetchAppOnlyOAuthTokenASync()
                                     .flatMap(appOnlyOAuthToken ->
-                                            ri.fetchAllPostsASync(createAllPostsAndCommentsBearerAuth()));
+                                            ri.fetchAllPostsASync(chooseAllPostsAndCommentsBearerAuth()));
                         }
                     }
                     return Single.error(throwable);
@@ -109,7 +100,7 @@ public class Repository {
     @SuppressLint("CheckResult")
     public void fetchSubscribedPostsASync() {
         if (authenticator.isUserLoggedInCache()) {
-            String bearerAuth = createSubscribedPostsBearerAuth();
+            String bearerAuth = chooseSubscribedPostsBearerAuth();
 
             ri.fetchSubscribedPostsASync(bearerAuth)
                     .onErrorResumeNext(throwable -> {
@@ -117,7 +108,7 @@ public class Repository {
                             if (((HttpException) throwable).code() == 401) {
                                 return authenticator.refreshExpiredUserOAuthTokenASync()
                                         .flatMap(userOAuthToken ->
-                                                ri.fetchSubscribedPostsASync(createSubscribedPostsBearerAuth()));
+                                                ri.fetchSubscribedPostsASync(chooseSubscribedPostsBearerAuth()));
                             }
                         }
                         return Single.error(throwable);
@@ -134,7 +125,7 @@ public class Repository {
      * link post or a self post. */
     public Single<CommentsViewState> fetchPostCommentsASync(final String id) {
         if (!"".equals(id)) {
-            String bearerAuth = createAllPostsAndCommentsBearerAuth();
+            String bearerAuth = chooseAllPostsAndCommentsBearerAuth();
 
             return ri.fetchPostCommentsASync(bearerAuth, id)
                     .onErrorResumeNext(throwable -> {
@@ -142,11 +133,11 @@ public class Repository {
                             if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
                                 return authenticator.refreshExpiredUserOAuthTokenASync()
                                         .flatMap(userOAuthToken ->
-                                                ri.fetchPostCommentsASync(createAllPostsAndCommentsBearerAuth(), id));
+                                                ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
                             } else if (((HttpException) throwable).code() == 401) {
                                 return authenticator.fetchAppOnlyOAuthTokenASync()
                                         .flatMap(appOnlyOAuthToken ->
-                                                ri.fetchPostCommentsASync(createAllPostsAndCommentsBearerAuth(), id));
+                                                ri.fetchPostCommentsASync(chooseAllPostsAndCommentsBearerAuth(), id));
                             }
                         }
                         return Single.error(throwable);
@@ -154,7 +145,6 @@ public class Repository {
                     .map(this::cleanRawComments);
         }
 
-        //TODO: specify this throwable
         // do nothing if id is empty
         return Single.error(new Throwable());
     }
@@ -237,21 +227,21 @@ public class Repository {
 
     /* used by fetchAllPostsASync() and fetchPostCommentsASync() - they both take the same
      * auth token. */
-    private String createAllPostsAndCommentsBearerAuth() {
+    private String chooseAllPostsAndCommentsBearerAuth() {
         String accessToken;
 
         if (authenticator.isUserLoggedInCache()) {
+            // use a user auth token, if one exists
             accessToken = authenticator.getUserOAuthAccessTokenCache();
         } else {
             if (!"".equals(authenticator.getAppOnlyOAuthTokenCache())) {
+                // if none exists, then fall-back to a logged-out app-only auth token
                 accessToken = authenticator.getAppOnlyOAuthTokenCache();
             } else {
-                /* If user is logged out and there's no app only OAuth token in the cache,
+                /* If user is logged out and there's no app only auth token in the cache,
                  * we need to fetch one. To do so, we just send a garbage value which triggers
                  * a 401 error, onErrorResumeNext(), and subsequently,
-                 * fetchAppOnlyOAuthTokenASync() in our Rx chain.
-                 *
-                 * A little hacky since it relies on a side effect, but works fine. */
+                 * fetchAppOnlyOAuthTokenASync() in our Rx chain. */
 
                 accessToken = "xyz";
             }
@@ -261,9 +251,9 @@ public class Repository {
     }
 
     /* used only by fetchSubscribedPostsASync(). Less logic is required compared to
-     * createAllPostsAndCommentsBearerAuth(), since this is only called when the user is
-     * logged in. */
-    private String createSubscribedPostsBearerAuth() {
+     * chooseAllPostsAndCommentsBearerAuth(), since the user is guaranteed to be logged in
+     * when this is called, and so we don't have to deal with the logged-out case. */
+    private String chooseSubscribedPostsBearerAuth() {
         return BEARER + authenticator.getUserOAuthAccessTokenCache();
     }
 
@@ -279,7 +269,7 @@ public class Repository {
         executor.execute(runnable);
     }
 
-    /* stream of clicked post IDs, this Observable is merged into PostsViewState objects */
+    /* stream of clicked post IDs, this Observable gets merged into PostsViewState objects */
     public Observable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
@@ -302,8 +292,6 @@ public class Repository {
         return clickedPostIds;
     }
 
-
-
     // endregion room methods and classes ----------------------------------------------------------
 
     // region init/de-init methods -----------------------------------------------------------------
@@ -312,17 +300,11 @@ public class Repository {
         authenticator.checkIfLoginCredentialsAlreadyExist();
     }
 
-    void setUserLoggedIn() {
-        authenticator.setUserLoggedIn();
-    }
-
     public void setUserLoggedOut() {
         authenticator.setUserLoggedOut();
     }
 
     // endregion init/de-init methods --------------------------------------------------------------
-
-
 
     // region getter methods -----------------------------------------------------------------------
 
@@ -334,11 +316,9 @@ public class Repository {
         return subscribedPosts;
     }
 
-    public LiveData<Boolean> getIsUserLoggedInLiveData() {
-        return isUserLoggedInLiveData;
+    public NoSurfAuthenticator getAuthenticator() {
+        return authenticator;
     }
 
     // endregion getter methods --------------------------------------------------------------------
-
-
 }

@@ -48,7 +48,7 @@ public class NoSurfAuthenticator {
     private boolean isUserLoggedInCache;
 
     // user login status
-    final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isUserLoggedInLiveData = new MutableLiveData<>();
 
     // other
     private final Application application;
@@ -110,7 +110,7 @@ public class NoSurfAuthenticator {
                             tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
                             tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
 
-                            repository.setUserLoggedIn();
+                            setUserLoggedIn();
                             repository.fetchAllPostsASync();
                             repository.fetchSubscribedPostsASync();
                         },
@@ -152,7 +152,7 @@ public class NoSurfAuthenticator {
         }
     }
 
-    void setUserLoggedIn() {
+    private void setUserLoggedIn() {
         isUserLoggedInCache = true;
         isUserLoggedInLiveData.setValue(true);
     }
@@ -208,6 +208,10 @@ public class NoSurfAuthenticator {
 
     void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public MutableLiveData<Boolean> getIsUserLoggedInLiveData() {
+        return isUserLoggedInLiveData;
     }
 
     // endregion getters and setters ---------------------------------------------------------------
