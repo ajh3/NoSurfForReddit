@@ -14,8 +14,7 @@ public class SelfPostFragment extends PostFragment {
                 .postFragmentDividerUnderDetailsForSelfPostsOnly
                 .setVisibility(View.VISIBLE);
 
-        if (!"".equals(postsViewStateLiveData.getValue().postData.get(lastClickedPostPosition)
-                .selfTextHtml)) {
+        if (!"".equals(viewModel.getLastClickedPostDatum().selfTextHtml)) {
 
             fragmentPostBinding
                     .postFragmentSelftextForSelfPostsOnly

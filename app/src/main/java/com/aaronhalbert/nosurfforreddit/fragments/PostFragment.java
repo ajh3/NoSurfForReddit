@@ -17,12 +17,9 @@ import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
-import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
-import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import javax.inject.Inject;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
@@ -35,21 +32,15 @@ abstract public class PostFragment extends BaseFragment {
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
-
     @SuppressWarnings("WeakerAccess") public MainActivityViewModel viewModel;
-    public LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
     private TextView[] comments;
     private TextView[] commentsDetails;
     private View[] dividers;
 
-    private String lastClickedPostId;
-    private String lastClickedPostUrl;
-    private String lastClickedPostPermalink;
     private boolean commentsAlreadyLoaded;
     boolean externalBrowser;
-    @SuppressWarnings("WeakerAccess") public int lastClickedPostPosition; // data binding class accesses
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -57,14 +48,9 @@ abstract public class PostFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
-
         viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
-
         externalBrowser = settingsStore.isUseExternalBrowser();
-
-        lookupPostMetadata();
         checkIfCommentsAlreadyLoaded(savedInstanceState);
     }
 
@@ -95,7 +81,6 @@ abstract public class PostFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(KEY_COMMENTS_ALREADY_LOADED, commentsAlreadyLoaded);
-
         super.onSaveInstanceState(outState);
     }
 
@@ -114,7 +99,7 @@ abstract public class PostFragment extends BaseFragment {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
                 ShareHelper shareHelper = new ShareHelper(getContext());
-                shareHelper.createShareIntent(lastClickedPostPermalink);
+                shareHelper.createShareIntent(viewModel.getLastClickedPostDatum().permalink);
                 shareHelper.launchShareIntent();
 
                 return true;
@@ -128,7 +113,7 @@ abstract public class PostFragment extends BaseFragment {
     // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
-        launchLink(view, lastClickedPostUrl);
+        launchLink(view, viewModel.getLastClickedPostDatum().url);
     }
 
     // endregion listeners -------------------------------------------------------------------------
@@ -174,7 +159,7 @@ abstract public class PostFragment extends BaseFragment {
 
         if (!commentsAlreadyLoaded) {
             observeCommentsFinishedLoadingLiveEvent();
-            viewModel.fetchPostCommentsASync(lastClickedPostId);
+            viewModel.fetchPostCommentsASync(viewModel.getLastClickedPostDatum().id);
         } else {
             updateCommentViewVisibilities();
         }
@@ -182,17 +167,15 @@ abstract public class PostFragment extends BaseFragment {
 
     private void observeCommentsFinishedLoadingLiveEvent() {
         viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
-            if (lastClickedPostId.equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
+            if ((viewModel.getLastClickedPostDatum().id).equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
                 updateCommentViewVisibilities();
-
                 commentsAlreadyLoaded = true;
             }
         });
     }
 
+    /* show the correct comment and divider views based on how many comments the post has */
     private void updateCommentViewVisibilities() {
-        /* show the correct comment and divider views based on how many comments the post has */
-
         int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
 
         for (int i = 0; i < numComments; i++) {
@@ -205,21 +188,6 @@ abstract public class PostFragment extends BaseFragment {
         }
 
         fragmentPostBinding.postFragmentCommentProgressBar.setVisibility(View.GONE);
-    }
-
-    private void lookupPostMetadata() {
-        LastClickedPostMetadata lastClickedPostMetadata = viewModel.getLastClickedPostMetadata();
-
-        lastClickedPostPosition = lastClickedPostMetadata.lastClickedPostPosition;
-        lastClickedPostId = lastClickedPostMetadata.lastClickedPostId;
-        lastClickedPostUrl = lastClickedPostMetadata.lastClickedPostUrl;
-        lastClickedPostPermalink = lastClickedPostMetadata.lastClickedPostPermalink;
-
-        if (lastClickedPostMetadata.lastClickedPostIsSubscribed) {
-            postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
-        } else {
-            postsViewStateLiveData = viewModel.getAllPostsViewStateLiveData();
-        }
     }
 
     private void checkIfCommentsAlreadyLoaded(Bundle savedInstanceState) {

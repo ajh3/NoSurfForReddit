@@ -6,7 +6,6 @@ import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
-import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import java.util.Arrays;
@@ -26,6 +25,7 @@ import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.N
 import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.LOGIN_STATUS_CHECK_ERROR;
 import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.USER_AUTH_CALL_ERROR;
+import static com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState.PostDatum;
 
 public class MainActivityViewModel extends ViewModel {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
@@ -54,7 +54,8 @@ public class MainActivityViewModel extends ViewModel {
 
     // caches a few key variables from the most recently clicked/viewed post
     // TODO: pass this around as a fragment argument instead of sharing it via the ViewModel?
-    private LastClickedPostMetadata lastClickedPostMetadata;
+    private PostDatum lastClickedPostDatum;
+    private boolean lastClickedPostIsSubscribed;
 
     MainActivityViewModel(Repository repository) {
         this.repository = repository;
@@ -146,12 +147,20 @@ public class MainActivityViewModel extends ViewModel {
         return isUserLoggedInLiveData;
     }
 
-    public LastClickedPostMetadata getLastClickedPostMetadata() {
-        return lastClickedPostMetadata;
+    public PostDatum getLastClickedPostDatum() {
+        return lastClickedPostDatum;
     }
 
-    public void setLastClickedPostMetadata(LastClickedPostMetadata lastClickedPostMetadata) {
-        this.lastClickedPostMetadata = lastClickedPostMetadata;
+    public void setLastClickedPostDatum(PostDatum postDatum) {
+        this.lastClickedPostDatum = postDatum;
+    }
+
+    public boolean isLastClickedPostIsSubscribed() {
+        return lastClickedPostIsSubscribed;
+    }
+
+    public void setLastClickedPostIsSubscribed(boolean lastClickedPostIsSubscribed) {
+        this.lastClickedPostIsSubscribed = lastClickedPostIsSubscribed;
     }
 
     // endregion getter/setter methods -------------------------------------------------------------

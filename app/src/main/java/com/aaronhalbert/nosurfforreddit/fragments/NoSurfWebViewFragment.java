@@ -76,7 +76,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
                 ShareHelper shareHelper = new ShareHelper(getContext());
-                shareHelper.createShareIntent(getLastClickedPostPermalink());
+                shareHelper.createShareIntent(mainActivityViewModel.getLastClickedPostDatum().permalink);
                 shareHelper.launchShareIntent();
 
                 return true;
@@ -88,12 +88,6 @@ public class NoSurfWebViewFragment extends BaseFragment {
     // endregion menu ------------------------------------------------------------------------------
 
     // region helper methods -----------------------------------------------------------------------
-
-    private String getLastClickedPostPermalink() {
-        return mainActivityViewModel
-                .getLastClickedPostMetadata()
-                .lastClickedPostPermalink;
-    }
 
     void setupMenu() {
         setHasOptionsMenu(true);

@@ -9,7 +9,6 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
 import androidx.appcompat.app.AlertDialog;
@@ -31,6 +30,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private final MainActivityViewModel viewModel;
     private final PostsFragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
+    private final boolean isSubscribedPostsAdapter;
 
     /* this app has two primary screens/modes, a feed of posts from r/all (Reddit's public home
      * page, and a feed of posts from the user's subscribed subreddits (if the user is logged in).
@@ -42,7 +42,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      * all that's necessary to configure this adapter is to pass it the boolean argument
      * isSubscribedPostsAdapter in the constructor, and it sets own its data source
      * (postsViewStateLiveData) and works accordingly. */
-    private final boolean isSubscribedPostsAdapter;
 
     public PostsAdapter(MainActivityViewModel viewModel,
                         PostsFragment hostFragment,
@@ -112,28 +111,26 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            setLastClickedPostMetadata(position);
-            boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf);
-
+            setLastClickedPostDatum(getAdapterPosition());
+            boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPostDatum().isSelf);
             evaluateClick(v, isShortcutClick);
         }
 
         private void evaluateClick(View v, boolean isShortcutClick) {
-            if (isNsfwFilter() && viewModel.getLastClickedPostMetadata().lastClickedPostIsNsfw) {
+            if (isNsfwFilter() && viewModel.getLastClickedPostDatum().isNsfw) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
                 builder
-                        .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPostMetadata().lastClickedPostTitle, viewModel.getLastClickedPostMetadata().lastClickedPostSubreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
+                        .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPostDatum().title, viewModel.getLastClickedPostDatum().subreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
                         .setPositiveButton(VIEW_NSFW_POST, (dialog, id) -> {
                             evaluateIfShortcutClick(isShortcutClick);
-                            viewModel.insertClickedPostId(viewModel.getLastClickedPostMetadata().lastClickedPostId);
+                            viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
                         })
                         .setNegativeButton(GO_BACK, (dialog, id) -> dialog.cancel())
                         .show();
             } else {
                 evaluateIfShortcutClick(isShortcutClick);
-                viewModel.insertClickedPostId(viewModel.getLastClickedPostMetadata().lastClickedPostId);
+                viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
             }
         }
 
@@ -148,7 +145,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void launchPost() {
-            if (viewModel.getLastClickedPostMetadata().lastClickedPostIsSelf) {
+            if (viewModel.getLastClickedPostDatum().isSelf) {
                 ViewPagerFragmentDirections.ClickSelfPostAction action
                         = ViewPagerFragmentDirections.clickSelfPostAction();
 
@@ -162,7 +159,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void gotoUrlDirectly() {
-            String url = viewModel.getLastClickedPostMetadata().lastClickedPostUrl;
+            String url = viewModel.getLastClickedPostDatum().url;
 
             GotoUrlGlobalAction action
                     = gotoUrlGlobalAction(url);
@@ -175,17 +172,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         /* cache this information in the ViewModel, as it's used by various other components */
-        private void setLastClickedPostMetadata(int position) {
-            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
-                    position,
-                    postsViewStateLiveData.getValue().postData.get(position).id,
-                    postsViewStateLiveData.getValue().postData.get(position).isSelf,
-                    postsViewStateLiveData.getValue().postData.get(position).url,
-                    isSubscribedPostsAdapter,
-                    postsViewStateLiveData.getValue().postData.get(position).permalink,
-                    postsViewStateLiveData.getValue().postData.get(position).isNsfw,
-                    postsViewStateLiveData.getValue().postData.get(position).title,
-                    postsViewStateLiveData.getValue().postData.get(position).subreddit));
+        private void setLastClickedPostDatum(int position) {
+            viewModel.setLastClickedPostDatum(postsViewStateLiveData.getValue().postData.get(position));
+            viewModel.setLastClickedPostIsSubscribed(isSubscribedPostsAdapter);
         }
     }
     // endregion helper classes---------------------------------------------------------------------
