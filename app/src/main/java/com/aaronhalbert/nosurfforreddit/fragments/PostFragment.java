@@ -16,7 +16,6 @@ import com.aaronhalbert.nosurfforreddit.ShareHelper;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -30,7 +29,6 @@ abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
 
-    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
     @SuppressWarnings("WeakerAccess") public MainActivityViewModel viewModel;
     FragmentPostBinding fragmentPostBinding;

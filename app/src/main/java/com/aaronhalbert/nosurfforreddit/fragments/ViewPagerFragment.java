@@ -12,7 +12,6 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;
@@ -29,7 +28,6 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
-    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
     private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
