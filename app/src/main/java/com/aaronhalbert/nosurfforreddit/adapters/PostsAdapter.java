@@ -8,7 +8,6 @@ import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.fragments.PostsFragment;
 import com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragmentDirections;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -25,7 +24,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     // we only ever show the first page of posts, which is 25 by default
     private static final int ITEM_COUNT = 25;
 
-    private final MainActivityViewModel mainActivityViewModel;
+    private final MainActivityViewModel viewModel;
     private final PostsFragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -41,12 +40,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      * (postsViewStateLiveData) and works accordingly. */
     private final boolean isSubscribedPostsAdapter;
 
-    public PostsAdapter(PostsFragmentViewModel viewModel,
-                        MainActivityViewModel mainActivityViewModel,
+    public PostsAdapter(MainActivityViewModel viewModel,
                         PostsFragment hostFragment,
                         boolean isSubscribedPostsAdapter) {
 
-        this.mainActivityViewModel = mainActivityViewModel;
+        this.viewModel = viewModel;
         this.hostFragment = hostFragment;
         this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
@@ -110,7 +108,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             NavController navController = Navigation.findNavController(v);
 
             setLastClickedPostMetadata(position);
-            mainActivityViewModel.insertClickedPostId(postsViewStateLiveData.getValue().postData.get(position).id);
+            viewModel.insertClickedPostId(postsViewStateLiveData.getValue().postData.get(position).id);
 
             /* if the clicked post is a link post and the user clicked directly on the image
              * thumbnail, then shortcut to the link itself and skip showing the PostFragment */
@@ -123,7 +121,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         /* cache this information in the ViewModel, as it's used by various other components */
         private void setLastClickedPostMetadata(int position) {
-            mainActivityViewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
+            viewModel.setLastClickedPostMetadata(new LastClickedPostMetadata(
                     position,
                     postsViewStateLiveData.getValue().postData.get(position).id,
                     postsViewStateLiveData.getValue().postData.get(position).isSelf,
@@ -147,7 +145,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void gotoUrlDirectly(NavController navController) {
-            String url = mainActivityViewModel.getLastClickedPostMetadata().lastClickedPostUrl;
+            String url = viewModel.getLastClickedPostMetadata().lastClickedPostUrl;
 
             GotoUrlGlobalAction action
                     = gotoUrlGlobalAction(url);

@@ -13,7 +13,6 @@ import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ViewPagerFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;
@@ -32,8 +31,7 @@ import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.bu
 public class ViewPagerFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
-    private ViewPagerFragmentViewModel viewModel;
-    private MainActivityViewModel mainActivityViewModel;
+    private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
 
     private ViewPager pager;
@@ -46,8 +44,7 @@ public class ViewPagerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ViewPagerFragmentViewModel.class);
-        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         observeIsUserLoggedInLiveData();
     }
 
@@ -97,7 +94,7 @@ public class ViewPagerFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.logout:
-                mainActivityViewModel.logUserOut();
+                viewModel.logUserOut();
                 return true;
             case R.id.login:
                 launchLoginScreen();

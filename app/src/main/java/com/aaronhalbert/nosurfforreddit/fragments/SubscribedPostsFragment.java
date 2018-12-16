@@ -20,7 +20,6 @@ public class SubscribedPostsFragment extends PostsFragment {
     PostsAdapter createPostsAdapter() {
         return new PostsAdapter(
                 viewModel,
-                mainActivityViewModel,
                 this,
                 true);
     }

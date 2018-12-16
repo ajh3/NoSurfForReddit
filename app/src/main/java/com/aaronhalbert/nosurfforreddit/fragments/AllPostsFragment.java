@@ -18,7 +18,6 @@ public class AllPostsFragment extends PostsFragment {
     PostsAdapter createPostsAdapter() {
         return new PostsAdapter(
                 viewModel,
-                mainActivityViewModel,
                 this,
                 false);
     }

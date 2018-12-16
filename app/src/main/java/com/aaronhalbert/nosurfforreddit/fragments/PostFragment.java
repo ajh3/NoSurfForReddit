@@ -16,7 +16,6 @@ import com.aaronhalbert.nosurfforreddit.ShareHelper;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.PostFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.LastClickedPostMetadata;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
@@ -37,8 +36,7 @@ abstract public class PostFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @Inject SettingsStore settingsStore;
 
-    public PostFragmentViewModel viewModel;
-    private MainActivityViewModel mainActivityViewModel;
+    @SuppressWarnings("WeakerAccess") public MainActivityViewModel viewModel;
     public LiveData<PostsViewState> postsViewStateLiveData;
     FragmentPostBinding fragmentPostBinding;
 
@@ -62,8 +60,7 @@ abstract public class PostFragment extends BaseFragment {
 
         setHasOptionsMenu(true);
 
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostFragmentViewModel.class);
-        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
 
         externalBrowser = settingsStore.isUseExternalBrowser();
 
@@ -211,7 +208,7 @@ abstract public class PostFragment extends BaseFragment {
     }
 
     private void lookupPostMetadata() {
-        LastClickedPostMetadata lastClickedPostMetadata = mainActivityViewModel.getLastClickedPostMetadata();
+        LastClickedPostMetadata lastClickedPostMetadata = viewModel.getLastClickedPostMetadata();
 
         lastClickedPostPosition = lastClickedPostMetadata.lastClickedPostPosition;
         lastClickedPostId = lastClickedPostMetadata.lastClickedPostId;

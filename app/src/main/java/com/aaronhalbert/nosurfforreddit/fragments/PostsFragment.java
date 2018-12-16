@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.viewmodel.PostsFragmentViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
@@ -29,8 +28,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    PostsFragmentViewModel viewModel;
-    MainActivityViewModel mainActivityViewModel;
+    MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
     private RecyclerView rv;
@@ -43,8 +41,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(PostsFragmentViewModel.class);
-        mainActivityViewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
         selectPostsViewStateLiveData();
         setupRefreshAnimationCanceler();
     }

@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException;
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException;
-import com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
@@ -32,6 +31,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.extractCodeFromIntent;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors;
 
 public class MainActivity extends BaseActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {

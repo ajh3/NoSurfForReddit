@@ -1,9 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.Event;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
@@ -12,44 +10,32 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_ALL_POSTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
-import static com.aaronhalbert.nosurfforreddit.repository.Repository.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 
 public class Repository {
-    private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
-    private static final String FETCH_SUBSCRIBED_POSTS_CALL_FAILED = "fetchSubscribedPostsASync call failed: ";
-    private static final String FETCH_POST_COMMENTS_CALL_FAILED = "fetchPostCommentsASync call failed: ";
+
     private static final String BEARER = "Bearer ";
     private static final String ZERO = "zero";
 
-    /* these MutableLiveData are exposed as LiveData through public getters, and feed the UI
-     * directly. Alternatively, we could remove all LiveData from the repository, instead
-     * exposing only Rx observables and make the switchover to LiveData in the ViewModel using
-     * LiveDataReactiveStreams. However, most of the Rx work being done in the repository is
-     * Single calls which end automatically by themselves, and so there is no real benefit
-     * to getting lifecycle-aware unsubscription from LiveDataReactiveStreams. Instead, we just
-     * have the observers write to these MutableLiveData directly in the repository. */
-    private final MutableLiveData<PostsViewState> allPostsViewStateLiveData = new MutableLiveData<>();
-    private final MutableLiveData<PostsViewState> subscribedPostsViewStateLiveData = new MutableLiveData<>();
-    private final MutableLiveData<CommentsViewState> commentsViewStateLiveData = new MutableLiveData<>();
+    /* these PublishSubjects act as stable Observers for the ViewModel to subscribe to in order to
+     * combineLatest() post data with the list of clicked post IDs from Room. We feed the results
+     * of multiple, independent Single Retrofit calls into these */
+    private final PublishSubject<PostsViewState> allPosts = PublishSubject.create();
+    private final PublishSubject<PostsViewState> subscribedPosts = PublishSubject.create();
 
     private final LiveData<Boolean> isUserLoggedInLiveData;
-    private final MutableLiveData<Event<NetworkErrors>> networkErrorsLiveData = new MutableLiveData<>();
+
+
+
 
     private final RetrofitContentInterface ri;
     private final ClickedPostIdDao clickedPostIdDao;
@@ -98,7 +84,7 @@ public class Repository {
          *
          * We "react" to expired tokens dynamically instead of calculating the date/time of token
          * expiration and trying to time refreshes pre-emptively. */
-        Single<PostsViewState> call = ri.fetchAllPostsASync(bearerAuth)
+        ri.fetchAllPostsASync(bearerAuth)
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof HttpException) {
                         if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
@@ -113,20 +99,8 @@ public class Repository {
                     }
                     return Single.error(throwable);
                 })
-                .observeOn(Schedulers.computation())
-                .map(this::cleanRawPosts);
-
-        /* combines the results of the above call with the latest list of clicked post IDs from
-         * the Room database, so the UI knows which posts to gray/X-out. The list of posts is a
-         * Observable, so we have to convert the Single network call to a Observable as well. */
-        Observable.combineLatest(call.toObservable(), fetchClickedPostIds(), mergeClickedPosts)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        allPostsViewStateLiveData::setValue,
-                        throwable -> {
-                            setNetworkErrorsLiveData(new Event<>(FETCH_ALL_POSTS_ERROR));
-                            Log.d(getClass().toString(), FETCH_ALL_POSTS_CALL_FAILED, throwable);
-                        });
+                .map(this::cleanRawPosts)
+                .subscribe(allPosts::onNext);
     }
 
     /* gets posts from the user's subscribed subreddits; only works for logged-in users. See
@@ -137,7 +111,7 @@ public class Repository {
         if (authenticator.isUserLoggedInCache()) {
             String bearerAuth = createSubscribedPostsBearerAuth();
 
-            Single<PostsViewState> call = ri.fetchSubscribedPostsASync(bearerAuth)
+            ri.fetchSubscribedPostsASync(bearerAuth)
                     .onErrorResumeNext(throwable -> {
                         if (throwable instanceof HttpException) {
                             if (((HttpException) throwable).code() == 401) {
@@ -148,17 +122,8 @@ public class Repository {
                         }
                         return Single.error(throwable);
                     })
-                    .observeOn(Schedulers.computation())
-                    .map(this::cleanRawPosts);
-
-            Observable.combineLatest(call.toObservable(), fetchClickedPostIds(), mergeClickedPosts)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            subscribedPostsViewStateLiveData::setValue,
-                            throwable -> {
-                                setNetworkErrorsLiveData(new Event<>(FETCH_SUBSCRIBED_POSTS_ERROR));
-                                Log.d(getClass().toString(), FETCH_SUBSCRIBED_POSTS_CALL_FAILED, throwable);
-                            });
+                    .map(this::cleanRawPosts)
+                    .subscribe(subscribedPosts::onNext);
         }
 
         // do nothing if user is logged out, as subscribed posts are only for logged-in users
@@ -167,13 +132,11 @@ public class Repository {
     /* get a post's comments. This is called every time a user clicks a post, and works for both
      * logged-in and logged-out users. Works the same regardless of whether the post is a
      * link post or a self post. */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public void fetchPostCommentsASync(final String id) {
+    public Single<CommentsViewState> fetchPostCommentsASync(final String id) {
         if (!"".equals(id)) {
             String bearerAuth = createAllPostsAndCommentsBearerAuth();
 
-            ri.fetchPostCommentsASync(bearerAuth, id)
+            return ri.fetchPostCommentsASync(bearerAuth, id)
                     .onErrorResumeNext(throwable -> {
                         if (throwable instanceof HttpException) {
                             if (((HttpException) throwable).code() == 401 && (authenticator.isUserLoggedInCache())) {
@@ -188,16 +151,12 @@ public class Repository {
                         }
                         return Single.error(throwable);
                     })
-                    .observeOn(Schedulers.computation())
-                    .map(this::cleanRawComments)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            commentsViewStateLiveData::setValue,
-                            throwable -> {
-                                setNetworkErrorsLiveData(new Event<>(FETCH_POST_COMMENTS_ERROR));
-                                Log.d(getClass().toString(), FETCH_POST_COMMENTS_CALL_FAILED, throwable);
-                            });
+                    .map(this::cleanRawComments);
         }
+
+        //TODO: specify this throwable
+        // do nothing if id is empty
+        return Single.error(new Throwable());
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -321,7 +280,7 @@ public class Repository {
     }
 
     /* stream of clicked post IDs, this Observable is merged into PostsViewState objects */
-    private Observable<String[]> fetchClickedPostIds() {
+    public Observable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
                 .map(this::getArrayOfClickedPostIds);
@@ -343,19 +302,7 @@ public class Repository {
         return clickedPostIds;
     }
 
-    /* see comments on getArrayOfClickedPostIds() */
-    private final BiFunction<PostsViewState, String[], PostsViewState> mergeClickedPosts
-            = (postsViewState, ids) -> {
-        List list = Arrays.asList(ids);
 
-        for (int i = 0; i < 25; i++) {
-            if (list.contains(postsViewState.postData.get(i).id)) {
-                postsViewState.hasBeenClicked[i] = true;
-            }
-        }
-
-        return postsViewState;
-    };
 
     // endregion room methods and classes ----------------------------------------------------------
 
@@ -375,30 +322,16 @@ public class Repository {
 
     // endregion init/de-init methods --------------------------------------------------------------
 
-    // region event handling -----------------------------------------------------------------------
 
-    private void setNetworkErrorsLiveData(Event<NetworkErrors> n) {
-        networkErrorsLiveData.setValue(n);
-    }
-
-    public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
-        return networkErrorsLiveData;
-    }
-
-    //endregion event handling ---------------------------------------------------------------------
 
     // region getter methods -----------------------------------------------------------------------
 
-    public LiveData<PostsViewState> getAllPostsViewStateLiveData() {
-        return allPostsViewStateLiveData;
+    public PublishSubject<PostsViewState> getAllPosts() {
+        return allPosts;
     }
 
-    public LiveData<PostsViewState> getSubscribedPostsViewStateLiveData() {
-        return subscribedPostsViewStateLiveData;
-    }
-
-    public LiveData<CommentsViewState> getCommentsViewStateLiveData() {
-        return commentsViewStateLiveData;
+    public PublishSubject<PostsViewState> getSubscribedPosts() {
+        return subscribedPosts;
     }
 
     public LiveData<Boolean> getIsUserLoggedInLiveData() {
@@ -407,16 +340,5 @@ public class Repository {
 
     // endregion getter methods --------------------------------------------------------------------
 
-    // region enums --------------------------------------------------------------------------------
 
-    public enum NetworkErrors {
-        FETCH_ALL_POSTS_ERROR,
-        FETCH_POST_COMMENTS_ERROR,
-        FETCH_SUBSCRIBED_POSTS_ERROR,
-        APP_ONLY_AUTH_CALL_ERROR,
-        USER_AUTH_CALL_ERROR,
-        REFRESH_AUTH_CALL_ERROR
-    }
-
-    // endregion enums -----------------------------------------------------------------------------
 }

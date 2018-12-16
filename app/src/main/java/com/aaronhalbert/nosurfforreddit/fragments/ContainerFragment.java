@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.viewmodel.ContainerFragmentViewModel;
+import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -28,7 +28,7 @@ public class ContainerFragment extends BaseFragment {
     private static final String TAG_LOGIN_FRAGMENT = "loginFragment";
 
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
-    private ContainerFragmentViewModel viewModel;
+    private MainActivityViewModel viewModel;
     private FragmentManager fm;
 
     public static ContainerFragment newInstance() {
@@ -42,7 +42,7 @@ public class ContainerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ContainerFragmentViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
         fm = getChildFragmentManager();
 
         // we add both fragments and simply show/hide them as needed
