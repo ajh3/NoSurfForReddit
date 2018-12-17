@@ -176,14 +176,16 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        nightMode = settingsStore.isNightMode();
+        if ("nightMode".equals(key) || "amoledNightMode".equals(key)) {
+            nightMode = settingsStore.isNightMode();
 
-        if (nightMode) {
-            nightModeOn();
-            recreate();
-        } else {
-            nightModeOff();
-            recreate();
+            if (nightMode) {
+                nightModeOn();
+                recreate();
+            } else {
+                nightModeOff();
+                recreate();
+            }
         }
     }
 

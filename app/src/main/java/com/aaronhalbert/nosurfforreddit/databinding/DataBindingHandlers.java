@@ -3,6 +3,7 @@ package com.aaronhalbert.nosurfforreddit.databinding;
 import android.content.Context;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -86,6 +87,7 @@ public class DataBindingHandlers {
 
     @BindingAdapter({"nsfw", "nsfwFilter"})
     public static void nsfw(TextView tv, boolean isNsfw, boolean isNsfwFilter) {
+        Log.e("zzz", "yeah");
         if (isNsfw && isNsfwFilter) {
             BlurMaskFilter filter = new BlurMaskFilter(tv.getTextSize() / 2, BlurMaskFilter.Blur.NORMAL);
 
