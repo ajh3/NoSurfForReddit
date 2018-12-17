@@ -42,7 +42,7 @@ public class NoSurfAuthenticator {
     private boolean isUserLoggedInCache;
 
     // user login status
-    private final BehaviorSubject<Boolean> isUserLoggedIn = BehaviorSubject.createDefault(false);
+    private final BehaviorSubject<Boolean> isUserLoggedIn = BehaviorSubject.create();
 
     // other
     private final Application application;
@@ -88,7 +88,7 @@ public class NoSurfAuthenticator {
                 code,
                 BuildConfig.REDIRECT_URI,
                 AUTH_HEADER)
-                .doOnSuccess(this::loginSuccess);
+                .doOnSuccess(token -> loginSuccess(token, false));
     }
 
     /* unlike the app-only, logged-out auth token, user auth tokens require a special refresh
@@ -99,7 +99,7 @@ public class NoSurfAuthenticator {
                 USER_REFRESH_GRANT_TYPE,
                 userOAuthRefreshTokenCache,
                 AUTH_HEADER)
-                .doOnSuccess(this::loginSuccess);
+                .doOnSuccess(token -> loginSuccess(token, true));
     }
 
     // endregion network auth calls ----------------------------------------------------------------
@@ -142,12 +142,18 @@ public class NoSurfAuthenticator {
         tokenStore.clearUserOAuthRefreshTokenAsync();
     }
 
-    private void loginSuccess(UserOAuthToken userOAuthToken) {
+    private void loginSuccess(UserOAuthToken userOAuthToken, boolean isRefresh) {
         userOAuthAccessTokenCache = userOAuthToken.getAccessToken();
-        userOAuthRefreshTokenCache = userOAuthToken.getRefreshToken();
+        tokenStore.setUserOAuthAccessTokenAsync(userOAuthAccessTokenCache);
 
-        tokenStore.setUserOAuthAccessTokenAsync(userOAuthToken.getAccessToken());
-        tokenStore.setUserOAuthRefreshTokenAsync(userOAuthToken.getRefreshToken());
+        /* we only get a refresh token from the initial fetchUserOAuthTokenASync(), call, and
+         * the same refresh token continues working as long as the user stays logged in. Refresh
+         * calls to refreshExpiredUserOAuthTokenASync() return a new user auth token, but NOT a new
+         * refresh token, so don't try to save one. */
+        if (!isRefresh) {
+            userOAuthRefreshTokenCache = userOAuthToken.getRefreshToken();
+            tokenStore.setUserOAuthRefreshTokenAsync(userOAuthRefreshTokenCache);
+        }
 
         setUserLoggedIn();
     }
