@@ -1,61 +1,47 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="PostFragmentTitle" tools:keep="@style/PostFragmentTitle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
+<resources>
+    <style
+        name="PostFragmentTitle"
+        parent="BasePostFragmentTitle">
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:paddingTop">4dp</item>
     </style>
 
-    <style name="PostFragmentDetails" tools:keep="@style/PostFragmentDetails">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style
+        name="PostFragmentDetails"
+        parent="BasePostFragmentDetails">
         <item name="android:paddingStart">4dp</item>
-        <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="PostFragmentFirstCommentDetails" tools:keep="@style/PostFragmentFirstCommentDetails">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">8dp</item>
+    <style
+        name="PostFragmentFirstCommentDetails"
+        parent="BasePostFragmentFirstCommentDetails">
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:visibility">gone</item>
     </style>
 
-    <style name="PostFragmentFirstComment" tools:keep="@style/PostFragmentFirstComment">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style
+        name="PostFragmentFirstComment"
+        parent="BasePostFragmentFirstComment">
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:visibility">gone</item>
     </style>
 
-    <style name="PostFragmentDividerUnderFirstComment"
-        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" tools:keep="@style/PostFragmentDividerUnderFirstComment">
+    <style
+        name="PostFragmentDividerUnderFirstComment"
+        parent="BasePostFragmentDividerUnderFirstComment">
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
     </style>
 
-    <style name="RecyclerViewRowTitle" tools:keep="@style/RecyclerViewRowTitle">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">4dp</item>
+    <style
+        name="RecyclerViewRowTitle"
+        parent="BaseRecyclerViewRowTitle">
         <item name="android:paddingEnd">8dp</item>
     </style>
 
-    <style name="RecyclerViewRowDetails" tools:keep="@style/RecyclerViewRowDetails">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:paddingBottom">8dp</item>
+    <style
+        name="RecyclerViewRowDetails"
+        parent="BaseRecyclerViewRowDetails">
         <item name="android:paddingEnd">8dp</item>
     </style>
 </resources>

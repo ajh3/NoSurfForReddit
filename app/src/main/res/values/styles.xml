@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -23,13 +23,13 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
-    <style name="RecyclerViewRow" tools:keep="@style/RecyclerViewRow">
+    <style name="RecyclerViewRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
-    <style name="RecyclerViewRowTitle" tools:keep="@style/RecyclerViewRowTitle">
+    <style name="BaseRecyclerViewRowTitle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
@@ -38,7 +38,7 @@
         <item name="android:paddingRight">8dp</item>
     </style>
 
-    <style name="RecyclerViewRowDetails" tools:keep="@style/RecyclerViewRowDetails">
+    <style name="BaseRecyclerViewRowDetails">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">14sp</item>
@@ -46,14 +46,14 @@
         <item name="android:paddingRight">8dp</item>
     </style>
 
-    <style name="RecyclerViewRowThumbnail" tools:keep="@style/RecyclerViewRowThumbnail">
+    <style name="RecyclerViewRowThumbnail">
         <item name="android:layout_width">96sp</item>
         <item name="android:layout_height">96sp</item>
         <item name="android:contentDescription">@string/post_thumbnail_description</item>
         <item name="android:padding">8dp</item>
     </style>
 
-    <style name="PostFragmentTitle" tools:keep="@style/PostFragmentTitle">
+    <style name="BasePostFragmentTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">24sp</item>
@@ -63,20 +63,20 @@
         <item name="android:paddingTop">4dp</item>
     </style>
 
-    <style name="PostFragmentDetails" tools:keep="@style/PostFragmentDetails">
+    <style name="BasePostFragmentDetails">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">4dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="PostFragmentImageForLinkPostsOnly" tools:keep="@style/PostFragmentImageForLinkPostsOnly">
+    <style name="PostFragmentImageForLinkPostsOnly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">200dp</item>
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="PostFragmentDividerUnderDetailsForSelfPostsOnly" tools:keep="@style/PostFragmentDividerUnderDetailsForSelfPostsOnly">
+    <style name="PostFragmentDividerUnderDetailsForSelfPostsOnly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:visibility">gone</item>
@@ -84,7 +84,7 @@
         <item name="android:paddingBottom">3dp</item>
     </style>
 
-    <style name="PostFragmentSelftextForSelfPostsOnly" tools:keep="@style/PostFragmentSelftextForSelfPostsOnly">
+    <style name="PostFragmentSelftextForSelfPostsOnly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">8dp</item>
@@ -92,14 +92,14 @@
     </style>
 
     <style name="PostFragmentDividerUnderSelftextForSelfPostsOnly"
-        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" tools:keep="@style/PostFragmentDividerUnderSelftextForSelfPostsOnly" />
+        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" />
 
-    <style name="PostFragmentCommentProgressBar" tools:keep="@style/PostFragmentCommentProgressBar">
+    <style name="PostFragmentCommentProgressBar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="PostFragmentFirstCommentDetails" tools:keep="@style/PostFragmentFirstCommentDetails">
+    <style name="BasePostFragmentFirstCommentDetails">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">8dp</item>
@@ -110,7 +110,7 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="PostFragmentFirstComment" tools:keep="@style/PostFragmentFirstComment">
+    <style name="BasePostFragmentFirstComment">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">8dp</item>
@@ -119,24 +119,24 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="PostFragmentDividerUnderFirstComment"
-        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly" tools:keep="@style/PostFragmentDividerUnderFirstComment">
+    <style name="BasePostFragmentDividerUnderFirstComment"
+        parent="PostFragmentDividerUnderDetailsForSelfPostsOnly">
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
     </style>
 
     <style name="PostFragmentSecondCommentDetails"
-        parent="PostFragmentFirstCommentDetails" tools:keep="@style/PostFragmentSecondCommentDetails" />
+        parent="PostFragmentFirstCommentDetails" />
 
     <style name="PostFragmentSecondComment"
-        parent="PostFragmentFirstComment" tools:keep="@style/PostFragmentSecondComment" />
+        parent="PostFragmentFirstComment" />
 
     <style name="PostFragmentDividerUnderSecondComment"
-        parent="PostFragmentDividerUnderFirstComment" tools:keep="@style/PostFragmentDividerUnderSecondComment" />
+        parent="PostFragmentDividerUnderFirstComment" />
 
     <style name="PostFragmentThirdCommentDetails"
-        parent="PostFragmentFirstCommentDetails" tools:keep="@style/PostFragmentThirdCommentDetails" />
+        parent="PostFragmentFirstCommentDetails" />
 
     <style name="PostFragmentThirdComment"
-        parent="PostFragmentFirstComment" tools:keep="@style/PostFragmentThirdComment" />
+        parent="PostFragmentFirstComment" />
 </resources>
