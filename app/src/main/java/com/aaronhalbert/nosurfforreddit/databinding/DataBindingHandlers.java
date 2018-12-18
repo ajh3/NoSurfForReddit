@@ -87,7 +87,6 @@ public class DataBindingHandlers {
 
     @BindingAdapter({"nsfw", "nsfwFilter"})
     public static void nsfw(TextView tv, boolean isNsfw, boolean isNsfwFilter) {
-        Log.e("zzz", "yeah");
         if (isNsfw && isNsfwFilter) {
             BlurMaskFilter filter = new BlurMaskFilter(tv.getTextSize() / 2, BlurMaskFilter.Blur.NORMAL);
 
