@@ -19,10 +19,12 @@ public class Event<T> {
         }
     }
 
+    @SuppressWarnings("unused")
     public T peekContent() {
         return content;
     }
 
+    @SuppressWarnings("unused")
     public boolean getHasBeenHandled() {
         return hasBeenHandled;
     }

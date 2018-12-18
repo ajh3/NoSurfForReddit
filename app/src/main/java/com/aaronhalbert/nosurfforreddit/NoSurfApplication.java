@@ -21,6 +21,7 @@ public class NoSurfApplication extends Application {
                 .build();
     }
 
+    @SuppressWarnings("unused")
     private void initLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.

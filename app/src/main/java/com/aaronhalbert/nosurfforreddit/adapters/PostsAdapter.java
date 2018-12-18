@@ -30,7 +30,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
     private final MainActivityViewModel viewModel;
     private final PostsFragment hostFragment;
     private final LiveData<PostsViewState> postsViewStateLiveData;
-    private final boolean isSubscribedPostsAdapter;
 
     /* this app has two primary screens/modes, a feed of posts from r/all (Reddit's public home
      * page, and a feed of posts from the user's subscribed subreddits (if the user is logged in).
@@ -49,7 +48,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
-        this.isSubscribedPostsAdapter = isSubscribedPostsAdapter;
 
         if (isSubscribedPostsAdapter) {
             postsViewStateLiveData = viewModel.getSubscribedPostsViewStateLiveData();
@@ -174,7 +172,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         /* cache this information in the ViewModel, as it's used by various other components */
         private void setLastClickedPostDatum(int position) {
             viewModel.setLastClickedPostDatum(postsViewStateLiveData.getValue().postData.get(position));
-            viewModel.setLastClickedPostIsSubscribed(isSubscribedPostsAdapter);
         }
     }
     // endregion helper classes---------------------------------------------------------------------

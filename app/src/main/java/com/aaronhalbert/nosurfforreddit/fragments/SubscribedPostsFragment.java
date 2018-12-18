@@ -11,6 +11,8 @@ import com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter;
  *
  * also see AllPostsFragment*/
 
+//TODO: Lint recommends this class be made package-private - it can't be - bug?
+@SuppressWarnings("WeakerAccess")
 public class SubscribedPostsFragment extends PostsFragment {
     static SubscribedPostsFragment newInstance() {
         return new SubscribedPostsFragment();

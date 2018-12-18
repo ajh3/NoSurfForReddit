@@ -52,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     // endregion dagger ----------------------------------------------------------------------------
 
     //detects all violations on main thread, logs to Logcat, and flashes red border if DEBUG build
+    @SuppressWarnings("unused")
     private void setupStrictMode() {
         StrictMode.ThreadPolicy.Builder builder=
                 new StrictMode.ThreadPolicy.Builder()

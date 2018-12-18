@@ -55,7 +55,6 @@ public class MainActivityViewModel extends ViewModel {
     // caches a few key variables from the most recently clicked/viewed post
     // TODO: pass this around as a fragment argument instead of sharing it via the ViewModel?
     private PostDatum lastClickedPostDatum;
-    private boolean lastClickedPostIsSubscribed;
 
     MainActivityViewModel(Repository repository) {
         this.repository = repository;
@@ -153,14 +152,6 @@ public class MainActivityViewModel extends ViewModel {
 
     public void setLastClickedPostDatum(PostDatum postDatum) {
         this.lastClickedPostDatum = postDatum;
-    }
-
-    public boolean isLastClickedPostIsSubscribed() {
-        return lastClickedPostIsSubscribed;
-    }
-
-    public void setLastClickedPostIsSubscribed(boolean lastClickedPostIsSubscribed) {
-        this.lastClickedPostIsSubscribed = lastClickedPostIsSubscribed;
     }
 
     // endregion getter/setter methods -------------------------------------------------------------
