@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:keep="@layout/row">
+    <!-- tools:keep prevents Lint from complaining that this layout file is unused. It
+      only appears that way because data binding is using it to generate a binding class,
+      and so we don't inflate it directly -->
 
     <data>
         <import type="android.view.View"/>
