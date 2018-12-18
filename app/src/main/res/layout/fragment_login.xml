@@ -2,11 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_fragment_base_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.LoginFragment">
+    android:layout_height="match_parent">
 
     <!-- this layout previously used a packed chain to horizontally and vertically center
      the TextView and button, but vertical centering broke when ViewPagerFragment was
