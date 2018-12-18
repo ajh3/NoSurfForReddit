@@ -8,8 +8,7 @@
 
     <fragment
         android:id="@+id/fragment_view_pager_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment"
-        tools:layout="@layout/fragment_view_pager">
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment">
         <action
             android:id="@+id/click_link_post_action"
             app:destination="@id/fragment_link_post_dest"
@@ -42,26 +41,22 @@
 
     <fragment
         android:id="@+id/fragment_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.PostFragment"
-        tools:layout="@layout/fragment_post">
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.PostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_link_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment"
-        tools:layout="@layout/fragment_post">
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_self_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment"
-        tools:layout="@layout/fragment_post">
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_login_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.LoginFragment"
-        tools:layout="@layout/fragment_login">
+        android:name="com.aaronhalbert.nosurfforreddit.fragments.LoginFragment">
     </fragment>
 
     <fragment
