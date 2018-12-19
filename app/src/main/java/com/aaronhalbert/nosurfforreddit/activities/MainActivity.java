@@ -39,6 +39,8 @@ public class MainActivity extends BaseActivity implements
     private static final String ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied";
     private static final String LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed";
     private static final String NETWORK_ERROR_MESSAGE = "Network error!";
+    private static final String NIGHT_MODE = "nightMode";
+    private static final String AMOLED_NIGHT_MODE = "amoledNightMode";
 
     @SuppressWarnings("WeakerAccess") @Inject SettingsStore settingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
@@ -110,13 +112,13 @@ public class MainActivity extends BaseActivity implements
     private void nightModeOn() {
         new WebView(this); //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        View v = getWindow().getDecorView();
+        if (amoledNightMode) amoledNightModeOn();
+    }
 
-        if (amoledNightMode) {
-            v.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg));
-        } else {
-            v.setBackgroundColor(ContextCompat.getColor(this, R.color.colorNightBg));
-        }
+    private void amoledNightModeOn() {
+        getWindow()
+                .getDecorView()
+                .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg));
     }
 
     private void nightModeOff() {
@@ -176,7 +178,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ("nightMode".equals(key) || "amoledNightMode".equals(key)) {
+        if (NIGHT_MODE.equals(key) || AMOLED_NIGHT_MODE.equals(key)) {
             nightMode = settingsStore.isNightMode();
 
             if (nightMode) {
