@@ -1,12 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.activities
 
-import android.animation.AnimatorInflater
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
-import android.view.View
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
@@ -20,6 +18,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.aaronhalbert.nosurfforreddit.R
+import com.aaronhalbert.nosurfforreddit.SplashHelper
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
 import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.extractCodeFromIntent
@@ -60,7 +59,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
                 .get(MainActivityViewModel::class.java)
 
         /* only run the splash animation on fresh app launch */
-        if (savedInstanceState == null) setupSplashAnimation()
+        if (savedInstanceState == null) initSplash()
 
         initNavComponent()
         subscribeToNetworkErrors()
@@ -87,6 +86,17 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
         nightMode = settingsStore.isNightMode
         amoledNightMode = settingsStore.isAmoledNightMode
+    }
+
+    private fun initSplash() {
+        val splashHelper = SplashHelper()
+        val logo = findViewById<ImageView>(R.id.logo)
+
+        splashHelper.setupSplashAnimation(logo, this)
+        splashHelper.setupSplashCanceler(
+                logo,
+                viewModel.allPostsViewStateLiveData,
+                this)
     }
 
     private fun initNightMode() {
@@ -126,24 +136,6 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
-    }
-
-    /* we implement the splash animation as a View inside MainActivity rather than having a
-     * separate SplashActivity. The latter would be slower, and we don't want to display the
-     * splash for any longer than is necessary. */
-    private fun setupSplashAnimation() {
-        val refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_animation)
-        val iv = findViewById<ImageView>(R.id.logo)
-        iv.setImageDrawable(resources.getDrawable(R.drawable.web_hi_res_512, null))
-        refreshDrawableAnimator.setTarget(iv)
-        refreshDrawableAnimator.start()
-        setupSplashCanceler()
-    }
-
-    /* clear the splash screen as soon as data have arrived */
-    private fun setupSplashCanceler() {
-        viewModel.allPostsViewStateLiveData.observe(this,
-                Observer { findViewById<View>(R.id.logo).visibility = View.GONE })
     }
 
     // endregion helper methods --------------------------------------------------------------------
