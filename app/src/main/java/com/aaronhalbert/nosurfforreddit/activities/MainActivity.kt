@@ -28,12 +28,17 @@ import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+const val ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied"
+const val LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed"
+const val NETWORK_ERROR_MESSAGE = "Network error!"
+const val NIGHT_MODE = "nightMode"
+const val AMOLED_NIGHT_MODE = "amoledNightMode"
 
+class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject lateinit var settingsStore: SettingsStore
     @Inject lateinit var viewModelFactory: ViewModelFactory
-    private var viewModel: MainActivityViewModel? = null
-    private var navController: NavController? = null
+    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var navController: NavController
 
     private var nightMode: Boolean = false
     private var amoledNightMode: Boolean = false
@@ -52,12 +57,10 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
          * specifying the factory */
         viewModel = ViewModelProviders
                 .of(this, viewModelFactory)
-                .get(MainActivityViewModel::class.java!!)
+                .get(MainActivityViewModel::class.java)
 
-        /* only run the splash animation on first app launch */
-        if (savedInstanceState == null) {
-            setupSplashAnimation()
-        }
+        /* only run the splash animation on fresh app launch */
+        if (savedInstanceState == null) setupSplashAnimation()
 
         initNavComponent()
         subscribeToNetworkErrors()
@@ -66,13 +69,13 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onResume() {
         super.onResume()
 
-        settingsStore!!.registerListener(this)
+        settingsStore.registerListener(this)
     }
 
     override fun onPause() {
         super.onPause()
 
-        settingsStore!!.unregisterListener(this)
+        settingsStore.unregisterListener(this)
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -82,8 +85,8 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     private fun initPrefs() {
         PreferenceManager.setDefaultValues(application, R.xml.preferences, false)
 
-        nightMode = settingsStore!!.isNightMode
-        amoledNightMode = settingsStore!!.isAmoledNightMode
+        nightMode = settingsStore.isNightMode
+        amoledNightMode = settingsStore.isAmoledNightMode
     }
 
     private fun initNightMode() {
@@ -112,19 +115,17 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun navUp() {
-        navController!!.navigateUp()
+        navController.navigateUp()
     }
 
     private fun initNavComponent() {
         navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment))
 
         /* NavigationUI uses AppBarConfiguration to manage the "UP" button in top-left corner */
-        val appBarConfiguration = AppBarConfiguration.Builder(navController!!.graph).build()
-
-        val t = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(t)
-
-        NavigationUI.setupWithNavController(t, navController!!, appBarConfiguration)
+        val appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
     }
 
     /* we implement the splash animation as a View inside MainActivity rather than having a
@@ -133,16 +134,16 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     private fun setupSplashAnimation() {
         val refreshDrawableAnimator = AnimatorInflater.loadAnimator(this, R.animator.splash_animation)
         val iv = findViewById<ImageView>(R.id.logo)
-        iv.setImageDrawable(resources.getDrawable(R.drawable.web_hi_res_512))
+        iv.setImageDrawable(resources.getDrawable(R.drawable.web_hi_res_512, null))
         refreshDrawableAnimator.setTarget(iv)
         refreshDrawableAnimator.start()
-
         setupSplashCanceler()
     }
 
     /* clear the splash screen as soon as data have arrived */
     private fun setupSplashCanceler() {
-        viewModel!!.allPostsViewStateLiveData.observe(this, Observer { postsViewState -> findViewById<View>(R.id.logo).visibility = View.GONE })
+        viewModel.allPostsViewStateLiveData.observe(this,
+                Observer { findViewById<View>(R.id.logo).visibility = View.GONE })
     }
 
     // endregion helper methods --------------------------------------------------------------------
@@ -150,18 +151,20 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     // region observers/listeners ------------------------------------------------------------------
 
     private fun subscribeToNetworkErrors() {
-        viewModel!!.networkErrorsLiveData.observe(this, Observer { networkErrorsEvent ->
-            val n = networkErrorsEvent.getContentIfNotHandled()
+        viewModel.networkErrorsLiveData.observe(this,
+                Observer {
+                    val n = it.contentIfNotHandled
 
-            if (n != null) {
-                Toast.makeText(this, NETWORK_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
-            }
-        })
+                    n?.let { Toast.makeText(
+                            this,
+                            NETWORK_ERROR_MESSAGE,
+                            Toast.LENGTH_LONG).show() }
+                })
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (NIGHT_MODE == key || AMOLED_NIGHT_MODE == key) {
-            nightMode = settingsStore!!.isNightMode
+            nightMode = settingsStore.isNightMode
 
             if (nightMode) {
                 nightModeOn()
@@ -195,18 +198,9 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
                 return
             }
 
-            viewModel!!.logUserIn(code)
+            viewModel.logUserIn(code)
             navUp()
         }
-    }
-
-    companion object {
-
-        private val ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied"
-        private val LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed"
-        private val NETWORK_ERROR_MESSAGE = "Network error!"
-        private val NIGHT_MODE = "nightMode"
-        private val AMOLED_NIGHT_MODE = "amoledNightMode"
     }
 
     // endregion observers/listeners ---------------------------------------------------------------
