@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -22,6 +21,8 @@ import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.extractCo
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.toolbar.*
 import javax.inject.Inject
 
 const val ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied"
@@ -81,7 +82,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun initSplash() {
         val splashHelper = SplashHelper(
-                findViewById(R.id.logo),
+                logo,
                 this,
                 viewModel.allPostsViewStateLiveData)
 
@@ -93,7 +94,6 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
         /* NavigationUI uses AppBarConfiguration to manage the "UP" button in top-left corner */
         val appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
     }
