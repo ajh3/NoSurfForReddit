@@ -5,6 +5,5 @@
     <color name="colorAccent">#607D8B</color>
     <color name="colorRecyclerViewText">#8A000000</color>
     <color name="colorRecyclerViewTextClicked">#8ABFBFBF</color>
-    <color name="colorBg">@color/background_material_light</color>
     <color name="colorAmoledNightBg">#FF000000</color>
 </resources>

@@ -5,18 +5,15 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
-import android.webkit.WebView
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.aaronhalbert.nosurfforreddit.DayNightHelper
 import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.SplashHelper
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
@@ -38,6 +35,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
+    private var nightHelper = DayNightHelper(this)
 
     private var nightMode: Boolean = false
     private var amoledNightMode: Boolean = false
@@ -46,8 +44,8 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         presentationComponent.inject(this)
-        initPrefs()
-        initNightMode() // call before super to avoid MainActivity recreating itself
+        PreferenceManager.setDefaultValues(application, R.xml.preferences, false)
+        pickDayNightMode() // call before super to avoid MainActivity recreating itself
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -79,53 +77,15 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
     // endregion lifecycle methods -----------------------------------------------------------------
 
-    // region helper methods -----------------------------------------------------------------------
-
-    private fun initPrefs() {
-        PreferenceManager.setDefaultValues(application, R.xml.preferences, false)
-
-        nightMode = settingsStore.isNightMode
-        amoledNightMode = settingsStore.isAmoledNightMode
-    }
+    // region init methods -------------------------------------------------------------------------
 
     private fun initSplash() {
-        val splashHelper = SplashHelper()
-        val logo = findViewById<ImageView>(R.id.logo)
+        val splashHelper = SplashHelper(
+                findViewById(R.id.logo),
+                this,
+                viewModel.allPostsViewStateLiveData)
 
-        splashHelper.setupSplashAnimation(logo, this)
-        splashHelper.setupSplashCanceler(
-                logo,
-                viewModel.allPostsViewStateLiveData,
-                this)
-    }
-
-    private fun initNightMode() {
-        if (nightMode) {
-            nightModeOn()
-        } else {
-            nightModeOff()
-        }
-    }
-
-    private fun nightModeOn() {
-        WebView(this) //DayNight fix: https://stackoverflow.com/questions/44035654/broken-colors-in-daynight-theme-after-loading-admob-firebase-ad
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        if (amoledNightMode) amoledNightModeOn()
-    }
-
-    private fun amoledNightModeOn() {
-        window
-                .decorView
-                .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAmoledNightBg))
-    }
-
-    private fun nightModeOff() {
-        WebView(this) // see comment in nightModeOn()
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-    }
-
-    private fun navUp() {
-        navController.navigateUp()
+        splashHelper.setupSplashAnimation()
     }
 
     private fun initNavComponent() {
@@ -138,7 +98,18 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
     }
 
-    // endregion helper methods --------------------------------------------------------------------
+    private fun pickDayNightMode() {
+        nightMode = settingsStore.isNightMode
+        amoledNightMode = settingsStore.isAmoledNightMode
+
+        if (nightMode) {
+            nightHelper.nightModeOn(amoledNightMode)
+        } else {
+            nightHelper.nightModeOff()
+        }
+    }
+
+    // endregion init methods ----------------------------------------------------------------------
 
     // region observers/listeners ------------------------------------------------------------------
 
@@ -156,15 +127,8 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (NIGHT_MODE == key || AMOLED_NIGHT_MODE == key) {
-            nightMode = settingsStore.isNightMode
-
-            if (nightMode) {
-                nightModeOn()
-                recreate()
-            } else {
-                nightModeOff()
-                recreate()
-            }
+            pickDayNightMode()
+            recreate()
         }
     }
 
@@ -181,17 +145,17 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
             } catch (e: NoSurfAccessDeniedLoginException) {
                 Log.e(javaClass.toString(), ACCESS_DENIED_ERROR_MESSAGE, e)
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
-                navUp()
+                navController.navigateUp()
                 return
             } catch (e: NoSurfLoginException) {
                 Log.e(javaClass.toString(), LOGIN_FAILED_ERROR_MESSAGE, e)
                 Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
-                navUp()
+                navController.navigateUp()
                 return
             }
 
             viewModel.logUserIn(code)
-            navUp()
+            navController.navigateUp()
         }
     }
 

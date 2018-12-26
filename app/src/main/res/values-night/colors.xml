@@ -2,5 +2,4 @@
 <resources>
     <color name="colorRecyclerViewText">#B3FFFFFF</color>
     <color name="colorRecyclerViewTextClicked">#B3666666</color>
-    <color name="colorBg">@color/background_material_dark</color>
 </resources>
