@@ -35,7 +35,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
-    private var nightHelper = DayNightHelper(this)
+    private var dayNightHelper = DayNightHelper(this)
 
     private var nightMode: Boolean = false
     private var amoledNightMode: Boolean = false
@@ -103,9 +103,9 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
         amoledNightMode = settingsStore.isAmoledNightMode
 
         if (nightMode) {
-            nightHelper.nightModeOn(amoledNightMode)
+            dayNightHelper.nightModeOn(amoledNightMode)
         } else {
-            nightHelper.nightModeOff()
+            dayNightHelper.nightModeOff()
         }
     }
 
