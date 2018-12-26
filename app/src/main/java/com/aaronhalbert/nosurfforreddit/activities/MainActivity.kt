@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.aaronhalbert.nosurfforreddit.DayNightHelper
@@ -90,7 +91,8 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun initNavComponent() {
-        navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment))
+        navController = NavHostFragment.findNavController(
+                        supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!)
 
         /* NavigationUI uses AppBarConfiguration to manage the "UP" button in top-left corner */
         val appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
