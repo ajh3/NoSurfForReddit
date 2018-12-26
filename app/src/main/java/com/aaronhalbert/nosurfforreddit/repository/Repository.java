@@ -252,9 +252,8 @@ public class Repository {
 
     /* works in conjunction with the mergeClickedPosts BiFunction. Sort of awkward. We first
      * transform a List of ClickedPostId objects into an array of Strings, and then the array back
-     * into a List of Strings. Rough alternative would be to write a custom equals() method for the
-     * ClickedPostId class so we can more easily check if a List of ClickedPostId objects contains
-     * a particular post id (String). */
+     * into a List of Strings. */
+    //TODO: Fix w/ AutoValue
     private String[] getArrayOfClickedPostIds(List<ClickedPostId> input) {
         int size = input.size();
         String[] clickedPostIds = new String[size];
