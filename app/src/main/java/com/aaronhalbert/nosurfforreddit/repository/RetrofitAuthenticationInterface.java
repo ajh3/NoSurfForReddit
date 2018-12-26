@@ -12,7 +12,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
 
-interface RetrofitAuthenticationInterface {
+public interface RetrofitAuthenticationInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded

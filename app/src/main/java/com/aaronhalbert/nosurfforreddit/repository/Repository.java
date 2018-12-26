@@ -1,7 +1,5 @@
 package com.aaronhalbert.nosurfforreddit.repository;
 
-import android.annotation.SuppressLint;
-
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Data_;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.Listing;
 import com.aaronhalbert.nosurfforreddit.repository.redditschema.UserOAuthToken;
@@ -18,7 +16,6 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 import retrofit2.HttpException;
-import retrofit2.Retrofit;
 
 public class Repository {
     private static final String BEARER = "Bearer ";
@@ -29,15 +26,13 @@ public class Repository {
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    public Repository(Retrofit retrofit,
+    public Repository(RetrofitContentInterface ri,
                       ClickedPostIdRoomDatabase db,
                       ExecutorService executor,
                       NoSurfAuthenticator authenticator) {
+        this.ri = ri;
         this.executor = executor;
         this.authenticator = authenticator;
-        ri = retrofit.create(RetrofitContentInterface.class);
         clickedPostIdDao = db.clickedPostIdDao();
     }
 

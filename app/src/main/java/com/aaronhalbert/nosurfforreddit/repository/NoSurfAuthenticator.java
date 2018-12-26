@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
-import retrofit2.Retrofit;
 
 /* see https://github.com/reddit-archive/reddit/wiki/OAuth2 for Reddit login API documentation */
 
@@ -50,10 +49,10 @@ public class NoSurfAuthenticator {
     private final TokenStore tokenStore;
 
     public NoSurfAuthenticator(Application application,
-                               Retrofit retrofit,
+                               RetrofitAuthenticationInterface ri,
                                TokenStore tokenStore) {
         this.application = application;
-        ri = retrofit.create(RetrofitAuthenticationInterface.class);
+        this.ri = ri;
         this.tokenStore = tokenStore;
     }
 

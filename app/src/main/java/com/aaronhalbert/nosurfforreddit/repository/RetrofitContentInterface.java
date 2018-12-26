@@ -11,7 +11,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 
-interface RetrofitContentInterface {
+public interface RetrofitContentInterface {
 
     @Headers({BuildConfig.USER_AGENT})
     @GET("r/all/hot")

@@ -2,6 +2,8 @@ package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.repository.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.repository.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.repository.RetrofitContentInterface;
 
 import javax.inject.Singleton;
 
@@ -43,5 +45,15 @@ class NetworkingModule {
     @Provides
     RateLimitInterceptor provideRateLimitInterceptor() {
         return new RateLimitInterceptor();
+    }
+
+    @Provides
+    RetrofitContentInterface provideRetrofitContentInterface(Retrofit retrofit) {
+        return retrofit.create(RetrofitContentInterface.class);
+    }
+
+    @Provides
+    RetrofitAuthenticationInterface provideRetrofitAuthenticationInterface(Retrofit retrofit) {
+        return retrofit.create(RetrofitAuthenticationInterface.class);
     }
 }

@@ -9,6 +9,8 @@ import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.repository.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.repository.RetrofitContentInterface;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.TokenStore;
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostIdRoomDatabase;
@@ -21,7 +23,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
 
 @Module
 public class ApplicationModule {
@@ -33,11 +34,11 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    Repository provideNoSurfRepository(Retrofit retrofit,
+    Repository provideNoSurfRepository(RetrofitContentInterface ri,
                                        ClickedPostIdRoomDatabase db,
                                        ExecutorService executor,
                                        NoSurfAuthenticator authenticator) {
-        return new Repository(retrofit, db, executor, authenticator);
+        return new Repository(ri, db, executor, authenticator);
     }
 
     @Singleton
@@ -86,8 +87,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    NoSurfAuthenticator provideNoSurfAuthenticator(Retrofit retrofit,
+    NoSurfAuthenticator provideNoSurfAuthenticator(RetrofitAuthenticationInterface ri,
                                                    TokenStore tokenStore) {
-        return new NoSurfAuthenticator(application, retrofit, tokenStore);
+        return new NoSurfAuthenticator(application, ri, tokenStore);
     }
 }
