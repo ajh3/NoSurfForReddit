@@ -140,10 +140,8 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
         super.onNewIntent(intent)
 
         if (Intent.ACTION_VIEW == intent.action) {
-            val code: String
-
-            try {
-                code = extractCodeFromIntent(intent)
+            val code = try {
+                extractCodeFromIntent(intent)
             } catch (e: NoSurfAccessDeniedLoginException) {
                 Log.e(javaClass.toString(), ACCESS_DENIED_ERROR_MESSAGE, e)
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
