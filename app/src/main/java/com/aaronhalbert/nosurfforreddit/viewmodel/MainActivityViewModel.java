@@ -237,15 +237,12 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     /* used by combineLatest() to write the latest list of clicked post IDs into a PostsViewState
-     * object.
-     *
-     * see comments on RepoUtils.getArrayOfClickedPostIds() */
-    private final BiFunction<PostsViewState, String[], PostsViewState> mergeClickedPosts
+     * object. */
+    private final BiFunction<PostsViewState, List<String>, PostsViewState> mergeClickedPosts
             = (postsViewState, ids) -> {
-        List list = Arrays.asList(ids);
 
         for (int i = 0; i < 25; i++) {
-            if (list.contains(postsViewState.postData.get(i).id)) {
+            if (ids.contains(postsViewState.postData.get(i).id)) {
                 postsViewState.hasBeenClicked[i] = true;
             }
         }

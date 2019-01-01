@@ -247,10 +247,10 @@ public class Repository {
     }
 
     /* stream of clicked post IDs, this Observable gets merged into PostsViewState objects */
-    public Observable<String[]> fetchClickedPostIds() {
+    public Observable<List<String>> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
-                .map(repoUtils::getArrayOfClickedPostIds);
+                .map(repoUtils::getListOfClickedPostIdStrings);
     }
 
     // endregion room methods and classes ----------------------------------------------------------
