@@ -250,7 +250,7 @@ public class Repository {
     public Observable<List<String>> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
-                .map(repoUtils::getListOfClickedPostIdStrings);
+                .map(repoUtils::convertListOfClickedPostIdsToListOfStrings);
     }
 
     // endregion room methods and classes ----------------------------------------------------------

@@ -4,7 +4,7 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostId
 
 class RepoUtils {
 
-    fun getListOfClickedPostIdStrings(input: List<ClickedPostId>): List<String> {
+    fun convertListOfClickedPostIdsToListOfStrings(input: List<ClickedPostId>): List<String> {
         val list = mutableListOf<String>()
 
         input.forEach { list.add(it.clickedPostId) }
