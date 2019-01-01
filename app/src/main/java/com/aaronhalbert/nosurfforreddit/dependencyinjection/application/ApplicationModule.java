@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
+import com.aaronhalbert.nosurfforreddit.repository.RepoUtils;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.repository.RetrofitAuthenticationInterface;
 import com.aaronhalbert.nosurfforreddit.repository.RetrofitContentInterface;
@@ -37,8 +38,9 @@ public class ApplicationModule {
     Repository provideNoSurfRepository(RetrofitContentInterface ri,
                                        ClickedPostIdRoomDatabase db,
                                        ExecutorService executor,
-                                       NoSurfAuthenticator authenticator) {
-        return new Repository(ri, db, executor, authenticator);
+                                       NoSurfAuthenticator authenticator,
+                                       RepoUtils repoUtils) {
+        return new Repository(ri, db, executor, authenticator, repoUtils);
     }
 
     @Singleton
@@ -90,5 +92,11 @@ public class ApplicationModule {
     NoSurfAuthenticator provideNoSurfAuthenticator(RetrofitAuthenticationInterface ri,
                                                    TokenStore tokenStore) {
         return new NoSurfAuthenticator(application, ri, tokenStore);
+    }
+
+    @Singleton
+    @Provides
+    RepoUtils provideRepoUtils() {
+        return new RepoUtils();
     }
 }

@@ -25,15 +25,18 @@ public class Repository {
     private final ClickedPostIdDao clickedPostIdDao;
     private final ExecutorService executor;
     private final NoSurfAuthenticator authenticator;
+    private final RepoUtils repoUtils;
 
     public Repository(RetrofitContentInterface ri,
                       ClickedPostIdRoomDatabase db,
                       ExecutorService executor,
-                      NoSurfAuthenticator authenticator) {
+                      NoSurfAuthenticator authenticator,
+                      RepoUtils repoUtils) {
         this.ri = ri;
+        clickedPostIdDao = db.clickedPostIdDao();
         this.executor = executor;
         this.authenticator = authenticator;
-        clickedPostIdDao = db.clickedPostIdDao();
+        this.repoUtils = repoUtils;
     }
 
     // region network auth calls -------------------------------------------------------------------
@@ -247,22 +250,7 @@ public class Repository {
     public Observable<String[]> fetchClickedPostIds() {
         return clickedPostIdDao
                 .getAllClickedPostIds()
-                .map(this::getArrayOfClickedPostIds);
-    }
-
-    /* works in conjunction with the mergeClickedPosts BiFunction. Sort of awkward. We first
-     * transform a List of ClickedPostId objects into an array of Strings, and then the array back
-     * into a List of Strings. */
-    //TODO: Fix w/ AutoValue
-    private String[] getArrayOfClickedPostIds(List<ClickedPostId> input) {
-        int size = input.size();
-        String[] clickedPostIds = new String[size];
-
-        for (int i = 0; i < size; i++) {
-            clickedPostIds[i] = input.get(i).getClickedPostId();
-        }
-
-        return clickedPostIds;
+                .map(repoUtils::getArrayOfClickedPostIds);
     }
 
     // endregion room methods and classes ----------------------------------------------------------
