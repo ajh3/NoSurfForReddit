@@ -5,7 +5,6 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import java.util.List;
 
 public class RepoUtils {
-    public RepoUtils() { }
 
     /* works in conjunction with the mergeClickedPosts BiFunction. Sort of awkward. We first
      * transform a List of ClickedPostId objects into an array of Strings, and then the array back
