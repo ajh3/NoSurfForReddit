@@ -1,10 +1,9 @@
 package com.aaronhalbert.nosurfforreddit.repository
 
 import com.aaronhalbert.nosurfforreddit.room.ClickedPostId
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-
-import org.junit.Assert.*
 import org.hamcrest.CoreMatchers.`is` as Is
 
 class RepoUtilsTest {
