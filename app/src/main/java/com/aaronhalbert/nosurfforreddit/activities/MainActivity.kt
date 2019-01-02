@@ -15,8 +15,6 @@ import androidx.navigation.ui.NavigationUI
 import com.aaronhalbert.nosurfforreddit.DayNightHelper
 import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.SplashHelper
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
 import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel
@@ -25,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import javax.inject.Inject
 
-const val ACCESS_DENIED_ERROR_MESSAGE = "Error: Access denied"
 const val LOGIN_FAILED_ERROR_MESSAGE = "Error: Login failed"
 const val NETWORK_ERROR_MESSAGE = "Network error!"
 const val NIGHT_MODE = "nightMode"
@@ -137,15 +134,10 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
         super.onNewIntent(intent)
 
         if (Intent.ACTION_VIEW == intent.action) {
-            val code = try {
-                authenticatorUtils.extractCodeFromIntent(intent)
-            } catch (e: NoSurfAccessDeniedLoginException) {
-                Log.e(javaClass.toString(), ACCESS_DENIED_ERROR_MESSAGE, e)
-                Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
-                navController.navigateUp()
-                return
-            } catch (e: NoSurfLoginException) {
-                Log.e(javaClass.toString(), LOGIN_FAILED_ERROR_MESSAGE, e)
+            val code = authenticatorUtils.extractCodeFromIntent(intent)
+
+            if ("" == code) {
+                Log.e(javaClass.toString(), LOGIN_FAILED_ERROR_MESSAGE)
                 Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
                 navController.navigateUp()
                 return

@@ -2,8 +2,6 @@ package com.aaronhalbert.nosurfforreddit.repository
 
 import android.content.Intent
 import com.aaronhalbert.nosurfforreddit.BuildConfig
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
 
 const val AUTH_URL_RESPONSE_TYPE = "&response_type="
 const val RESPONSE_TYPE = "code"
@@ -37,16 +35,14 @@ class AuthenticatorUtils(private val randomUUIDWrapper: RandomUUIDWrapper) {
 
     /* get the one-time use code returned by the Reddit auth server. We later exchange it for a
      * bearer token */
-    @Throws(NoSurfLoginException::class)
     fun extractCodeFromIntent(intent: Intent): String {
-
-        val uri = intent.data ?: throw NoSurfLoginException()
+        val uri = intent.data ?: return ""
         val error = uri.getQueryParameter(ERROR) ?: ""
-        val code = uri.getQueryParameter(CODE) ?: throw NoSurfLoginException()
+        val code = uri.getQueryParameter(CODE) ?: return ""
 
         when {
-            (ACCESS_DENIED_ERROR_CODE == error) -> throw NoSurfAccessDeniedLoginException()
-            ("" == code) -> throw NoSurfLoginException()
+            (ACCESS_DENIED_ERROR_CODE == error) -> return ""
+            ("" == code) -> return ""
         }
 
         return code
