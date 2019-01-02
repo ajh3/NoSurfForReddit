@@ -17,7 +17,7 @@ import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.SplashHelper
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
-import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.extractCodeFromIntent
+import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils.extractCodeFromIntent
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory

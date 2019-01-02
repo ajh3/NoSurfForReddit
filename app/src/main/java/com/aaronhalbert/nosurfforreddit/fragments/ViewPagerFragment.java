@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.adapters.NoSurfFragmentPagerAdapter;
+import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel;
 import com.google.android.material.tabs.TabLayout;
@@ -23,7 +24,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoLoginUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGlobalAction;
-import static com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator.buildAuthUrl;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 
@@ -168,7 +168,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     private void launchLoginScreen() {
         GotoLoginUrlGlobalAction action
-                = gotoLoginUrlGlobalAction(buildAuthUrl());
+                = gotoLoginUrlGlobalAction(AuthenticatorUtils.buildAuthUrl());
 
         navController.navigate(action);
     }
