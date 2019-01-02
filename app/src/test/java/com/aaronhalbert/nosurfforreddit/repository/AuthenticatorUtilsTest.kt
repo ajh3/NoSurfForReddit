@@ -1,88 +1,140 @@
 package com.aaronhalbert.nosurfforreddit.repository
 
+import android.content.Intent
+import android.net.Uri
+import com.aaronhalbert.nosurfforreddit.BuildConfig
+import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
+import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.hamcrest.CoreMatchers.`is` as Is
 
-import org.mockito.Captor
-import org.mockito.Mock
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.stubbing.Answer
+const val AUTH_URL_RESPONSE_TYPE = "&response_type="
+const val RESPONSE_TYPE = "code"
+const val AUTH_URL_STATE = "&state="
+const val AUTH_URL_REDIRECT_URI = "&redirect_uri="
+const val AUTH_URL_DURATION = "&duration="
+const val DURATION = "permanent"
+const val AUTH_URL_SCOPE = "&scope="
+const val SCOPE = "identity mysubreddits read"
 
-import java.util.ArrayList
-import java.util.Collections
-
-import org.junit.Assert.*
-import org.hamcrest.CoreMatchers.*
-import org.hamcrest.MatcherAssert.*
-import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.*
-import org.mockito.ArgumentCaptor.*
+const val ACCESS_DENIED_ERROR_CODE = "access_denied"
 
 class AuthenticatorUtilsTest {
-
     private lateinit var sut: AuthenticatorUtils
+    private val fakeUUID = "fakeUUID"
+    private val mockCode = "mockCode"
 
     @Before
     fun setup() {
-        sut = AuthenticatorUtils()
 
+        val mockRandomUUIDWrapper : RandomUUIDWrapper = mock {
+            on { randomUUID() } doReturn fakeUUID
+        }
 
+        sut = AuthenticatorUtils(mockRandomUUIDWrapper)
     }
 
     @Test
-    fun buildAuthUrl() {
-        // Arrange
-        val RESPONSE_TYPE = "code"
-        val DURATION = "permanent"
-        val SCOPE = "identity mysubreddits read"
-        val AUTH_URL_RESPONSE_TYPE = "&response_type="
-        val AUTH_URL_STATE = "&state="
-        val AUTH_URL_REDIRECT_URI = "&redirect_uri="
-        val AUTH_URL_DURATION = "&duration="
-        val AUTH_URL_SCOPE = "&scope="
-        val ERROR = "error"
-        val CODE = "code"
-        val ACCESS_DENIED_ERROR_CODE = "access_denied"
+    fun buildAuthUrl_success() {
+
+        // Arrange - N/A
 
         // Act
-
+        val result = sut.buildAuthUrl()
 
         // Assert
-
-
+        assertThat(result, Is(BuildConfig.AUTH_URL_BASE
+        + BuildConfig.CLIENT_ID
+        + AUTH_URL_RESPONSE_TYPE
+        + RESPONSE_TYPE
+        + AUTH_URL_STATE
+        + fakeUUID
+        + AUTH_URL_REDIRECT_URI
+        + BuildConfig.REDIRECT_URI
+        + AUTH_URL_DURATION
+        + DURATION
+        + AUTH_URL_SCOPE
+        + SCOPE))
     }
 
     @Test
-    fun extractCodeFromIntent() {
-        // Arrange
+    fun extractCodeFromIntent_intentHasValidData_validCodeReturned() {
 
+        // Arrange
+        val mockUri : Uri = mock {
+            on { getQueryParameter(ERROR) } doReturn ""
+            on { getQueryParameter(CODE) } doReturn mockCode
+        }
+        val mockIntent : Intent = mock { on { data } doReturn mockUri }
 
         // Act
-
+        val result = sut.extractCodeFromIntent(mockIntent)
 
         // Assert
-
-
+        assertThat(result, Is(mockCode))
     }
 
-    // region constants ----------------------------------------------------------------------------
+    @Test(expected = NoSurfLoginException::class)
+    fun extractCodeFromIntent_intentDataIsNull_NoSurfLoginExceptionThrown() {
 
-    // endregion constants -------------------------------------------------------------------------
+        // Arrange
+        val mockIntent : Intent = mock { on { data } doReturn null }
 
+        // Act
+        val result = sut.extractCodeFromIntent(mockIntent)
 
-    // region helper fields ------------------------------------------------------------------------
+        // Assert - N/A
+    }
 
-    // endregion helper fields ---------------------------------------------------------------------
+    @Test(expected = NoSurfLoginException::class)
+    fun extractCodeFromIntent_codeIsNull_NoSurfLoginExceptionThrown() {
 
+        // Arrange
+        val mockUri : Uri = mock {
+            on { getQueryParameter(ERROR) } doReturn ""
+            on { getQueryParameter(CODE) } doReturn null
+        }
+        val mockIntent : Intent = mock { on { data } doReturn mockUri }
 
-    // region helper methods -----------------------------------------------------------------------
+        // Act
+        val result = sut.extractCodeFromIntent(mockIntent)
 
-    // endregion helper methods --------------------------------------------------------------------
+        // Assert - N/A
+    }
 
+    @Test(expected = NoSurfLoginException::class)
+    fun extractCodeFromIntent_codeIsEmpty_NoSurfLoginExceptionThrown() {
 
-    // region helper classes -----------------------------------------------------------------------
+        // Arrange
+        val mockUri : Uri = mock {
+            on { getQueryParameter(ERROR) } doReturn ""
+            on { getQueryParameter(CODE) } doReturn ""
+        }
+        val mockIntent : Intent = mock { on { data } doReturn mockUri }
 
-    // endregion helper classes --------------------------------------------------------------------
+        // Act
+        val result = sut.extractCodeFromIntent(mockIntent)
+
+        // Assert - N/A
+    }
+
+    @Test(expected = NoSurfAccessDeniedLoginException::class)
+    fun extractCodeFromIntent_accessDeniedErrorCode_NoSurfAccessDeniedLoginExceptionThrown() {
+
+        // Arrange
+        val mockUri : Uri = mock {
+            on { getQueryParameter(ERROR) } doReturn ACCESS_DENIED_ERROR_CODE
+            on { getQueryParameter(CODE) } doReturn mockCode
+        }
+        val mockIntent : Intent = mock { on { data } doReturn mockUri }
+
+        // Act
+        val result = sut.extractCodeFromIntent(mockIntent)
+
+        // Assert - N/A
+    }
 }
