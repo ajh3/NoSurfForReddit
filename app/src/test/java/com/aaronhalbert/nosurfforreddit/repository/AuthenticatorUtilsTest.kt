@@ -3,8 +3,6 @@ package com.aaronhalbert.nosurfforreddit.repository
 import android.content.Intent
 import android.net.Uri
 import com.aaronhalbert.nosurfforreddit.BuildConfig
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
-import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import org.hamcrest.MatcherAssert.assertThat
@@ -78,8 +76,8 @@ class AuthenticatorUtilsTest {
         assertThat(result, Is(mockCode))
     }
 
-    @Test(expected = NoSurfLoginException::class)
-    fun extractCodeFromIntent_intentDataIsNull_NoSurfLoginExceptionThrown() {
+    @Test
+    fun extractCodeFromIntent_intentDataIsNull_emptyStringReturned() {
 
         // Arrange
         val mockIntent : Intent = mock { on { data } doReturn null }
@@ -87,11 +85,12 @@ class AuthenticatorUtilsTest {
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
 
-        // Assert - N/A
+        // Assert
+        assertThat(result, Is(""))
     }
 
-    @Test(expected = NoSurfLoginException::class)
-    fun extractCodeFromIntent_codeIsNull_NoSurfLoginExceptionThrown() {
+    @Test
+    fun extractCodeFromIntent_codeIsNull_emptyStringReturned() {
 
         // Arrange
         val mockUri : Uri = mock {
@@ -103,11 +102,12 @@ class AuthenticatorUtilsTest {
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
 
-        // Assert - N/A
+        // Assert
+        assertThat(result, Is(""))
     }
 
-    @Test(expected = NoSurfLoginException::class)
-    fun extractCodeFromIntent_codeIsEmpty_NoSurfLoginExceptionThrown() {
+    @Test
+    fun extractCodeFromIntent_codeIsEmpty_emptyStringReturned() {
 
         // Arrange
         val mockUri : Uri = mock {
@@ -119,11 +119,12 @@ class AuthenticatorUtilsTest {
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
 
-        // Assert - N/A
+        // Assert
+        assertThat(result, Is(""))
     }
 
-    @Test(expected = NoSurfAccessDeniedLoginException::class)
-    fun extractCodeFromIntent_accessDeniedErrorCode_NoSurfAccessDeniedLoginExceptionThrown() {
+    @Test
+    fun extractCodeFromIntent_errorCode_emptyStringReturned() {
 
         // Arrange
         val mockUri : Uri = mock {
@@ -135,6 +136,7 @@ class AuthenticatorUtilsTest {
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
 
-        // Assert - N/A
+        // Assert
+        assertThat(result, Is(""))
     }
 }

@@ -14,7 +14,6 @@ const val SCOPE = "identity mysubreddits read"
 
 const val ERROR = "error"
 const val CODE = "code"
-const val ACCESS_DENIED_ERROR_CODE = "access_denied"
 
 class AuthenticatorUtils(private val randomUUIDWrapper: RandomUUIDWrapper) {
 
@@ -33,15 +32,21 @@ class AuthenticatorUtils(private val randomUUIDWrapper: RandomUUIDWrapper) {
                 + SCOPE)
     }
 
-    /* get the one-time use code returned by the Reddit auth server. We later exchange it for a
-     * bearer token */
+    /* Get the one-time use code returned by the Reddit auth server. We later exchange it for a
+     * bearer token.
+     *
+     * Returning an empty string indicates failure; a non-empty value indicates success.
+     *
+     * Although Reddit sends a descriptive string in case of an error, this function does not
+     * report it; all errors are treated as failure and reported as an empty code string
+     * regardless of their type. */
     fun extractCodeFromIntent(intent: Intent): String {
         val uri = intent.data ?: return ""
         val error = uri.getQueryParameter(ERROR) ?: ""
         val code = uri.getQueryParameter(CODE) ?: return ""
 
         when {
-            (ACCESS_DENIED_ERROR_CODE == error) -> return ""
+            ("" != error) -> return ""
             ("" == code) -> return ""
         }
 
