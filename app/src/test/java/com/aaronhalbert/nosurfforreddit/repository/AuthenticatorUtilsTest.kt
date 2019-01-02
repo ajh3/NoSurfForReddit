@@ -28,7 +28,6 @@ class AuthenticatorUtilsTest {
 
     @Before
     fun setup() {
-
         val mockRandomUUIDWrapper : RandomUUIDWrapper = mock {
             on { randomUUID() } doReturn fakeUUID
         }
@@ -38,12 +37,9 @@ class AuthenticatorUtilsTest {
 
     @Test
     fun buildAuthUrl_success() {
-
         // Arrange - N/A
-
         // Act
         val result = sut.buildAuthUrl()
-
         // Assert
         assertThat(result, Is(BuildConfig.AUTH_URL_BASE
         + BuildConfig.CLIENT_ID
@@ -61,81 +57,66 @@ class AuthenticatorUtilsTest {
 
     @Test
     fun extractCodeFromIntent_intentHasValidData_validCodeReturned() {
-
         // Arrange
         val mockUri : Uri = mock {
             on { getQueryParameter(ERROR) } doReturn ""
             on { getQueryParameter(CODE) } doReturn mockCode
         }
         val mockIntent : Intent = mock { on { data } doReturn mockUri }
-
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
-
         // Assert
         assertThat(result, Is(mockCode))
     }
 
     @Test
     fun extractCodeFromIntent_intentDataIsNull_emptyStringReturned() {
-
         // Arrange
         val mockIntent : Intent = mock { on { data } doReturn null }
-
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
-
         // Assert
         assertThat(result, Is(""))
     }
 
     @Test
     fun extractCodeFromIntent_codeIsNull_emptyStringReturned() {
-
         // Arrange
         val mockUri : Uri = mock {
             on { getQueryParameter(ERROR) } doReturn ""
             on { getQueryParameter(CODE) } doReturn null
         }
         val mockIntent : Intent = mock { on { data } doReturn mockUri }
-
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
-
         // Assert
         assertThat(result, Is(""))
     }
 
     @Test
     fun extractCodeFromIntent_codeIsEmpty_emptyStringReturned() {
-
         // Arrange
         val mockUri : Uri = mock {
             on { getQueryParameter(ERROR) } doReturn ""
             on { getQueryParameter(CODE) } doReturn ""
         }
         val mockIntent : Intent = mock { on { data } doReturn mockUri }
-
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
-
         // Assert
         assertThat(result, Is(""))
     }
 
     @Test
     fun extractCodeFromIntent_errorCode_emptyStringReturned() {
-
         // Arrange
         val mockUri : Uri = mock {
             on { getQueryParameter(ERROR) } doReturn ACCESS_DENIED_ERROR_CODE
             on { getQueryParameter(CODE) } doReturn mockCode
         }
         val mockIntent : Intent = mock { on { data } doReturn mockUri }
-
         // Act
         val result = sut.extractCodeFromIntent(mockIntent)
-
         // Assert
         assertThat(result, Is(""))
     }

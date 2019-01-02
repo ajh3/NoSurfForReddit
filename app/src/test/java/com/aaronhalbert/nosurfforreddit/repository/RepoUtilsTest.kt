@@ -20,27 +20,21 @@ class RepoUtilsTest {
 
     @Test
     fun convertListOfClickedPostIdsToListOfStrings_emptyList_emptyListReturned() {
-
         // Arrange
         val emptyList = emptyList<ClickedPostId>()
-
         // Act
         val result = sut.convertListOfClickedPostIdsToListOfStrings(emptyList)
-
         // Assert
         assertThat(result.size, Is(0))
     }
 
     @Test
     fun convertListOfClickedPostIdsToListOfStrings_singleItemList_sameStringReturned() {
-
         // Arrange
         val testId = "testId"
         val singleItem = ClickedPostId(testId)
-
         // Act
         val result = sut.convertListOfClickedPostIdsToListOfStrings(listOf(singleItem))
-
         // Assert
         assertThat(result.size, Is(1))
         assertThat(result[0], Is(testId))
