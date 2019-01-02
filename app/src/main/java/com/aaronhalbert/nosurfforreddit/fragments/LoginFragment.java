@@ -9,15 +9,25 @@ import android.widget.Button;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils;
 
+import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoLoginUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGlobalAction;
 
 public class LoginFragment extends BaseFragment {
+    @Inject AuthenticatorUtils authenticatorUtils;
 
     static LoginFragment newInstance() {
         return new LoginFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        getPresentationComponent().inject(this);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -35,7 +45,7 @@ public class LoginFragment extends BaseFragment {
     * for calling viewModel.logUserIn() if it's successful */
     private void login() {
         GotoLoginUrlGlobalAction action
-                = gotoLoginUrlGlobalAction(AuthenticatorUtils.buildAuthUrl());
+                = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
 
         Navigation.findNavController(getView()).navigate(action);
     }

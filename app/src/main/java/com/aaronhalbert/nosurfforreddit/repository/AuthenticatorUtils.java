@@ -19,7 +19,7 @@ public class AuthenticatorUtils {
     private static final String AUTH_URL_DURATION = "&duration=";
     private static final String AUTH_URL_SCOPE = "&scope=";
 
-    public static String buildAuthUrl() {
+    public String buildAuthUrl() {
         return BuildConfig.AUTH_URL_BASE
                 + BuildConfig.CLIENT_ID
                 + AUTH_URL_RESPONSE_TYPE
@@ -36,7 +36,7 @@ public class AuthenticatorUtils {
 
     /* get the one-time use code returned by the Reddit auth server. We later exchange it for a
      * bearer token */
-    public static String extractCodeFromIntent(Intent i) throws NoSurfLoginException {
+    public String extractCodeFromIntent(Intent i) throws NoSurfLoginException {
         final String ERROR = "error";
         final String CODE = "code";
         final String ACCESS_DENIED_ERROR_CODE = "access_denied";

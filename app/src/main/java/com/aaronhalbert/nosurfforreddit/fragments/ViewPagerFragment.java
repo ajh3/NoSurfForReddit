@@ -29,6 +29,7 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGl
 
 public class ViewPagerFragment extends BaseFragment {
     @Inject SettingsStore settingsStore;
+    @Inject AuthenticatorUtils authenticatorUtils;
     private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
 
@@ -168,7 +169,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     private void launchLoginScreen() {
         GotoLoginUrlGlobalAction action
-                = gotoLoginUrlGlobalAction(AuthenticatorUtils.buildAuthUrl());
+                = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
 
         navController.navigate(action);
     }

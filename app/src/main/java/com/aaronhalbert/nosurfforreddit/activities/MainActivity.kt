@@ -17,7 +17,7 @@ import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.SplashHelper
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfAccessDeniedLoginException
 import com.aaronhalbert.nosurfforreddit.exceptions.NoSurfLoginException
-import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils.extractCodeFromIntent
+import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils
 import com.aaronhalbert.nosurfforreddit.repository.SettingsStore
 import com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel
 import com.aaronhalbert.nosurfforreddit.viewmodel.ViewModelFactory
@@ -34,6 +34,7 @@ const val AMOLED_NIGHT_MODE = "amoledNightMode"
 class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject lateinit var settingsStore: SettingsStore
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var authenticatorUtils: AuthenticatorUtils
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
     private var dayNightHelper = DayNightHelper(this)
@@ -140,7 +141,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
 
         if (Intent.ACTION_VIEW == intent.action) {
             val code = try {
-                extractCodeFromIntent(intent)
+                authenticatorUtils.extractCodeFromIntent(intent)
             } catch (e: NoSurfAccessDeniedLoginException) {
                 Log.e(javaClass.toString(), ACCESS_DENIED_ERROR_MESSAGE, e)
                 Toast.makeText(this, ACCESS_DENIED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
@@ -98,5 +99,11 @@ public class ApplicationModule {
     @Provides
     RepoUtils provideRepoUtils() {
         return new RepoUtils();
+    }
+
+    @Singleton
+    @Provides
+    AuthenticatorUtils provideAuthenticatorUtils() {
+        return new AuthenticatorUtils();
     }
 }
