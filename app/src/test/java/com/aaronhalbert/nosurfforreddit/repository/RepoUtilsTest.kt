@@ -8,6 +8,9 @@ import org.hamcrest.CoreMatchers.`is` as Is
 
 class RepoUtilsTest {
 
+    /* Note: RepoUtils is a trivially simple class, and this unit test is really just testing the
+     * Kotlin standard library since the class doesn't contain any custom logic. But, since this
+     * was the first unit test I ever wrote, I wanted to pick an extremely simple class to test. */
     private lateinit var sut: RepoUtils
 
     @Before
@@ -41,23 +44,5 @@ class RepoUtilsTest {
         // Assert
         assertThat(result.size, Is(1))
         assertThat(result[0], Is(testId))
-    }
-
-    @Test
-    fun convertListOfClickedPostIdsToListOfStrings_multipleItemList_sameStringsReturned() {
-
-        // Arrange
-        val testId1 = "testId"
-        val testId2 = "testId2"
-        val item1 = ClickedPostId(testId1)
-        val item2 = ClickedPostId(testId2)
-
-        // Act
-        val result = sut.convertListOfClickedPostIdsToListOfStrings(listOf(item1, item2))
-
-        // Assert
-        assertThat(result.size, Is(2))
-        assertThat(result[0], Is(testId1))
-        assertThat(result[1], Is(testId2))
     }
 }
