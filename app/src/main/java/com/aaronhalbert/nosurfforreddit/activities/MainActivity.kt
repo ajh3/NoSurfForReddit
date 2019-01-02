@@ -38,7 +38,6 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
     private var dayNightHelper = DayNightHelper(this)
-
     private var nightMode: Boolean = false
     private var amoledNightMode: Boolean = false
 
@@ -59,8 +58,7 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
                 .get(MainActivityViewModel::class.java)
 
         /* only run the splash animation on fresh app launch */
-        if (savedInstanceState == null) initSplash()
-
+        savedInstanceState ?: initSplash()
         initNavComponent()
         subscribeToNetworkErrors()
     }
@@ -82,12 +80,11 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     // region init methods -------------------------------------------------------------------------
 
     private fun initSplash() {
-        val splashHelper = SplashHelper(
+        SplashHelper(
                 logo,
                 this,
                 viewModel.allPostsViewStateLiveData)
-
-        splashHelper.setupSplashAnimation()
+                .setupSplashAnimation()
     }
 
     private fun initNavComponent() {
@@ -118,12 +115,12 @@ class MainActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeL
     private fun subscribeToNetworkErrors() {
         viewModel.networkErrorsLiveData.observe(this,
                 Observer {
-                    val n = it.contentIfNotHandled
-
-                    n?.let { Toast.makeText(
-                            this,
-                            NETWORK_ERROR_MESSAGE,
-                            Toast.LENGTH_LONG).show() }
+                    it.contentIfNotHandled?.let {
+                        Toast.makeText(
+                                this,
+                                NETWORK_ERROR_MESSAGE,
+                                Toast.LENGTH_LONG).show()
+                    }
                 })
     }
 
