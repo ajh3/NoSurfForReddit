@@ -8,7 +8,6 @@ import com.aaronhalbert.nosurfforreddit.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState;
 
-import java.util.Arrays;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
@@ -20,7 +19,11 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.subjects.PublishSubject;
 
-import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.*;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.FETCH_ALL_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.FETCH_POST_COMMENTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.LOGIN_STATUS_CHECK_ERROR;
+import static com.aaronhalbert.nosurfforreddit.viewmodel.MainActivityViewModel.NetworkErrors.USER_AUTH_CALL_ERROR;
 import static com.aaronhalbert.nosurfforreddit.viewstate.PostsViewState.PostDatum;
 
 public class MainActivityViewModel extends ViewModel {
