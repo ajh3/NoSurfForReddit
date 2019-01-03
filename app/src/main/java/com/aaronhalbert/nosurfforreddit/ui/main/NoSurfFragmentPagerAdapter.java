@@ -7,12 +7,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-public class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
+class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final int NUM_ITEMS = 2;
     private static final String R_ALL = "/r/All";
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
 
-    public NoSurfFragmentPagerAdapter(FragmentManager fm) {
+    NoSurfFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

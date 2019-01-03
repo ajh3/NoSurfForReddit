@@ -14,7 +14,7 @@ abstract public class BaseFragment extends Fragment {
     private boolean isInjectorUsed;
 
     @UiThread
-    public PresentationComponent getPresentationComponent() {
+    protected PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {
             throw new RuntimeException(INJECTION_ALREADY_PERFORMED);
         }

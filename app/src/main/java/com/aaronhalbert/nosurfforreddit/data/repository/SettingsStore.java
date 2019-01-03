@@ -2,6 +2,7 @@ package com.aaronhalbert.nosurfforreddit.data.repository;
 
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity;
 
+@SuppressWarnings("UnusedReturnValue")
 public interface SettingsStore {
     boolean isNightMode();
     boolean isAmoledNightMode();

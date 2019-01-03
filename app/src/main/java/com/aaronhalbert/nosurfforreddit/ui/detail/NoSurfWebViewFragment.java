@@ -88,7 +88,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
 
     // region helper methods -----------------------------------------------------------------------
 
-    public void setupMenu() {
+    protected void setupMenu() {
         setHasOptionsMenu(true);
     }
 

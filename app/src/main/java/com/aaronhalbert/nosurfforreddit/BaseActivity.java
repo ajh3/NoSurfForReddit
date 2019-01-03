@@ -31,6 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     // region dagger -------------------------------------------------------------------------------
 
+    @SuppressWarnings("UnusedReturnValue")
     @UiThread
     public PresentationComponent getPresentationComponent() {
         if (isInjectorUsed) {

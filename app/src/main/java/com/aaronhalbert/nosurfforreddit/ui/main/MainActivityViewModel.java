@@ -108,7 +108,7 @@ public class MainActivityViewModel extends ViewModel {
     /* this ViewModel and the app in general continue to function normally while user is logged out,
      * but user is limited to viewing posts and comments from r/all. All functionality related
      * to Subscribed posts is unavailable */
-    public void logUserOut() {
+    void logUserOut() {
         repository.setUserLoggedOut();
     }
 
@@ -120,6 +120,7 @@ public class MainActivityViewModel extends ViewModel {
         networkErrorsLiveData.setValue(n);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public LiveData<Event<NetworkErrors>> getNetworkErrorsLiveData() {
         return networkErrorsLiveData;
     }

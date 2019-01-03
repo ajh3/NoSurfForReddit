@@ -10,6 +10,7 @@ public class Event<T> {
         this.content = content;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public T getContentIfNotHandled() {
         if (hasBeenHandled) {
             return null;

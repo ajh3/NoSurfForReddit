@@ -41,9 +41,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
      * isSubscribedPostsAdapter in the constructor, and it sets own its data source
      * (postsViewStateLiveData) and works accordingly. */
 
-    public PostsAdapter(MainActivityViewModel viewModel,
-                        PostsFragment hostFragment,
-                        boolean isSubscribedPostsAdapter) {
+    PostsAdapter(MainActivityViewModel viewModel,
+                 PostsFragment hostFragment,
+                 boolean isSubscribedPostsAdapter) {
 
         this.viewModel = viewModel;
         this.hostFragment = hostFragment;
@@ -66,7 +66,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                 .inflate(hostFragment.getLayoutInflater(), parent, false);
 
         /* follow the view hierarchy lifecycle of hostFragment instead of its fragment lifecycle.
-         * If we follow the fragment lifecycle, the row.xmll data binding class does not correctly
+         * If we follow the fragment lifecycle, the row.xml data binding class does not correctly
          * release its reference to its row controller (RowHolder) when PostsFragment is
          * detached upon being replace()'d. This results in a PostAdapter being leaked on each
          * RecyclerView click, which in turn leads to numerous DTO and Glide objects also
