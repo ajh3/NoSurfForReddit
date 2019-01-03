@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.repository.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.repository.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
 

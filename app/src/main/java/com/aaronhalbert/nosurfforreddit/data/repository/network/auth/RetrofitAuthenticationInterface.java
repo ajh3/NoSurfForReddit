@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository;
+package com.aaronhalbert.nosurfforreddit.data.repository.network.auth;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
 import com.aaronhalbert.nosurfforreddit.data.repository.model.AppOnlyOAuthToken;

@@ -2,6 +2,9 @@ package com.aaronhalbert.nosurfforreddit.data.repository
 
 import android.content.Intent
 import android.net.Uri
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.AuthenticatorUtils
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.CODE
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.ERROR
 import com.nhaarman.mockitokotlin2.KStubbing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

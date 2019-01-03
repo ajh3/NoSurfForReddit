@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository;
+package com.aaronhalbert.nosurfforreddit.data.repository.settings;
 
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity;
 

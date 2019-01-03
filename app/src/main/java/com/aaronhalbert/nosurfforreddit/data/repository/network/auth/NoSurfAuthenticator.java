@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository;
+package com.aaronhalbert.nosurfforreddit.data.repository.network.auth;
 
 import android.app.Application;
 import android.os.Build;
@@ -49,7 +49,7 @@ public class NoSurfAuthenticator {
      * fetchAppOnlyOAuthTokenASync() and does not require any user credentials.
      *
      *  Also called to refresh this anonymous token when it expires */
-    Single<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
+    public Single<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync() {
         return ri.fetchAppOnlyOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 BuildConfig.APP_ONLY_GRANT_TYPE,
@@ -66,7 +66,7 @@ public class NoSurfAuthenticator {
      *
      * Note that after the user is logged in, their user token is now also used for viewing
      * r/all, instead of the previously-fetched anonymous token from fetchAppOnlyOAuthTokenASync. */
-    Single<UserOAuthToken> fetchUserOAuthTokenASync(String code) {
+    public Single<UserOAuthToken> fetchUserOAuthTokenASync(String code) {
         return ri.fetchUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_GRANT_TYPE,
@@ -78,7 +78,7 @@ public class NoSurfAuthenticator {
 
     /* unlike the app-only, logged-out auth token, user auth tokens require a special refresh
      * call */
-    Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
+    public Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync() {
         return ri.refreshExpiredUserOAuthTokenASync(
                 BuildConfig.OAUTH_BASE_URL,
                 USER_REFRESH_GRANT_TYPE,
@@ -97,7 +97,7 @@ public class NoSurfAuthenticator {
      *
      *  This method should run on app initialization, to see if the user's credentials have been
      *  previously saved. */
-    void checkIfLoginCredentialsAlreadyExist() {
+    public void checkIfLoginCredentialsAlreadyExist() {
         userOAuthAccessTokenCache = tokenStore.getUserOAuthAccessToken();
         userOAuthRefreshTokenCache = tokenStore.getUserOAuthRefreshToken();
 
@@ -114,7 +114,7 @@ public class NoSurfAuthenticator {
         isUserLoggedIn.onNext(true);
     }
 
-    void setUserLoggedOut() {
+    public void setUserLoggedOut() {
         clearCookies();
 
         isUserLoggedInCache = false;
@@ -167,19 +167,19 @@ public class NoSurfAuthenticator {
 
     // region getters and setters ------------------------------------------------------------------
 
-    String getUserOAuthAccessTokenCache() {
+    public String getUserOAuthAccessTokenCache() {
         return userOAuthAccessTokenCache;
     }
 
-    String getAppOnlyOAuthTokenCache() {
+    public String getAppOnlyOAuthTokenCache() {
         return appOnlyOAuthTokenCache;
     }
 
-    boolean isUserLoggedInCache() {
+    public boolean isUserLoggedInCache() {
         return isUserLoggedInCache;
     }
 
-    BehaviorSubject<Boolean> getIsUserLoggedIn() {
+    public BehaviorSubject<Boolean> getIsUserLoggedIn() {
         return isUserLoggedIn;
     }
 

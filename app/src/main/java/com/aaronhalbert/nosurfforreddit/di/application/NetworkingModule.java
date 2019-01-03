@@ -1,10 +1,10 @@
 package com.aaronhalbert.nosurfforreddit.di.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.repository.AuthenticatorUtils;
-import com.aaronhalbert.nosurfforreddit.data.repository.RateLimitInterceptor;
-import com.aaronhalbert.nosurfforreddit.data.repository.RetrofitAuthenticationInterface;
-import com.aaronhalbert.nosurfforreddit.data.repository.RetrofitContentInterface;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.RetrofitContentInterface;
 
 import javax.inject.Singleton;
 

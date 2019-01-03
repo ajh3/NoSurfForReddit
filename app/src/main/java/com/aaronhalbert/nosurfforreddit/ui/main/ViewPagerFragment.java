@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.repository.AuthenticatorUtils;
-import com.aaronhalbert.nosurfforreddit.data.repository.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.data.repository.settings.SettingsStore;
 import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;

@@ -1,5 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.data.repository
 
+import com.aaronhalbert.nosurfforreddit.data.repository.network.RepoUtils
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostId
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before

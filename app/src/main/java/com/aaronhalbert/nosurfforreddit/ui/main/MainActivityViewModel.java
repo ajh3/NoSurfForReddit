@@ -2,7 +2,7 @@ package com.aaronhalbert.nosurfforreddit.ui.main;
 
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.data.repository.Repository;
+import com.aaronhalbert.nosurfforreddit.data.repository.network.Repository;
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;

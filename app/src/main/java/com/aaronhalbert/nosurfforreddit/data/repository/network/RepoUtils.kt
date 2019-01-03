@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository
+package com.aaronhalbert.nosurfforreddit.data.repository.network
 
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostId
 
