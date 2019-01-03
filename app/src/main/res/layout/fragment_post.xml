@@ -11,7 +11,7 @@
     <data>
         <variable
             name="postFragment"
-            type="com.aaronhalbert.nosurfforreddit.fragments.PostFragment"/>
+            type="com.aaronhalbert.nosurfforreddit.ui.detail.PostFragment"/>
     </data>
 
     <ScrollView

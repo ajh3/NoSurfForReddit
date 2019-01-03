@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_view_pager_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.ViewPagerFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.main.ViewPagerFragment">
         <action
             android:id="@+id/click_link_post_action"
             app:destination="@id/fragment_link_post_dest"
@@ -40,27 +40,27 @@
 
     <fragment
         android:id="@+id/fragment_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.PostFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.detail.PostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_link_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.LinkPostFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.detail.LinkPostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_self_post_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.SelfPostFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.detail.SelfPostFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_login_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.LoginFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_nosurf_web_view_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.detail.NoSurfWebViewFragment">
         <argument
             android:name="url"
             app:argType="string"/>
@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/fragment_nosurf_web_view_login_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.NoSurfWebViewLoginFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.login.NoSurfWebViewLoginFragment">
         <argument
             android:name="url"
             app:argType="string"/>
@@ -76,12 +76,12 @@
 
     <fragment
         android:id="@+id/fragment_nosurf_preference_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.NoSurfPreferenceFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.prefs.NoSurfPreferenceFragment">
     </fragment>
 
     <fragment
         android:id="@+id/fragment_about_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.fragments.AboutFragment">
+        android:name="com.aaronhalbert.nosurfforreddit.ui.about.AboutFragment">
     </fragment>
 
     <action

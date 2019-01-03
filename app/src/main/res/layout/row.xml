@@ -14,7 +14,7 @@
 
         <variable
             name="controller"
-            type="com.aaronhalbert.nosurfforreddit.adapters.PostsAdapter.RowHolder"/>
+            type="com.aaronhalbert.nosurfforreddit.ui.master.PostsAdapter.RowHolder"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

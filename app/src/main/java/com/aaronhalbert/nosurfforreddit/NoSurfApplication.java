@@ -2,9 +2,9 @@ package com.aaronhalbert.nosurfforreddit;
 
 import android.app.Application;
 
-import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationComponent;
-import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.ApplicationModule;
-import com.aaronhalbert.nosurfforreddit.dependencyinjection.application.DaggerApplicationComponent;
+import com.aaronhalbert.nosurfforreddit.di.application.ApplicationComponent;
+import com.aaronhalbert.nosurfforreddit.di.application.ApplicationModule;
+import com.aaronhalbert.nosurfforreddit.di.application.DaggerApplicationComponent;
 import com.squareup.leakcanary.LeakCanary;
 
 public class NoSurfApplication extends Application {
