@@ -31,7 +31,7 @@ class AuthenticatorUtilsTest {
      * Also note that this test works by asserting the beginning and end substrings of the URL:
      * what's in the middle is simply a randomly-generated UUID, which there is no need to test. */
     @Test
-    fun buildAuthUrl_success_stringMatches() {
+    fun buildAuthUrl_success_urlMatches() {
         val result = sut.buildAuthUrl()
 
         assertThat(result, startsWith("https://www.reddit.com/api%2Fv1%2Fauthorize.compact?client_id=jPF59UF5MbMkWg&response_type=code&state="))
