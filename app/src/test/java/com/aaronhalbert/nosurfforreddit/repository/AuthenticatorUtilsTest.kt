@@ -24,12 +24,13 @@ class AuthenticatorUtilsTest {
     }
 
     /* note that buildAuthUrl() comprises no logic of my own, it's just calls to 3rd-party static
-     * methods. So, this test is effectively testing code that is not my own. However, it's still
-     * useful, because it'll warn us if any of the constants used to build the URL
-     * accidentally get changed.
+     * methods. So, this test is effectively testing code that is not my own. Normally this would
+     * be undesirable, but in this case, this test is still useful because it'll warn us if any
+     * of the constants used to build the URL accidentally get changed.
      *
      * Also note that this test works by asserting the beginning and end substrings of the URL:
-     * what's in the middle is simply a randomly-generated UUID, which there is no need to test. */
+     * what's in the middle is simply a randomly-generated UUID, which there is no need to test -
+     * we can just assume that UUID.randomUUID() works. */
     @Test
     fun buildAuthUrl_success_urlMatches() {
         val result = sut.buildAuthUrl()
