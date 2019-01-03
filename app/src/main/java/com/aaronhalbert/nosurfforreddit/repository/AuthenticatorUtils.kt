@@ -20,17 +20,16 @@ const val CODE = "code"
 class AuthenticatorUtils {
 
     fun buildAuthUrl(): String {
-        return HttpUrl.Builder()
-                .scheme(BuildConfig.SCHEME)
-                .host(BuildConfig.HOST)
-                .addPathSegment(BuildConfig.REDDIT_AUTH_PATH)
-                .addQueryParameter(CLIENT_ID_PARAMETER_NAME, BuildConfig.CLIENT_ID)
-                .addQueryParameter(AUTH_URL_RESPONSE_TYPE, RESPONSE_TYPE)
-                .addQueryParameter(AUTH_URL_STATE, UUID.randomUUID().toString())
-                .addQueryParameter(AUTH_URL_REDIRECT_URI, BuildConfig.REDIRECT_URI)
-                .addQueryParameter(AUTH_URL_DURATION, DURATION)
-                .addQueryParameter(AUTH_URL_SCOPE, SCOPE)
-                .build()
+        return HttpUrl
+                .parse(BuildConfig.AUTH_URL_BASE)
+                ?.newBuilder()
+                ?.addQueryParameter(CLIENT_ID_PARAMETER_NAME, BuildConfig.CLIENT_ID)
+                ?.addQueryParameter(AUTH_URL_RESPONSE_TYPE, RESPONSE_TYPE)
+                ?.addQueryParameter(AUTH_URL_STATE, UUID.randomUUID().toString())
+                ?.addQueryParameter(AUTH_URL_REDIRECT_URI, BuildConfig.REDIRECT_URI)
+                ?.addQueryParameter(AUTH_URL_DURATION, DURATION)
+                ?.addQueryParameter(AUTH_URL_SCOPE, SCOPE)
+                ?.build()
                 .toString()
     }
 

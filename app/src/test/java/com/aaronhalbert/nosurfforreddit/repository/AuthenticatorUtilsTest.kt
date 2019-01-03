@@ -35,7 +35,7 @@ class AuthenticatorUtilsTest {
     fun buildAuthUrl_success_urlMatches() {
         val result = sut.buildAuthUrl()
 
-        assertThat(result, startsWith("https://www.reddit.com/api%2Fv1%2Fauthorize.compact?client_id=jPF59UF5MbMkWg&response_type=code&state="))
+        assertThat(result, startsWith("https://www.reddit.com/api/v1/authorize.compact?client_id=jPF59UF5MbMkWg&response_type=code&state="))
         assertThat(result, endsWith("&redirect_uri=nosurfforreddit%3A%2F%2Foauth&duration=permanent&scope=identity%20mysubreddits%20read"))
     }
 
