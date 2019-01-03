@@ -2,34 +2,36 @@ package com.aaronhalbert.nosurfforreddit.repository
 
 import android.content.Intent
 import com.aaronhalbert.nosurfforreddit.BuildConfig
+import okhttp3.HttpUrl
+import java.util.*
 
-const val AUTH_URL_RESPONSE_TYPE = "&response_type="
+const val CLIENT_ID_PARAMETER_NAME = "client_id"
+const val AUTH_URL_RESPONSE_TYPE = "response_type"
 const val RESPONSE_TYPE = "code"
-const val AUTH_URL_STATE = "&state="
-const val AUTH_URL_REDIRECT_URI = "&redirect_uri="
-const val AUTH_URL_DURATION = "&duration="
+const val AUTH_URL_STATE = "state"
+const val AUTH_URL_REDIRECT_URI = "redirect_uri"
+const val AUTH_URL_DURATION = "duration"
 const val DURATION = "permanent"
-const val AUTH_URL_SCOPE = "&scope="
+const val AUTH_URL_SCOPE = "scope"
 const val SCOPE = "identity mysubreddits read"
-
 const val ERROR = "error"
 const val CODE = "code"
 
-class AuthenticatorUtils(private val randomUUIDWrapper: RandomUUIDWrapper) {
+class AuthenticatorUtils {
 
     fun buildAuthUrl(): String {
-        return (BuildConfig.AUTH_URL_BASE
-                + BuildConfig.CLIENT_ID
-                + AUTH_URL_RESPONSE_TYPE
-                + RESPONSE_TYPE
-                + AUTH_URL_STATE
-                + randomUUIDWrapper.randomUUID()
-                + AUTH_URL_REDIRECT_URI
-                + BuildConfig.REDIRECT_URI
-                + AUTH_URL_DURATION
-                + DURATION
-                + AUTH_URL_SCOPE
-                + SCOPE)
+        return HttpUrl.Builder()
+                .scheme(BuildConfig.SCHEME)
+                .host(BuildConfig.HOST)
+                .addPathSegment(BuildConfig.REDDIT_AUTH_PATH)
+                .addQueryParameter(CLIENT_ID_PARAMETER_NAME, BuildConfig.CLIENT_ID)
+                .addQueryParameter(AUTH_URL_RESPONSE_TYPE, RESPONSE_TYPE)
+                .addQueryParameter(AUTH_URL_STATE, UUID.randomUUID().toString())
+                .addQueryParameter(AUTH_URL_REDIRECT_URI, BuildConfig.REDIRECT_URI)
+                .addQueryParameter(AUTH_URL_DURATION, DURATION)
+                .addQueryParameter(AUTH_URL_SCOPE, SCOPE)
+                .build()
+                .toString()
     }
 
     /* Get the one-time use code returned by the Reddit auth server. We later exchange it for a

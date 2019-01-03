@@ -1,6 +1,7 @@
 package com.aaronhalbert.nosurfforreddit.dependencyinjection.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
+import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.repository.RateLimitInterceptor;
 import com.aaronhalbert.nosurfforreddit.repository.RetrofitAuthenticationInterface;
 import com.aaronhalbert.nosurfforreddit.repository.RetrofitContentInterface;
@@ -55,5 +56,11 @@ class NetworkingModule {
     @Provides
     RetrofitAuthenticationInterface provideRetrofitAuthenticationInterface(Retrofit retrofit) {
         return retrofit.create(RetrofitAuthenticationInterface.class);
+    }
+
+    @Singleton
+    @Provides
+    AuthenticatorUtils provideAuthenticatorUtils() {
+        return new AuthenticatorUtils();
     }
 }

@@ -20,6 +20,9 @@ android {
             }
         }
 
+        buildConfigField "String", "SCHEME", '"https"'
+        buildConfigField "String", "HOST", '"www.reddit.com"'
+        buildConfigField "String", "REDDIT_AUTH_PATH", '"api/v1/authorize.compact"'
         buildConfigField "String", "REDDIT_URL_BASE", '"https://www.reddit.com"'
         buildConfigField "String", "AUTH_URL_BASE", '"https://www.reddit.com/api/v1/authorize.compact?client_id="'
         buildConfigField "String", "CLIENT_ID", '"jPF59UF5MbMkWg"'

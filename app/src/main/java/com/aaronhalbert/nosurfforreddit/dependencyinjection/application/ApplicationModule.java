@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.repository.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.repository.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.repository.PreferenceTokenStore;
-import com.aaronhalbert.nosurfforreddit.repository.RandomUUIDWrapper;
 import com.aaronhalbert.nosurfforreddit.repository.RepoUtils;
 import com.aaronhalbert.nosurfforreddit.repository.Repository;
 import com.aaronhalbert.nosurfforreddit.repository.RetrofitAuthenticationInterface;
@@ -100,17 +98,5 @@ public class ApplicationModule {
     @Provides
     RepoUtils provideRepoUtils() {
         return new RepoUtils();
-    }
-
-    @Singleton
-    @Provides
-    RandomUUIDWrapper provideRandomUUIDWrapper() {
-        return new RandomUUIDWrapper();
-    }
-
-    @Singleton
-    @Provides
-    AuthenticatorUtils provideAuthenticatorUtils(RandomUUIDWrapper randomUUIDWrapper) {
-        return new AuthenticatorUtils(randomUUIDWrapper);
     }
 }
