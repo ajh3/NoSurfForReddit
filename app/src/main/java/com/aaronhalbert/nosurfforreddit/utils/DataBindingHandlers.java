@@ -15,11 +15,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
-import static com.aaronhalbert.nosurfforreddit.data.repository.model.Listing.DEFAULT;
-import static com.aaronhalbert.nosurfforreddit.data.repository.model.Listing.IMAGE;
-import static com.aaronhalbert.nosurfforreddit.data.repository.model.Listing.NSFW;
-import static com.aaronhalbert.nosurfforreddit.data.repository.model.Listing.SELF;
-import static com.aaronhalbert.nosurfforreddit.data.repository.model.Listing.SPOILER;
+import static com.aaronhalbert.nosurfforreddit.data.model.Listing.DEFAULT;
+import static com.aaronhalbert.nosurfforreddit.data.model.Listing.IMAGE;
+import static com.aaronhalbert.nosurfforreddit.data.model.Listing.NSFW;
+import static com.aaronhalbert.nosurfforreddit.data.model.Listing.SELF;
+import static com.aaronhalbert.nosurfforreddit.data.model.Listing.SPOILER;
 
 @SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {

@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.network.auth;
+package com.aaronhalbert.nosurfforreddit.data.network.auth;
 
 import android.app.Application;
 import android.os.Build;
@@ -6,8 +6,8 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.data.model.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.data.model.UserOAuthToken;
 
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;

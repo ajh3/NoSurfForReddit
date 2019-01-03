@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.network.auth;
+package com.aaronhalbert.nosurfforreddit.data.network.auth;
 
 import android.content.SharedPreferences;
 

@@ -5,15 +5,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.NoSurfAuthenticator;
-import com.aaronhalbert.nosurfforreddit.data.repository.settings.PreferenceSettingsStore;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.PreferenceTokenStore;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.RepoUtils;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.Repository;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.RetrofitAuthenticationInterface;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.RetrofitContentInterface;
-import com.aaronhalbert.nosurfforreddit.data.repository.settings.SettingsStore;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.TokenStore;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.data.settings.PreferenceSettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.PreferenceTokenStore;
+import com.aaronhalbert.nosurfforreddit.data.network.RepoUtils;
+import com.aaronhalbert.nosurfforreddit.data.network.Repository;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.data.network.RetrofitContentInterface;
+import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.TokenStore;
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostIdRoomDatabase;
 
 import java.util.concurrent.ExecutorService;

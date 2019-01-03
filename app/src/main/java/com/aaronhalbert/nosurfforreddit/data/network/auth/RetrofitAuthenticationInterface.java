@@ -1,8 +1,8 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.network.auth;
+package com.aaronhalbert.nosurfforreddit.data.network.auth;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.AppOnlyOAuthToken;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.data.model.AppOnlyOAuthToken;
+import com.aaronhalbert.nosurfforreddit.data.model.UserOAuthToken;
 
 import io.reactivex.Single;
 import retrofit2.http.Field;

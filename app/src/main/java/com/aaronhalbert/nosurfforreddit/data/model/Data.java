@@ -1,5 +1,5 @@
 
-package com.aaronhalbert.nosurfforreddit.data.repository.model;
+package com.aaronhalbert.nosurfforreddit.data.model;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

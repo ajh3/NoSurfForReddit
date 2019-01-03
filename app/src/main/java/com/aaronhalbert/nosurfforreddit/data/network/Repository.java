@@ -1,9 +1,9 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.network;
+package com.aaronhalbert.nosurfforreddit.data.network;
 
-import com.aaronhalbert.nosurfforreddit.data.repository.model.Data_;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.Listing;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.UserOAuthToken;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.data.model.Data_;
+import com.aaronhalbert.nosurfforreddit.data.model.Listing;
+import com.aaronhalbert.nosurfforreddit.data.model.UserOAuthToken;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostIdDao;
 import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostIdRoomDatabase;

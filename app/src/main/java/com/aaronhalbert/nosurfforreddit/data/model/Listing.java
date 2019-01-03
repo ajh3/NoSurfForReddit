@@ -1,4 +1,4 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.model;
+package com.aaronhalbert.nosurfforreddit.data.model;
 
 import android.text.Spanned;
 

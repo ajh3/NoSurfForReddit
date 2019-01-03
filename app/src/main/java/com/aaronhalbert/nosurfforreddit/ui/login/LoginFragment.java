@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.repository.network.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.data.network.auth.AuthenticatorUtils;
 
 import javax.inject.Inject;
 

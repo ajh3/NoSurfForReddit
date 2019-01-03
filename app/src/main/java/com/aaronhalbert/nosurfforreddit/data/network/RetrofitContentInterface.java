@@ -1,7 +1,7 @@
-package com.aaronhalbert.nosurfforreddit.data.repository.network;
+package com.aaronhalbert.nosurfforreddit.data.network;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.repository.model.Listing;
+import com.aaronhalbert.nosurfforreddit.data.model.Listing;
 
 import java.util.List;
 
