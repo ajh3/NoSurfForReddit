@@ -15,6 +15,7 @@ package com.aaronhalbert.nosurfforreddit.data.remote.posts
 
 import com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model.ClickedPostId
 
+//TODO: extract other helper methods out of PostsRepo into here and write unit tests as I go
 class PostsRepoUtils {
 
     fun convertListOfClickedPostIdsToListOfStrings(input: List<ClickedPostId>): List<String> {
