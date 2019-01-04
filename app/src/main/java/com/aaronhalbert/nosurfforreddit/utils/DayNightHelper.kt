@@ -16,9 +16,9 @@ class DayNightHelper(private val fragmentActivity: FragmentActivity) {
 
     private fun amoledNightModeOn() {
         fragmentActivity
-                .window
-                .decorView
-                .setBackgroundColor(ContextCompat.getColor(fragmentActivity, R.color.colorAmoledNightBg))
+            .window
+            .decorView
+            .setBackgroundColor(ContextCompat.getColor(fragmentActivity, R.color.colorAmoledNightBg))
     }
 
     fun nightModeOff() {

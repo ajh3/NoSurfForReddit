@@ -15,15 +15,15 @@ import org.junit.Before
 import org.junit.Test
 import org.hamcrest.CoreMatchers.`is` as Is
 
-const val ACCESS_DENIED_ERROR_CODE = "access_denied"
+private const val ACCESS_DENIED_ERROR_CODE = "access_denied"
 
 class AuthenticatorUtilsTest {
-    private lateinit var sut: AuthenticatorUtils
+    private lateinit var underTest: AuthenticatorUtils
     private val dummyCode = "dummyCode"
 
     @Before
     fun setup() {
-        sut = AuthenticatorUtils()
+        underTest = AuthenticatorUtils()
     }
 
     /* note that buildAuthUrl() comprises no logic of my own, it's just calls to 3rd-party static
@@ -35,81 +35,89 @@ class AuthenticatorUtilsTest {
      * what's in the middle is simply a randomly-generated UUID, which there is no need to test -
      * we can just assume that UUID.randomUUID() works. */
     @Test
-    fun buildAuthUrl_success_urlMatches() {
-        val result = sut.buildAuthUrl()
+    fun `buildAuthUrl() - ensure that none of the URL's component constants have accidentally changed`() {
+        val result = underTest.buildAuthUrl()
 
-        assertThat(result, startsWith("https://www.reddit.com/api/v1/authorize.compact?client_id=jPF59UF5MbMkWg&response_type=code&state="))
-        assertThat(result, endsWith("&redirect_uri=nosurfforreddit%3A%2F%2Foauth&duration=permanent&scope=identity%20mysubreddits%20read"))
+        assertThat(
+            result,
+            startsWith("https://www.reddit.com/api/v1/authorize.compact?client_id=jPF59UF5MbMkWg&response_type=code&state=")
+        )
+        assertThat(
+            result,
+            endsWith("&redirect_uri=nosurfforreddit%3A%2F%2Foauth&duration=permanent&scope=identity%20mysubreddits%20read")
+        )
     }
 
     @Test
-    fun extractCodeFromIntent_intentHasValidData_success_validCodeReturned() {
+    fun `extractCodeFromIntent() - valid string returned if the intent has a valid URI`() {
         // Arrange
-        val mockUri : Uri = mock {
+        val mockUri: Uri = mock {
             errorIsEmpty()
             codeIsDummyCode()
         }
-        val mockIntent : Intent = intentDataIsMockUri(mockUri)
+        val mockIntent: Intent = intentDataIsMockUri(mockUri)
         // Act
-        val result = sut.extractCodeFromIntent(mockIntent)
+        val result = underTest.extractCodeFromIntent(mockIntent)
         // Assert
         assertThat(result, Is(dummyCode))
     }
 
     @Test
-    fun extractCodeFromIntent_intentDataIsNull_failure_emptyCodeReturned() {
+    fun `extractCodeFromIntent() - empty string returned if the intent has a null URI`() {
         // Arrange
-        val mockIntent : Intent = intentDataIsNull()
+        val mockIntent: Intent = intentDataIsNull()
         // Act
-        val result = sut.extractCodeFromIntent(mockIntent)
+        val result = underTest.extractCodeFromIntent(mockIntent)
         // Assert
         assertIsEmptyString(result)
     }
 
     @Test
-    fun extractCodeFromIntent_codeIsNull_failure_emptyCodeReturned() {
+    fun `extractCodeFromIntent() - empty string returned if code is null`() {
         // Arrange
-        val mockUri : Uri = mock {
+        val mockUri: Uri = mock {
             errorIsEmpty()
             codeIsNull()
         }
-        val mockIntent : Intent = intentDataIsMockUri(mockUri)
+        val mockIntent: Intent = intentDataIsMockUri(mockUri)
         // Act
-        val result = sut.extractCodeFromIntent(mockIntent)
+        val result = underTest.extractCodeFromIntent(mockIntent)
         // Assert
         assertIsEmptyString(result)
     }
 
     @Test
-    fun extractCodeFromIntent_codeIsEmpty_failure_emptyCodeReturned() {
+    fun `extractCodeFromIntent() - empty string returned if code is empty`() {
         // Arrange
-        val mockUri : Uri = mock {
+        val mockUri: Uri = mock {
             errorIsEmpty()
             codeIsEmpty()
         }
-        val mockIntent : Intent = intentDataIsMockUri(mockUri)
+        val mockIntent: Intent = intentDataIsMockUri(mockUri)
         // Act
-        val result = sut.extractCodeFromIntent(mockIntent)
+        val result = underTest.extractCodeFromIntent(mockIntent)
         // Assert
         assertIsEmptyString(result)
     }
 
     @Test
-    fun extractCodeFromIntent_errorIsAccessDenied_failure_emptyCodeReturned() {
+    fun `extractCodeFromIntent() - empty string returned if there is an access denied error`() {
         // Arrange
-        val mockUri : Uri = mock {
+        val mockUri: Uri = mock {
             errorIsAccessDenied()
             codeIsDummyCode()
         }
-        val mockIntent : Intent = intentDataIsMockUri(mockUri)
+        val mockIntent: Intent = intentDataIsMockUri(mockUri)
         // Act
-        val result = sut.extractCodeFromIntent(mockIntent)
+        val result = underTest.extractCodeFromIntent(mockIntent)
         // Assert
         assertIsEmptyString(result)
     }
 
     // region helper methods -----------------------------------------------------------------------
 
+    /* importing org.hamcrest.text.IsEmptyString inexplicably breaks Android Studio, so I have
+     * to write this custom function ¯\_(ツ)_/¯ */
     private fun assertIsEmptyString(result: String) {
         assertThat(result, Is(""))
     }
@@ -135,7 +143,7 @@ class AuthenticatorUtilsTest {
     }
 
     private fun intentDataIsMockUri(mockUri: Uri): Intent =
-            mock { on { data } doReturn mockUri }
+        mock { on { data } doReturn mockUri }
 
     private fun intentDataIsNull(): Intent = mock { on { data } doReturn null }
 

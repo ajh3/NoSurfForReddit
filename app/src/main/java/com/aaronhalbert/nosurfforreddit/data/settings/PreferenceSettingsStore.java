@@ -43,12 +43,12 @@ public class PreferenceSettingsStore implements SettingsStore {
     }
 
     @Override
-    public void registerListener(MainActivity mainActivity) {
-        preferences.registerOnSharedPreferenceChangeListener(mainActivity);
+    public void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
-    public void unregisterListener(MainActivity mainActivity) {
-        preferences.unregisterOnSharedPreferenceChangeListener(mainActivity);
+    public void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
 }

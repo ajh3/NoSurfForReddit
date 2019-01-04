@@ -1,6 +1,6 @@
 package com.aaronhalbert.nosurfforreddit.data.settings;
 
-import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity;
+import android.content.SharedPreferences;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface SettingsStore {
@@ -10,6 +10,6 @@ public interface SettingsStore {
     boolean isDefaultPageSubscribed();
     boolean isNsfwFilter();
 
-    void registerListener(MainActivity mainActivity);
-    void unregisterListener(MainActivity mainActivity);
+    void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener);
+    void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener);
 }

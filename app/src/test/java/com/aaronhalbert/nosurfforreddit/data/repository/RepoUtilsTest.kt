@@ -12,30 +12,30 @@ class RepoUtilsTest {
     /* Note: RepoUtils is a trivially simple class, and this unit test is really just testing the
      * Kotlin standard library since the class doesn't contain any custom logic. But, since this
      * was the first unit test I ever wrote, I wanted to pick an extremely simple class to test. */
-    private lateinit var sut: RepoUtils
+    private lateinit var underTest: RepoUtils
 
     @Before
     fun setup() {
-        sut = RepoUtils()
+        underTest = RepoUtils()
     }
 
     @Test
-    fun convertListOfClickedPostIdsToListOfStrings_emptyList_emptyListReturned() {
+    fun `convertListOfClickedPostIdsToListOfStrings() - empty input produces empty output`() {
         // Arrange
         val emptyList = emptyList<ClickedPostId>()
         // Act
-        val result = sut.convertListOfClickedPostIdsToListOfStrings(emptyList)
+        val result = underTest.convertListOfClickedPostIdsToListOfStrings(emptyList)
         // Assert
         assertThat(result.size, Is(0))
     }
 
     @Test
-    fun convertListOfClickedPostIdsToListOfStrings_singleItemList_sameStringReturned() {
+    fun `convertListOfClickedPostIdsToListOfStrings() - output contains same string as input and is of same size`() {
         // Arrange
         val testId = "testId"
         val singleItem = ClickedPostId(testId)
         // Act
-        val result = sut.convertListOfClickedPostIdsToListOfStrings(listOf(singleItem))
+        val result = underTest.convertListOfClickedPostIdsToListOfStrings(listOf(singleItem))
         // Assert
         assertThat(result.size, Is(1))
         assertThat(result[0], Is(testId))
