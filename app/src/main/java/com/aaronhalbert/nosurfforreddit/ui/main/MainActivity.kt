@@ -27,8 +27,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.aaronhalbert.nosurfforreddit.BaseActivity
 import com.aaronhalbert.nosurfforreddit.R
-import com.aaronhalbert.nosurfforreddit.data.network.auth.AuthenticatorUtils
-import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils
+import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore
 import com.aaronhalbert.nosurfforreddit.ui.utils.DayNightPicker
 import com.aaronhalbert.nosurfforreddit.ui.utils.SplashScreen
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory

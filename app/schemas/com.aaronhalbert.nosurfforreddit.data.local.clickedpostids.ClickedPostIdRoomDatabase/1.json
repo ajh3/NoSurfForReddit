@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "e5a4959c388fd5955761a7c7e148ccb5",
+    "entities": [
+      {
+        "tableName": "clicked_post_id_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clickedPostId` TEXT NOT NULL, PRIMARY KEY(`clickedPostId`))",
+        "fields": [
+          {
+            "fieldPath": "clickedPostId",
+            "columnName": "clickedPostId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "clickedPostId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e5a4959c388fd5955761a7c7e148ccb5\")"
+    ]
+  }
+}

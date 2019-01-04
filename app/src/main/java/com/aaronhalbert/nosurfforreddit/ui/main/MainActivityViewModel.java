@@ -15,8 +15,8 @@ package com.aaronhalbert.nosurfforreddit.ui.main;
 
 import android.util.Log;
 
-import com.aaronhalbert.nosurfforreddit.data.network.Repository;
-import com.aaronhalbert.nosurfforreddit.data.room.ClickedPostId;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
+import com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model.ClickedPostId;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.CommentsViewState;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.utils.Event;
@@ -46,7 +46,7 @@ public class MainActivityViewModel extends ViewModel {
     private static final String USER_AUTH_CALL_FAILED = "User auth call failed";
     private static final String LOGIN_STATUS_CHECK_FAILED = "Login status check failed";
 
-    private final Repository repository;
+    private final PostsRepo postsRepo;
 
     /* these PublishSubjects act as stable Observers for the ViewModel to subscribe to in order to
      * combineLatest() post data with the list of clicked post IDs from Room. We feed the results
@@ -67,8 +67,8 @@ public class MainActivityViewModel extends ViewModel {
     // TODO: pass this around as a fragment argument instead of sharing it via the ViewModel?
     private PostDatum lastClickedPostDatum;
 
-    public MainActivityViewModel(Repository repository) {
-        this.repository = repository;
+    public MainActivityViewModel(PostsRepo postsRepo) {
+        this.postsRepo = postsRepo;
 
         combinePostsWithClickedPostIds(
                 allPosts,
@@ -82,7 +82,7 @@ public class MainActivityViewModel extends ViewModel {
                 FETCH_SUBSCRIBED_POSTS_ERROR,
                 FETCH_SUBSCRIBED_POSTS_CALL_FAILED);
 
-        disposables.add(repository
+        disposables.add(postsRepo
                 .getIsUserLoggedIn()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -93,18 +93,18 @@ public class MainActivityViewModel extends ViewModel {
                         }));
 
         // initialize self
-        repository.checkIfLoginCredentialsAlreadyExist();
+        postsRepo.checkIfLoginCredentialsAlreadyExist();
         fetchAllPostsASync();
         fetchSubscribedPostsASync();
     }
 
-    /* NOTE: refer to Repository for additional documentation on methods being called through
+    /* NOTE: refer to PostsRepo for additional documentation on methods being called through
      * to it */
 
     // region login/logout -------------------------------------------------------------------------
 
     public void logUserIn(String code) {
-        disposables.add(repository
+        disposables.add(postsRepo
                 .fetchUserOAuthTokenASync(code)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -122,7 +122,7 @@ public class MainActivityViewModel extends ViewModel {
      * but user is limited to viewing posts and comments from r/all. All functionality related
      * to Subscribed posts is unavailable */
     void logUserOut() {
-        repository.setUserLoggedOut();
+        postsRepo.setUserLoggedOut();
     }
 
     // endregion login/logout ----------------------------------------------------------------------
@@ -173,7 +173,7 @@ public class MainActivityViewModel extends ViewModel {
     /* see PostsAdapter for an explanation of AllPosts vs. SubscribedPosts */
 
     public void fetchAllPostsASync() {
-        disposables.add(repository
+        disposables.add(postsRepo
                 .fetchAllPostsASync()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -185,7 +185,7 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public void fetchSubscribedPostsASync() {
-        disposables.add(repository
+        disposables.add(postsRepo
                 .fetchSubscribedPostsASync()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -198,7 +198,7 @@ public class MainActivityViewModel extends ViewModel {
 
     public void fetchPostCommentsASync(String id) {
         disposables.add(
-                repository
+                postsRepo
                 .fetchPostCommentsASync(id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -222,7 +222,7 @@ public class MainActivityViewModel extends ViewModel {
             String errorMessage) {
         disposables.add(Observable.combineLatest(
                 postsSource,
-                repository.fetchClickedPostIds(),
+                postsRepo.fetchClickedPostIds(),
                 mergeClickedPosts)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -250,7 +250,7 @@ public class MainActivityViewModel extends ViewModel {
     // region misc ---------------------------------------------------------------------------------
 
     public void insertClickedPostId(String id) {
-        repository.insertClickedPostId(new ClickedPostId(id));
+        postsRepo.insertClickedPostId(new ClickedPostId(id));
     }
 
     /* used by combineLatest() to write the latest list of clicked post IDs into a PostsViewState

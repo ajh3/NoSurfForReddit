@@ -11,18 +11,27 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.di.presentation;
+package com.aaronhalbert.nosurfforreddit.data.remote.posts.model;
 
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import dagger.Module;
-import dagger.Provides;
+@SuppressWarnings("ALL")
+public class Preview {
+    @SerializedName("images")
+    @Expose
+    private final List<Image> images = null;
 
-@Module
-public class ViewModelModule {
-    @Provides
-    ViewModelFactory provideViewModelFactory(PostsRepo postsRepo) {
-        return new ViewModelFactory(postsRepo);
+    @SerializedName("enabled")
+    @Expose
+    private boolean enabled;
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

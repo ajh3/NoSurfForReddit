@@ -11,18 +11,14 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.di.presentation;
+package com.aaronhalbert.nosurfforreddit.data.remote.posts
 
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
+import com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model.ClickedPostId
 
-import dagger.Module;
-import dagger.Provides;
+class PostsRepoUtils {
 
-@Module
-public class ViewModelModule {
-    @Provides
-    ViewModelFactory provideViewModelFactory(PostsRepo postsRepo) {
-        return new ViewModelFactory(postsRepo);
+    fun convertListOfClickedPostIdsToListOfStrings(input: List<ClickedPostId>): List<String> {
+
+        return input.map { it.clickedPostId }
     }
 }

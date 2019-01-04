@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;

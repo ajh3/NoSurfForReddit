@@ -14,10 +14,10 @@
 package com.aaronhalbert.nosurfforreddit.di.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.network.auth.AuthenticatorUtils;
-import com.aaronhalbert.nosurfforreddit.data.network.RateLimitInterceptor;
-import com.aaronhalbert.nosurfforreddit.data.network.auth.RetrofitAuthenticationInterface;
-import com.aaronhalbert.nosurfforreddit.data.network.RetrofitContentInterface;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.data.remote.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.RetrofitContentInterface;
 
 import javax.inject.Singleton;
 

@@ -11,18 +11,15 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.di.presentation;
+package com.aaronhalbert.nosurfforreddit.data.local.auth;
 
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
+public interface TokenStore {
+    String getUserOAuthAccessToken();
+    String getUserOAuthRefreshToken();
 
-import dagger.Module;
-import dagger.Provides;
+    void setUserOAuthAccessTokenAsync(String userOAuthAccessToken);
+    void setUserOAuthRefreshTokenAsync(String userOAuthRefreshToken);
 
-@Module
-public class ViewModelModule {
-    @Provides
-    ViewModelFactory provideViewModelFactory(PostsRepo postsRepo) {
-        return new ViewModelFactory(postsRepo);
-    }
+    void clearUserOAuthAccessTokenAsync();
+    void clearUserOAuthRefreshTokenAsync();
 }

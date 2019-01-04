@@ -11,18 +11,18 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.di.presentation;
+package com.aaronhalbert.nosurfforreddit.data.local.settings;
 
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
+import android.content.SharedPreferences;
 
-import dagger.Module;
-import dagger.Provides;
+@SuppressWarnings("UnusedReturnValue")
+public interface SettingsStore {
+    boolean isNightMode();
+    boolean isAmoledNightMode();
+    boolean isUseExternalBrowser();
+    boolean isDefaultPageSubscribed();
+    boolean isNsfwFilter();
 
-@Module
-public class ViewModelModule {
-    @Provides
-    ViewModelFactory provideViewModelFactory(PostsRepo postsRepo) {
-        return new ViewModelFactory(postsRepo);
-    }
+    void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener);
+    void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener);
 }

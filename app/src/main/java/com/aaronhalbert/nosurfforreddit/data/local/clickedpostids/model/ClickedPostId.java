@@ -11,18 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.di.presentation;
+package com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model;
 
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-import dagger.Module;
-import dagger.Provides;
+@Entity(tableName = "clicked_post_id_table")
+public class ClickedPostId {
 
-@Module
-public class ViewModelModule {
-    @Provides
-    ViewModelFactory provideViewModelFactory(PostsRepo postsRepo) {
-        return new ViewModelFactory(postsRepo);
+    @PrimaryKey //this field is its own primary key
+    @NonNull
+    private final String clickedPostId;
+
+    public ClickedPostId(String clickedPostId) {
+        this.clickedPostId = clickedPostId;
+    }
+
+    public String getClickedPostId() {
+        return this.clickedPostId;
     }
 }

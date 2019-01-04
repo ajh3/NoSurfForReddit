@@ -15,9 +15,9 @@ package com.aaronhalbert.nosurfforreddit.data.repository
 
 import android.content.Intent
 import android.net.Uri
-import com.aaronhalbert.nosurfforreddit.data.network.auth.AuthenticatorUtils
-import com.aaronhalbert.nosurfforreddit.data.network.auth.CODE
-import com.aaronhalbert.nosurfforreddit.data.network.auth.ERROR
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.CODE
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.ERROR
 import com.nhaarman.mockitokotlin2.KStubbing
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock

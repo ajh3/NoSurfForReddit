@@ -13,24 +13,24 @@
 
 package com.aaronhalbert.nosurfforreddit.utils;
 
-import com.aaronhalbert.nosurfforreddit.data.network.Repository;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
-    private final Repository repository;
+    private final PostsRepo postsRepo;
 
-    public ViewModelFactory(Repository repository) {
-        this.repository = repository;
+    public ViewModelFactory(PostsRepo postsRepo) {
+        this.postsRepo = postsRepo;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass == MainActivityViewModel.class) {
-            return (T) new MainActivityViewModel(repository);
+            return (T) new MainActivityViewModel(postsRepo);
         } else {
             throw new RuntimeException("invalid ViewModel class" + modelClass);
         }
