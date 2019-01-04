@@ -23,7 +23,7 @@ import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState
 
-class SplashHelper(
+class SplashScreen(
     private val iv: ImageView,
     private val mainActivity: MainActivity,
     private val allPostsViewStateLiveData: LiveData<PostsViewState>

@@ -29,7 +29,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.utils.ShareHelper;
+import com.aaronhalbert.nosurfforreddit.utils.SharePost;
 
 import javax.inject.Inject;
 
@@ -110,9 +110,9 @@ abstract public class PostFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
-                ShareHelper shareHelper = new ShareHelper(getContext());
-                shareHelper.createShareIntent(viewModel.getLastClickedPostDatum().permalink);
-                shareHelper.launchShareIntent();
+                SharePost sharePost = new SharePost(getContext());
+                sharePost.createShareIntent(viewModel.getLastClickedPostDatum().permalink);
+                sharePost.launchShareIntent();
 
                 return true;
         }

@@ -27,7 +27,7 @@ import android.webkit.WebView;
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.utils.ShareHelper;
+import com.aaronhalbert.nosurfforreddit.utils.SharePost;
 import com.aaronhalbert.nosurfforreddit.utils.webview.NoSurfWebViewClient;
 
 import javax.inject.Inject;
@@ -87,9 +87,9 @@ public class NoSurfWebViewFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
-                ShareHelper shareHelper = new ShareHelper(getContext());
-                shareHelper.createShareIntent(mainActivityViewModel.getLastClickedPostDatum().permalink);
-                shareHelper.launchShareIntent();
+                SharePost sharePost = new SharePost(getContext());
+                sharePost.createShareIntent(mainActivityViewModel.getLastClickedPostDatum().permalink);
+                sharePost.launchShareIntent();
 
                 return true;
         }

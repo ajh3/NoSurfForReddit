@@ -29,8 +29,8 @@ import com.aaronhalbert.nosurfforreddit.BaseActivity
 import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.data.network.auth.AuthenticatorUtils
 import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore
-import com.aaronhalbert.nosurfforreddit.utils.DayNightHelper
-import com.aaronhalbert.nosurfforreddit.utils.SplashHelper
+import com.aaronhalbert.nosurfforreddit.utils.DayNightPicker
+import com.aaronhalbert.nosurfforreddit.utils.SplashScreen
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -47,7 +47,7 @@ class MainActivity : BaseActivity() {
     @Inject lateinit var authenticatorUtils: AuthenticatorUtils
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
-    private val dayNightHelper = DayNightHelper(this)
+    private val dayNightPicker = DayNightPicker(this)
     private val sharedPrefsListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (NIGHT_MODE == key || AMOLED_NIGHT_MODE == key) {
@@ -96,7 +96,7 @@ class MainActivity : BaseActivity() {
     // region init methods -------------------------------------------------------------------------
 
     private fun initSplash() {
-        SplashHelper(
+        SplashScreen(
             logo,
             this,
             viewModel.allPostsViewStateLiveData
@@ -120,9 +120,9 @@ class MainActivity : BaseActivity() {
         amoledNightMode = settingsStore.isAmoledNightMode
 
         if (nightMode) {
-            dayNightHelper.nightModeOn(amoledNightMode)
+            dayNightPicker.nightModeOn(amoledNightMode)
         } else {
-            dayNightHelper.nightModeOff()
+            dayNightPicker.nightModeOff()
         }
     }
 
