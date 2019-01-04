@@ -29,7 +29,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.utils.SharePost;
+import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;
 
 import javax.inject.Inject;
 

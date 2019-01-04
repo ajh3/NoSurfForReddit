@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.utils;
+package com.aaronhalbert.nosurfforreddit.ui.utils;
 
 import android.content.Context;
 import android.graphics.BlurMaskFilter;
@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.utils.glide.GlideApp;
+import com.aaronhalbert.nosurfforreddit.ui.utils.glide.GlideApp;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;

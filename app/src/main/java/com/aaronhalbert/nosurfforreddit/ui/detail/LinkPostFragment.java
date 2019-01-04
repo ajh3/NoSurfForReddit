@@ -16,7 +16,7 @@ package com.aaronhalbert.nosurfforreddit.ui.detail;
 import android.net.Uri;
 import android.view.View;
 
-import com.aaronhalbert.nosurfforreddit.utils.ExternalBrowser;
+import com.aaronhalbert.nosurfforreddit.ui.utils.ExternalBrowser;
 
 import androidx.navigation.Navigation;
 

@@ -27,8 +27,8 @@ import android.webkit.WebView;
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.utils.SharePost;
-import com.aaronhalbert.nosurfforreddit.utils.webview.NoSurfWebViewClient;
+import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;
+import com.aaronhalbert.nosurfforreddit.ui.utils.webview.NoSurfWebViewClient;
 
 import javax.inject.Inject;
 

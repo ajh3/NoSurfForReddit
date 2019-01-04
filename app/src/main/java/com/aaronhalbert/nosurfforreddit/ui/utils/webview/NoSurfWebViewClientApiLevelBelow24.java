@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.utils.webview;
+package com.aaronhalbert.nosurfforreddit.ui.utils.webview;
 
 import android.webkit.WebView;
 

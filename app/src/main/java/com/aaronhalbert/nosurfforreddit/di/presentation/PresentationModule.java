@@ -15,8 +15,8 @@ package com.aaronhalbert.nosurfforreddit.di.presentation;
 
 import android.os.Build;
 
-import com.aaronhalbert.nosurfforreddit.utils.webview.NoSurfWebViewClient;
-import com.aaronhalbert.nosurfforreddit.utils.webview.NoSurfWebViewClientApiLevelBelow24;
+import com.aaronhalbert.nosurfforreddit.ui.utils.webview.NoSurfWebViewClient;
+import com.aaronhalbert.nosurfforreddit.ui.utils.webview.NoSurfWebViewClientApiLevelBelow24;
 
 import androidx.fragment.app.FragmentActivity;
 import dagger.Module;

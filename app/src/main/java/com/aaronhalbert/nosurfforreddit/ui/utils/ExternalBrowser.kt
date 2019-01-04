@@ -11,13 +11,18 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.utils.glide;
+package com.aaronhalbert.nosurfforreddit.ui.utils
 
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 
-@SuppressWarnings("WeakerAccess")
-@GlideModule
-public final class MyAppGlideModule extends AppGlideModule {
-    // leave empty for now
+class ExternalBrowser(private val context: Context) {
+
+    fun launchExternalBrowser(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+
+        // avoid crashing if there is no supported external browser installed on the device
+        intent.resolveActivity(context.packageManager)?.let { context.startActivity(intent) }
+    }
 }
