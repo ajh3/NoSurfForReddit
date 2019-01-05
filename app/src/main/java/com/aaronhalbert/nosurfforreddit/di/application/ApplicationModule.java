@@ -48,7 +48,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    PostsRepo provideNoSurfRepository(RetrofitContentInterface ri,
+    PostsRepo providePostsRepo(RetrofitContentInterface ri,
                                       ClickedPostIdRoomDatabase db,
                                       ExecutorService executor,
                                       NoSurfAuthenticator authenticator,
@@ -109,7 +109,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    PostsRepoUtils provideRepoUtils() {
+    PostsRepoUtils providePostsRepoUtils() {
         return new PostsRepoUtils();
     }
 }
