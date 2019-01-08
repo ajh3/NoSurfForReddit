@@ -27,14 +27,13 @@ public class NoSurfApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //initLeakCanary();
+        initLeakCanary();
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
     }
 
-    @SuppressWarnings("unused")
     private void initLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
