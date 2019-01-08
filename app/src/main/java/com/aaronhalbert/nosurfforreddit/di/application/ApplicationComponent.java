@@ -28,6 +28,7 @@ public interface ApplicationComponent {
      *
      * Since we have a subcomponent, we don't need to expose any dependencies publicly
      * from this component; sub-components automatically have access to the entire object graph. */
+    @SuppressWarnings("UnusedReturnValue")
     PresentationComponent newPresentationComponent(PresentationModule presentationModule,
                                                    ViewModelModule viewModelModule);
 }

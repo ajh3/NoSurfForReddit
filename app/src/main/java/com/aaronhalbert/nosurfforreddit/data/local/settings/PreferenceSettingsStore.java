@@ -28,10 +28,14 @@ public class PreferenceSettingsStore {
         this.preferences = preferences;
     }
 
+    // Lint bug thinks method isn't used (?)
+    @SuppressWarnings("UnusedReturnValue")
     public boolean isNightMode() {
         return preferences.getBoolean(KEY_NIGHT_MODE, true);
     }
 
+    // Lint bug thinks method isn't used (?)
+    @SuppressWarnings("UnusedReturnValue")
     public boolean isAmoledNightMode() {
         return preferences.getBoolean(KEY_AMOLED_NIGHT_MODE, false);
     }

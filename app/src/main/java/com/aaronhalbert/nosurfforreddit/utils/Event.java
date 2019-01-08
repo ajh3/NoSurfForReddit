@@ -23,6 +23,7 @@ public class Event<T> {
         this.content = content;
     }
 
+    // might use this later
     @SuppressWarnings("UnusedReturnValue")
     public T getContentIfNotHandled() {
         if (hasBeenHandled) {
@@ -33,11 +34,13 @@ public class Event<T> {
         }
     }
 
+    // might use this later
     @SuppressWarnings("unused")
     public T peekContent() {
         return content;
     }
 
+    // might use this later
     @SuppressWarnings("unused")
     public boolean getHasBeenHandled() {
         return hasBeenHandled;

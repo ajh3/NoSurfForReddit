@@ -43,6 +43,7 @@ public class NoSurfApplication extends Application {
         LeakCanary.install(this);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public ApplicationComponent getApplicationComponent() {
         return applicationComponent;
     }
