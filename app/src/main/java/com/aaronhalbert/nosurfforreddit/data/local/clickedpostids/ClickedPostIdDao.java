@@ -35,7 +35,7 @@ public interface ClickedPostIdDao {
     void insertClickedPostId(ClickedPostId clickedPostId);
 
     //Note to self:  DELETE FROM with no WHERE clause deletes all records in the table
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //TODO: Clear database on regular interval - WorkManager?
     @Query("DELETE FROM clicked_post_id_table")
     void deleteAllClickedPostIds();
 }
