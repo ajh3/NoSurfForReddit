@@ -50,8 +50,6 @@ public class ContainerFragment extends BaseFragment {
         return new ContainerFragment();
     }
 
-    // region lifecycle methods --------------------------------------------------------------------
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getPresentationComponent().inject(this);
@@ -91,10 +89,6 @@ public class ContainerFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_container, container, false);
     }
 
-    // endregion lifecycle methods -----------------------------------------------------------------
-
-    // region helper methods -----------------------------------------------------------------------
-
     private void observeIsUserLoggedInLiveData() {
         viewModel.getIsUserLoggedInLiveData().observe(this, isUserLoggedIn -> {
             FragmentTransaction ft = fm.beginTransaction();
@@ -114,6 +108,4 @@ public class ContainerFragment extends BaseFragment {
     private Fragment findSubscribedPostsFragment() {
         return fm.findFragmentByTag(TAG_SUBSCRIBED_POSTS_FRAGMENT);
     }
-
-    // endregion helper methods --------------------------------------------------------------------
 }
