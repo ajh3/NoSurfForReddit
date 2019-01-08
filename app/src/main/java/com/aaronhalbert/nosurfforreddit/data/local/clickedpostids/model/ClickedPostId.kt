@@ -11,24 +11,13 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model;
+package com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.model
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "clicked_post_id_table")
-public class ClickedPostId {
-
-    @PrimaryKey //this field is its own primary key
-    @NonNull
-    private final String clickedPostId;
-
-    public ClickedPostId(String clickedPostId) {
-        this.clickedPostId = clickedPostId;
-    }
-
-    public String getClickedPostId() {
-        return this.clickedPostId;
-    }
-}
+data class ClickedPostId(
+    //Note to self: this field is its own primary key
+    @field:PrimaryKey val clickedPostId: String
+)
