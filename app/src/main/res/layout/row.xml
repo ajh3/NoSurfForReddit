@@ -27,6 +27,7 @@
             android:id="@+id/thumbnail"
             android:contentDescription="@string/post_thumbnail_description"
             android:onClick="@{controller::onClick}"
+            android:onLongClick="@{controller::onLongClick}"
             app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
             app:transparency="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
             app:layout_constraintStart_toStartOf="@id/list_item"
@@ -38,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:onClick="@{controller::onClick}"
+            android:onLongClick="@{controller::onLongClick}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
             app:layout_constraintEnd_toEndOf="@id/list_item">
 

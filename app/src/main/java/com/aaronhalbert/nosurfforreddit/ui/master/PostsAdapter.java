@@ -13,10 +13,12 @@
 
 package com.aaronhalbert.nosurfforreddit.ui.master;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.aaronhalbert.nosurfforreddit.BaseActivity;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
@@ -96,7 +98,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
     // region helper classes -----------------------------------------------------------------------
 
-    public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private static final String VIEW_NSFW_POST = "View NSFW post";
         private static final String GO_BACK = "Go back";
         private final RowBinding rowBinding;
@@ -107,6 +109,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             this.rowBinding = rowBinding;
             navController = Navigation.findNavController(viewGroup);
             itemView.setOnClickListener(this); // itemView is the root View of the ViewHolder
+            itemView.setOnLongClickListener(this);
         }
 
         void bindModel() {
@@ -126,6 +129,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
             evaluateClick(v, isShortcutClick);
         }
 
+        /* on long click, mark post as read and do nothing else */
+        @Override
+        public boolean onLongClick(View v) {
+            setLastClickedPostDatum(getAdapterPosition());
+            insertClickedPostId();
+            return true;
+        }
+
         private void evaluateClick(View v, boolean isShortcutClick) {
             if (isNsfwFilter() && viewModel.getLastClickedPostDatum().isNsfw) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -134,13 +145,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
                         .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPostDatum().title, viewModel.getLastClickedPostDatum().subreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
                         .setPositiveButton(VIEW_NSFW_POST, (dialog, id) -> {
                             evaluateIfShortcutClick(isShortcutClick);
-                            viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
+                            insertClickedPostId();
                         })
                         .setNegativeButton(GO_BACK, (dialog, id) -> dialog.cancel())
                         .show();
             } else {
                 evaluateIfShortcutClick(isShortcutClick);
-                viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
+                insertClickedPostId();
             }
         }
 
@@ -166,6 +177,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
                 navController.navigate(action);
             }
+        }
+
+        private void insertClickedPostId() {
+            viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
         }
 
         private void gotoUrlDirectly() {
