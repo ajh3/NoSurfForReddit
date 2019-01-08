@@ -178,7 +178,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         public boolean isNsfwFilter() {
-            return hostFragment.settingsStore.isNsfwFilter();
+            return hostFragment.preferenceSettingsStore.isNsfwFilter();
         }
 
         /* cache this information in the ViewModel, as it's used by various other components */

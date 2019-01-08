@@ -25,7 +25,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.aaronhalbert.nosurfforreddit.BaseActivity
 import com.aaronhalbert.nosurfforreddit.R
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore
+import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils
 import com.aaronhalbert.nosurfforreddit.makeToast
 import com.aaronhalbert.nosurfforreddit.noSurfLog
@@ -42,7 +42,7 @@ private const val NIGHT_MODE = "nightMode"
 private const val AMOLED_NIGHT_MODE = "amoledNightMode"
 
 class MainActivity : BaseActivity() {
-    @Inject lateinit var settingsStore: SettingsStore
+    @Inject lateinit var preferenceSettingsStore: PreferenceSettingsStore
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var authenticatorUtils: AuthenticatorUtils
     private lateinit var viewModel: MainActivityViewModel
@@ -80,12 +80,12 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        settingsStore.registerListener(sharedPrefsListener)
+        preferenceSettingsStore.registerListener(sharedPrefsListener)
     }
 
     override fun onPause() {
         super.onPause()
-        settingsStore.unregisterListener(sharedPrefsListener)
+        preferenceSettingsStore.unregisterListener(sharedPrefsListener)
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -113,8 +113,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun pickDayNightMode() {
-        nightMode = settingsStore.isNightMode
-        amoledNightMode = settingsStore.isAmoledNightMode
+        nightMode = preferenceSettingsStore.isNightMode
+        amoledNightMode = preferenceSettingsStore.isAmoledNightMode
 
         if (nightMode) {
             dayNightPicker.nightModeOn(amoledNightMode)

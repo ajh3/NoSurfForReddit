@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;
@@ -44,7 +44,7 @@ abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
 
-    @Inject SettingsStore settingsStore;
+    @Inject PreferenceSettingsStore preferenceSettingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @SuppressWarnings("WeakerAccess") public MainActivityViewModel viewModel;
     FragmentPostBinding fragmentPostBinding;
@@ -64,7 +64,7 @@ abstract public class PostFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
-        externalBrowser = settingsStore.isUseExternalBrowser();
+        externalBrowser = preferenceSettingsStore.isUseExternalBrowser();
         checkIfCommentsAlreadyLoaded(savedInstanceState);
     }
 

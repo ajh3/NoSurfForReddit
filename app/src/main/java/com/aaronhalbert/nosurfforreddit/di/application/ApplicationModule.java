@@ -22,7 +22,6 @@ import com.aaronhalbert.nosurfforreddit.data.local.auth.PreferenceTokenStore;
 import com.aaronhalbert.nosurfforreddit.data.local.auth.TokenStore;
 import com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.ClickedPostIdRoomDatabase;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.NoSurfAuthenticator;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.RetrofitAuthenticationInterface;
 import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
@@ -80,7 +79,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    SettingsStore provideSettingsStore(@Named(DEFAULT_SHARED_PREFS) SharedPreferences preferences) {
+    PreferenceSettingsStore providePreferenceSettingsStore(@Named(DEFAULT_SHARED_PREFS) SharedPreferences preferences) {
         return new PreferenceSettingsStore(preferences);
     }
 

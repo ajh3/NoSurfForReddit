@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
@@ -41,7 +41,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    @SuppressWarnings("WeakerAccess") @Inject public SettingsStore settingsStore;
+    @SuppressWarnings("WeakerAccess") @Inject public PreferenceSettingsStore preferenceSettingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;

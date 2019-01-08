@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
@@ -41,7 +41,7 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGl
 /* the main content fragment which holds all others, at the root of the activity's view */
 
 public class ViewPagerFragment extends BaseFragment {
-    @Inject SettingsStore settingsStore;
+    @Inject PreferenceSettingsStore preferenceSettingsStore;
     @Inject AuthenticatorUtils authenticatorUtils;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
@@ -172,7 +172,7 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void setPage() {
-        if (settingsStore.isDefaultPageSubscribed()) {
+        if (preferenceSettingsStore.isDefaultPageSubscribed()) {
             pager.setCurrentItem(1);
         }
     }
