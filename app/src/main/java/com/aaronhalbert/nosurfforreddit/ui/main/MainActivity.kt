@@ -17,8 +17,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -29,6 +27,8 @@ import com.aaronhalbert.nosurfforreddit.BaseActivity
 import com.aaronhalbert.nosurfforreddit.R
 import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils
+import com.aaronhalbert.nosurfforreddit.makeToast
+import com.aaronhalbert.nosurfforreddit.noSurfLog
 import com.aaronhalbert.nosurfforreddit.ui.utils.DayNightPicker
 import com.aaronhalbert.nosurfforreddit.ui.utils.SplashScreen
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory
@@ -130,13 +130,7 @@ class MainActivity : BaseActivity() {
     private fun subscribeToNetworkErrors() {
         viewModel.networkErrorsLiveData.observe(this,
             Observer {
-                it.contentIfNotHandled?.let {
-                    Toast.makeText(
-                        this,
-                        NETWORK_ERROR_MESSAGE,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                it.contentIfNotHandled?.let { makeToast(NETWORK_ERROR_MESSAGE) }
             })
     }
 
@@ -149,8 +143,8 @@ class MainActivity : BaseActivity() {
             val code = authenticatorUtils.extractCodeFromIntent(intent)
 
             if (code.isEmpty()) {
-                Log.e(javaClass.toString(), LOGIN_FAILED_ERROR_MESSAGE)
-                Toast.makeText(this, LOGIN_FAILED_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
+                noSurfLog { LOGIN_FAILED_ERROR_MESSAGE }
+                makeToast(LOGIN_FAILED_ERROR_MESSAGE)
                 navController.navigateUp()
             } else {
                 viewModel.logUserIn(code)

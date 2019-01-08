@@ -13,14 +13,23 @@
 
 package com.aaronhalbert.nosurfforreddit
 
+import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.aaronhalbert.nosurfforreddit.di.application.ApplicationComponent
 import com.aaronhalbert.nosurfforreddit.di.presentation.PresentationComponent
 import com.aaronhalbert.nosurfforreddit.di.presentation.PresentationModule
 import com.aaronhalbert.nosurfforreddit.di.presentation.ViewModelModule
+
+fun noSurfLog(message: () -> String) {
+    if (BuildConfig.DEBUG) Log.e("NoSurf", message())
+}
+
+fun Context.makeToast(text: String) = Toast.makeText(applicationContext, text, Toast.LENGTH_LONG).show()
 
 private const val INJECTION_ALREADY_PERFORMED = "Injection already performed on this activity"
 

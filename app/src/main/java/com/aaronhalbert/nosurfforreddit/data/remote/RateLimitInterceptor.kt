@@ -13,7 +13,7 @@
 
 package com.aaronhalbert.nosurfforreddit.data.remote
 
-import android.util.Log
+import com.aaronhalbert.nosurfforreddit.noSurfLog
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -50,10 +50,10 @@ class RateLimitInterceptor : Interceptor {
         ) {
             // equivalent to "if >1 request per second has been made so far during this period"
             try {
-                Log.e(javaClass.toString(), SLEEPING_ON_RATE_LIMIT)
+                noSurfLog { SLEEPING_ON_RATE_LIMIT }
                 Thread.sleep(1000)
             } catch (e: InterruptedException) {
-                Log.e(javaClass.toString(), INTERRUPTED_EXCEPTION)
+                noSurfLog { INTERRUPTED_EXCEPTION }
             }
         }
         return response
