@@ -25,6 +25,9 @@ private const val INJECTION_ALREADY_PERFORMED = "Injection already performed on 
 abstract class BaseFragment : Fragment() {
     private var isInjectorUsed = false
 
+    /* use Java-style names for this Dagger code since it's called from classes that haven't
+     * yet been converted to Kotlin */
+
     @UiThread
     fun getPresentationComponent(): PresentationComponent {
         if (isInjectorUsed) {
