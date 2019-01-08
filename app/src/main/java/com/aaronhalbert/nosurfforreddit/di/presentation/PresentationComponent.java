@@ -26,10 +26,16 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {PresentationModule.class, ViewModelModule.class})
 public interface PresentationComponent {
     void inject(MainActivity mainActivity);
+
     void inject(NoSurfWebViewFragment noSurfWebViewFragment);
+
     void inject(ViewPagerFragment viewPagerFragment);
+
     void inject(PostFragment postFragment);
+
     void inject(PostsFragment postsFragment);
+
     void inject(LoginFragment loginFragment);
+
     void inject(ContainerFragment containerFragment);
 }

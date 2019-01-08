@@ -14,8 +14,8 @@
 package com.aaronhalbert.nosurfforreddit.di.application;
 
 import com.aaronhalbert.nosurfforreddit.BuildConfig;
-import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.data.remote.RateLimitInterceptor;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.RetrofitAuthenticationInterface;
 import com.aaronhalbert.nosurfforreddit.data.remote.posts.RetrofitContentInterface;
 

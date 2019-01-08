@@ -25,6 +25,7 @@ import static com.aaronhalbert.nosurfforreddit.BuildConfig.REDDIT_URL_BASE;
  * is preferable IMO. */
 public class SharePost {
     private static final String SHARE_POST = "Share post...";
+    private static final String TEXT_PLAIN = "text/plain";
 
     private final Context context;
     private Intent intent;
@@ -35,7 +36,7 @@ public class SharePost {
 
     public void createShareIntent(String lastClickedPostPermalink) {
         Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
+        i.setType(TEXT_PLAIN);
         i.putExtra(Intent.EXTRA_SUBJECT, SHARE_POST);
         i.putExtra(Intent.EXTRA_TEXT, REDDIT_URL_BASE + lastClickedPostPermalink);
 

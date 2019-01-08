@@ -18,8 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
+import com.aaronhalbert.nosurfforreddit.R;
 
 public class AboutFragment extends BaseFragment {
 

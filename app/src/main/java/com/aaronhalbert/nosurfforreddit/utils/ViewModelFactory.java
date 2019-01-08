@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
+    private static final String INVALID_VIEW_MODEL_CLASS = "invalid ViewModel class";
     private final PostsRepo postsRepo;
 
     public ViewModelFactory(PostsRepo postsRepo) {
@@ -32,7 +33,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass == MainActivityViewModel.class) {
             return (T) new MainActivityViewModel(postsRepo);
         } else {
-            throw new RuntimeException("invalid ViewModel class" + modelClass);
+            throw new RuntimeException(INVALID_VIEW_MODEL_CLASS + modelClass);
         }
     }
 }

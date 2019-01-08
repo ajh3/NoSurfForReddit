@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing;
 import com.aaronhalbert.nosurfforreddit.ui.utils.glide.GlideApp;
 
 import androidx.annotation.DrawableRes;
@@ -30,17 +31,21 @@ import androidx.databinding.BindingAdapter;
 
 import static com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing.DEFAULT;
 import static com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing.IMAGE;
-import static com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing.NSFW;
 import static com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing.SELF;
 import static com.aaronhalbert.nosurfforreddit.data.remote.posts.model.Listing.SPOILER;
 
 @SuppressWarnings("WeakerAccess")
 public class DataBindingHandlers {
+    private static final String IMAGE_URL = "imageUrl";
+    private static final String STRIKETHROUGH = "strikethrough";
+    private static final String TRANSPARENCY = "transparency";
+    private static final String NSFW = "nsfw";
+    private static final String NSFW_FILTER = "nsfwFilter";
 
     /* these methods are called by the binding framework any time it finds a view with one
      * of the synthetic properties specified in the annotation arguments */
 
-    @BindingAdapter("imageUrl")
+    @BindingAdapter(IMAGE_URL)
     public static void bindImage(ImageView iv, String url) {
         Context context = iv.getContext();
 
@@ -51,7 +56,7 @@ public class DataBindingHandlers {
             loadImage(context, iv, R.drawable.link_post_thumbnail);
         } else if (SELF.equals(url)) {
             loadImage(context, iv, R.drawable.self_post_thumbnail);
-        } else if (NSFW.equals(url)) {
+        } else if (Listing.NSFW.equals(url)) {
             loadImage(context, iv, R.drawable.nsfw_thumbnail);
         } else if (IMAGE.equals(url)) {
             loadImage(context, iv, R.drawable.link_post_thumbnail);
@@ -75,20 +80,20 @@ public class DataBindingHandlers {
                 .into(iv);
     }
 
-    @BindingAdapter("strikethrough")
+    @BindingAdapter(STRIKETHROUGH)
     public static void strikethrough(TextView tv, boolean hasBeenClicked) {
         if (hasBeenClicked) {
             tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             tv.setTextColor(ContextCompat
                     .getColor(tv.getContext(), R.color.colorRecyclerViewTextClicked));
         } else {
-            tv.setPaintFlags(tv.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+            tv.setPaintFlags(tv.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             tv.setTextColor(ContextCompat
                     .getColor(tv.getContext(), R.color.colorRecyclerViewText));
         }
     }
 
-    @BindingAdapter("transparency")
+    @BindingAdapter(TRANSPARENCY)
     public static void transparency(ImageView iv, boolean hasBeenClicked) {
         if (hasBeenClicked) {
             iv.setAlpha(0.2f);
@@ -97,7 +102,7 @@ public class DataBindingHandlers {
         }
     }
 
-    @BindingAdapter({"nsfw", "nsfwFilter"})
+    @BindingAdapter({NSFW, NSFW_FILTER})
     public static void nsfw(TextView tv, boolean isNsfw, boolean isNsfwFilter) {
         if (isNsfw && isNsfwFilter) {
             BlurMaskFilter filter = new BlurMaskFilter(tv.getTextSize() / 2, BlurMaskFilter.Blur.NORMAL);

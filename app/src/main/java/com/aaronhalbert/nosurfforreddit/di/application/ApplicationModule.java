@@ -18,16 +18,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aaronhalbert.nosurfforreddit.data.remote.auth.NoSurfAuthenticator;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.local.auth.PreferenceTokenStore;
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepoUtils;
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
-import com.aaronhalbert.nosurfforreddit.data.remote.auth.RetrofitAuthenticationInterface;
-import com.aaronhalbert.nosurfforreddit.data.remote.posts.RetrofitContentInterface;
-import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.local.auth.TokenStore;
 import com.aaronhalbert.nosurfforreddit.data.local.clickedpostids.ClickedPostIdRoomDatabase;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.NoSurfAuthenticator;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.RetrofitAuthenticationInterface;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepo;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.PostsRepoUtils;
+import com.aaronhalbert.nosurfforreddit.data.remote.posts.RetrofitContentInterface;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,19 +40,21 @@ import dagger.Provides;
 
 @Module
 public class ApplicationModule {
+    private static final String O_AUTH_SHARED_PREFS = "oAuthSharedPrefs";
+    private static final String DEFAULT_SHARED_PREFS = "defaultSharedPrefs";
     private final Application application;
 
     public ApplicationModule(Application application) {
-         this.application = application;
-     }
+        this.application = application;
+    }
 
     @Singleton
     @Provides
     PostsRepo providePostsRepo(RetrofitContentInterface ri,
-                                      ClickedPostIdRoomDatabase db,
-                                      ExecutorService executor,
-                                      NoSurfAuthenticator authenticator,
-                                      PostsRepoUtils postsRepoUtils) {
+                               ClickedPostIdRoomDatabase db,
+                               ExecutorService executor,
+                               NoSurfAuthenticator authenticator,
+                               PostsRepoUtils postsRepoUtils) {
         return new PostsRepo(ri, db, executor, authenticator, postsRepoUtils);
     }
 
@@ -64,27 +66,27 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    @Named("oAuthSharedPrefs")
-        SharedPreferences provideOAuthSharedPrefs() {
+    @Named(O_AUTH_SHARED_PREFS)
+    SharedPreferences provideOAuthSharedPrefs() {
         return application.getSharedPreferences(application.getPackageName() + "oauth", Context.MODE_PRIVATE);
     }
 
     @Singleton
     @Provides
-    @Named("defaultSharedPrefs")
+    @Named(DEFAULT_SHARED_PREFS)
     SharedPreferences provideDefaultSharedPrefs() {
         return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
     @Singleton
     @Provides
-    SettingsStore provideSettingsStore(@Named("defaultSharedPrefs") SharedPreferences preferences) {
+    SettingsStore provideSettingsStore(@Named(DEFAULT_SHARED_PREFS) SharedPreferences preferences) {
         return new PreferenceSettingsStore(preferences);
     }
 
     @Singleton
     @Provides
-    TokenStore provideTokenStore(@Named("oAuthSharedPrefs") SharedPreferences preferences) {
+    TokenStore provideTokenStore(@Named(O_AUTH_SHARED_PREFS) SharedPreferences preferences) {
         return new PreferenceTokenStore(preferences);
     }
 

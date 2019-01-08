@@ -27,31 +27,38 @@ import retrofit2.http.Url;
 
 public interface RetrofitAuthenticationInterface {
 
+    String GRANT_TYPE = "grant_type";
+    String DEVICE_ID = "device_id";
+    String AUTHORIZATION = "Authorization";
+    String CODE = "code";
+    String REDIRECT_URI = "redirect_uri";
+    String REFRESH_TOKEN = "refresh_token";
+
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
-    @POST   // can't provide a relative URL here when using @Url
+    @POST // can't provide a relative URL here when using @Url
     Single<AppOnlyOAuthToken> fetchAppOnlyOAuthTokenASync(
             @Url String baseUrl,
-            @Field("grant_type") String grantType,
-            @Field("device_id") String deviceId,
-            @Header("Authorization") String authorization);
+            @Field(GRANT_TYPE) String grantType,
+            @Field(DEVICE_ID) String deviceId,
+            @Header(AUTHORIZATION) String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
     Single<UserOAuthToken> fetchUserOAuthTokenASync(
             @Url String baseUrl,
-            @Field("grant_type") String grantType,
-            @Field("code") String code,
-            @Field("redirect_uri") String redirectUri,
-            @Header("Authorization") String authorization);
+            @Field(GRANT_TYPE) String grantType,
+            @Field(CODE) String code,
+            @Field(REDIRECT_URI) String redirectUri,
+            @Header(AUTHORIZATION) String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
     @FormUrlEncoded
     @POST
     Single<UserOAuthToken> refreshExpiredUserOAuthTokenASync(
             @Url String baseUrl,
-            @Field("grant_type") String grantType,
-            @Field("refresh_token") String refreshToken,
-            @Header("Authorization") String authorization);
+            @Field(GRANT_TYPE) String grantType,
+            @Field(REFRESH_TOKEN) String refreshToken,
+            @Header(AUTHORIZATION) String authorization);
 }

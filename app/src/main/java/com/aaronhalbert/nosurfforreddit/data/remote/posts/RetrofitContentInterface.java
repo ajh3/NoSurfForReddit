@@ -26,19 +26,25 @@ import retrofit2.http.Path;
 
 public interface RetrofitContentInterface {
 
+    String R_ALL_HOT = "r/all/hot";
+    String AUTHORIZATION = "Authorization";
+    String COMMENTS_ARTICLE = "comments/{article}";
+    String ARTICLE = "article";
+    String HOT = "hot";
+
     @Headers({BuildConfig.USER_AGENT})
-    @GET("r/all/hot")
+    @GET(R_ALL_HOT)
     Single<Listing> fetchAllPostsASync(
-            @Header("Authorization") String authorization);
+            @Header(AUTHORIZATION) String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
-    @GET("hot")
+    @GET(HOT)
     Single<Listing> fetchSubscribedPostsASync(
-            @Header("Authorization") String authorization);
+            @Header(AUTHORIZATION) String authorization);
 
     @Headers({BuildConfig.USER_AGENT})
-    @GET("comments/{article}")
+    @GET(COMMENTS_ARTICLE)
     Single<List<Listing>> fetchPostCommentsASync(
-            @Header("Authorization") String authorization,
-            @Path("article") String article);
+            @Header(AUTHORIZATION) String authorization,
+            @Path(ARTICLE) String article);
 }
