@@ -25,6 +25,7 @@ import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
+import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     @SuppressWarnings("WeakerAccess") @Inject public SettingsStore settingsStore;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     MainActivityViewModel viewModel;
     LiveData<PostsViewState> postsViewStateLiveData;
 
@@ -54,7 +56,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
         selectPostsViewStateLiveData();
         setupRefreshAnimationCanceler();
     }

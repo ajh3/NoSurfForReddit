@@ -69,9 +69,6 @@ class MainActivity : BaseActivity() {
         PreferenceManager.setDefaultValues(application, R.xml.preferences, false)
         setContentView(R.layout.activity_main)
 
-        /* only necessary to specify the factory the first time here, subsequent calls to
-         * ViewModelProviders.of for MainActivityViewModel will get the right ViewModel without
-         * specifying the factory */
         viewModel = ViewModelProviders
             .of(this, viewModelFactory)[MainActivityViewModel::class.java]
 

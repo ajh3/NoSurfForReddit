@@ -23,8 +23,9 @@ import android.view.ViewGroup;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
+import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;
@@ -42,6 +43,7 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGl
 public class ViewPagerFragment extends BaseFragment {
     @Inject SettingsStore settingsStore;
     @Inject AuthenticatorUtils authenticatorUtils;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
 
@@ -55,7 +57,7 @@ public class ViewPagerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
         observeIsUserLoggedInLiveData();
     }
 

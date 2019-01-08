@@ -30,6 +30,7 @@ import com.aaronhalbert.nosurfforreddit.data.local.settings.SettingsStore;
 import com.aaronhalbert.nosurfforreddit.databinding.FragmentPostBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;
+import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -44,6 +45,7 @@ abstract public class PostFragment extends BaseFragment {
     private static final String ZERO = "zero";
 
     @Inject SettingsStore settingsStore;
+    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     @SuppressWarnings("WeakerAccess") public MainActivityViewModel viewModel;
     FragmentPostBinding fragmentPostBinding;
 
@@ -61,7 +63,7 @@ abstract public class PostFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
         externalBrowser = settingsStore.isUseExternalBrowser();
         checkIfCommentsAlreadyLoaded(savedInstanceState);
     }

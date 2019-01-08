@@ -18,6 +18,7 @@ import com.aaronhalbert.nosurfforreddit.ui.detail.PostFragment;
 import com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity;
 import com.aaronhalbert.nosurfforreddit.ui.main.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.ui.master.ContainerFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.PostsFragment;
 
 import dagger.Subcomponent;
@@ -30,4 +31,5 @@ public interface PresentationComponent {
     void inject(PostFragment postFragment);
     void inject(PostsFragment postsFragment);
     void inject(LoginFragment loginFragment);
+    void inject(ContainerFragment containerFragment);
 }
