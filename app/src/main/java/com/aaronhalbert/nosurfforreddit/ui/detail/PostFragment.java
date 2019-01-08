@@ -181,7 +181,7 @@ abstract public class PostFragment extends BaseFragment {
 
     private void observeCommentsFinishedLoadingLiveEvent() {
         viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
-            if ((viewModel.getLastClickedPostDatum().id).equals(commentsViewState.id) || (ZERO.equals(commentsViewState.id))) {
+            if ((viewModel.getLastClickedPostDatum().id).equals(commentsViewState.getId()) || (ZERO.equals(commentsViewState.getId()))) {
                 updateCommentViewVisibilities();
                 commentsAlreadyLoaded = true;
             }
@@ -190,7 +190,7 @@ abstract public class PostFragment extends BaseFragment {
 
     /* show the correct comment and divider views based on how many comments the post has */
     private void updateCommentViewVisibilities() {
-        int numComments = viewModel.getCommentsViewStateLiveData().getValue().numComments;
+        int numComments = viewModel.getCommentsViewStateLiveData().getValue().getNumComments();
 
         for (int i = 0; i < numComments; i++) {
             comments[i].setVisibility(View.VISIBLE);

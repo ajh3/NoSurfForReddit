@@ -203,8 +203,8 @@ public class PostsRepo {
                 String commentAuthor = input.get(1).getCommentAuthor(autoModOffset + i);
                 int commentScore = input.get(1).getCommentScore(autoModOffset, i);
 
-                commentsViewState.commentBodies[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
-                commentsViewState.commentDetails[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
+                commentsViewState.getCommentBodies()[i] = input.get(1).formatCommentBodyHtml(autoModOffset, i);
+                commentsViewState.getCommentDetails()[i] = input.get(0).formatCommentDetails(commentAuthor, commentScore);
             }
         } else { //if zero comments
             commentsViewState = new CommentsViewState(0, ZERO);
