@@ -44,16 +44,16 @@ class RateLimitInterceptor : Interceptor {
         val xRateLimitReset = response.header(X_RATELIMIT_RESET)
         val xRateLimitUsed = response.header(X_RATELIMIT_USED)
 
-        if (xRateLimitReset != null && xRateLimitUsed != null) {
-
+        if (xRateLimitReset != null
+            && xRateLimitUsed != null
+            && (xRateLimitUsed.toInt() >= (600 - xRateLimitReset.toInt()))
+        ) {
             // equivalent to "if >1 request per second has been made so far during this period"
-            if (xRateLimitUsed.toInt() >= (600 - xRateLimitReset.toInt())) {
-                try {
-                    Log.e(javaClass.toString(), SLEEPING_ON_RATE_LIMIT)
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException) {
-                    Log.e(javaClass.toString(), INTERRUPTED_EXCEPTION)
-                }
+            try {
+                Log.e(javaClass.toString(), SLEEPING_ON_RATE_LIMIT)
+                Thread.sleep(1000)
+            } catch (e: InterruptedException) {
+                Log.e(javaClass.toString(), INTERRUPTED_EXCEPTION)
             }
         }
         return response
