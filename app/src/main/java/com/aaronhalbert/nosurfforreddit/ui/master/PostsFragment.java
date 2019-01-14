@@ -27,6 +27,8 @@ import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import androidx.lifecycle.LiveData;
@@ -36,11 +38,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import static com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState.*;
+
 /* base fragment containing the master view of posts, in a RecyclerView
  *
  * when a row (post) is clicked, the associated PostsAdapter kicks off a PostFragment detail view */
 
 abstract public class PostsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+    private static final int ITEM_COUNT = 25;
+
     @SuppressWarnings("WeakerAccess") @Inject public PreferenceSettingsStore preferenceSettingsStore;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
     MainActivityViewModel viewModel;
@@ -102,6 +108,14 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         switch(item.getItemId()) {
             case R.id.refresh:
                 refreshWithAnimation();
+                return true;
+            case R.id.mark_all_as_read:
+                ArrayList<Post> postData = postsViewStateLiveData.getValue().postData;
+
+                for (int i = 0; i < ITEM_COUNT; i++) {
+                    viewModel.insertClickedPostId(postData.get(i).id);
+                }
+
                 return true;
         }
 
