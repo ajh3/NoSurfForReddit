@@ -30,8 +30,8 @@
             android:onLongClick="@{controller::onLongClick}"
             app:imageUrl="@{controller.postsViewStateLiveData.postData[controller.position].thumbnailUrl}"
             app:transparency="@{controller.postsViewStateLiveData.hasBeenClicked[controller.position]}"
-            app:layout_constraintStart_toStartOf="@id/list_item"
-            app:layout_constraintTop_toTopOf="@id/list_item"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/item_title_and_details" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +41,8 @@
             android:onClick="@{controller::onClick}"
             android:onLongClick="@{controller::onLongClick}"
             app:layout_constraintStart_toEndOf="@id/thumbnail"
-            app:layout_constraintEnd_toEndOf="@id/list_item">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/RecyclerViewRowTitle"
