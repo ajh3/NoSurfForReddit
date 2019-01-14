@@ -122,7 +122,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         @Override
         public void onClick(View v) {
-            setLastClickedPostDatum(getAdapterPosition());
+            setLastClickedPost(getAdapterPosition());
             boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPost().isSelf);
             evaluateClick(v, isShortcutClick);
         }
@@ -130,7 +130,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         /* on long click, mark post as read and do nothing else */
         @Override
         public boolean onLongClick(View v) {
-            setLastClickedPostDatum(getAdapterPosition());
+            setLastClickedPost(getAdapterPosition());
             insertClickedPostId();
             return true;
         }
@@ -195,7 +195,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         /* cache this information in the ViewModel, as it's used by various other components */
-        private void setLastClickedPostDatum(int position) {
+        private void setLastClickedPost(int position) {
             viewModel.setLastClickedPost(postsViewStateLiveData.getValue().postData.get(position));
         }
     }
