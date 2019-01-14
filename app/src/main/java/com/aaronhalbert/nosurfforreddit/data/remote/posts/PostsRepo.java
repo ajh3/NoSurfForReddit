@@ -151,31 +151,31 @@ public class PostsRepo {
         PostsViewState postsViewState = new PostsViewState();
 
         for (int i = 0; i < 25; i++) {
-            PostsViewState.PostDatum postDatum = new PostsViewState.PostDatum();
+            PostsViewState.Post post = new PostsViewState.Post();
 
             Data_ data = input.getData().getChildren().get(i).getData();
 
             // both link posts and self posts share these attributes
-            postDatum.isSelf = data.isIsSelf();
-            postDatum.id = data.getId();
-            postDatum.title = input.decodeHtml(data.getTitle()).toString(); // some titles contain HTML special entities
-            postDatum.author = data.getAuthor();
-            postDatum.subreddit = data.getSubreddit();
-            postDatum.score = data.getScore();
-            postDatum.numComments = data.getNumComments();
-            postDatum.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
-            postDatum.isNsfw = data.isNsfw();
-            postDatum.permalink = data.getPermalink();
+            post.isSelf = data.isIsSelf();
+            post.id = data.getId();
+            post.title = input.decodeHtml(data.getTitle()).toString(); // some titles contain HTML special entities
+            post.author = data.getAuthor();
+            post.subreddit = data.getSubreddit();
+            post.score = data.getScore();
+            post.numComments = data.getNumComments();
+            post.thumbnailUrl = input.pickThumbnailUrl(data.getThumbnail());
+            post.isNsfw = data.isNsfw();
+            post.permalink = data.getPermalink();
 
             // assign link- and self-post specific attributes
-            if (postDatum.isSelf) {
-                postDatum.selfTextHtml = input.formatSelfPostSelfTextHtml(data.getSelfTextHtml());
+            if (post.isSelf) {
+                post.selfTextHtml = input.formatSelfPostSelfTextHtml(data.getSelfTextHtml());
             } else {
-                postDatum.url = input.decodeHtml(data.getUrl()).toString();
-                postDatum.imageUrl = input.decodeHtml(input.pickImageUrl(i)).toString();
+                post.url = input.decodeHtml(data.getUrl()).toString();
+                post.imageUrl = input.decodeHtml(input.pickImageUrl(i)).toString();
             }
 
-            postsViewState.postData.set(i, postDatum);
+            postsViewState.postData.set(i, post);
         }
 
         return postsViewState;

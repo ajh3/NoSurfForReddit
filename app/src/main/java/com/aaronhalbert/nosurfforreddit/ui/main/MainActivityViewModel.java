@@ -37,7 +37,7 @@ import static com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel.Net
 import static com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel.NetworkErrors.FETCH_SUBSCRIBED_POSTS_ERROR;
 import static com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel.NetworkErrors.LOGIN_STATUS_CHECK_ERROR;
 import static com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel.NetworkErrors.USER_AUTH_CALL_ERROR;
-import static com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState.PostDatum;
+import static com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState.Post;
 
 public class MainActivityViewModel extends ViewModel {
     private static final String FETCH_ALL_POSTS_CALL_FAILED = "fetchAllPostsASync call failed: ";
@@ -65,7 +65,7 @@ public class MainActivityViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     // TODO: pass this around as a fragment argument instead of sharing it via the ViewModel?
-    private PostDatum lastClickedPostDatum;
+    private Post lastClickedPost;
 
     public MainActivityViewModel(PostsRepo postsRepo) {
         this.postsRepo = postsRepo;
@@ -158,12 +158,12 @@ public class MainActivityViewModel extends ViewModel {
         return isUserLoggedInLiveData;
     }
 
-    public PostDatum getLastClickedPostDatum() {
-        return lastClickedPostDatum;
+    public PostsViewState.Post getLastClickedPost() {
+        return lastClickedPost;
     }
 
-    public void setLastClickedPostDatum(PostDatum postDatum) {
-        this.lastClickedPostDatum = postDatum;
+    public void setLastClickedPost(Post post) {
+        this.lastClickedPost = post;
     }
 
     // endregion getter/setter methods -------------------------------------------------------------

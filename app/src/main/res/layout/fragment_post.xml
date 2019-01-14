@@ -26,13 +26,13 @@
             <TextView
                 style="@style/PostFragmentTitle"
                 android:id="@+id/post_fragment_title"
-                android:text="@{postFragment.viewModel.lastClickedPostDatum.title}"
+                android:text="@{postFragment.viewModel.lastClickedPost.title}"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 style="@style/PostFragmentDetails"
                 android:id="@+id/post_fragment_details"
-                android:text="@{`in r/` + postFragment.viewModel.lastClickedPostDatum.subreddit + ` by u/` + postFragment.viewModel.lastClickedPostDatum.author + ` • ` + postFragment.viewModel.lastClickedPostDatum.score}"
+                android:text="@{`in r/` + postFragment.viewModel.lastClickedPost.subreddit + ` by u/` + postFragment.viewModel.lastClickedPost.author + ` • ` + postFragment.viewModel.lastClickedPost.score}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_title"/>
 
             <ImageView
@@ -40,7 +40,7 @@
                 android:id="@+id/post_fragment_image_for_link_posts_only"
                 android:onClick="@{postFragment::onImageClick}"
                 android:contentDescription="@string/post_image_description"
-                app:imageUrl="@{postFragment.viewModel.lastClickedPostDatum.imageUrl}"
+                app:imageUrl="@{postFragment.viewModel.lastClickedPost.imageUrl}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_details"/>
 
             <View
@@ -51,7 +51,7 @@
             <TextView
                 style="@style/PostFragmentSelftextForSelfPostsOnly"
                 android:id="@+id/post_fragment_selftext_for_self_posts_only"
-                android:text="@{postFragment.viewModel.lastClickedPostDatum.selfTextHtml}"
+                android:text="@{postFragment.viewModel.lastClickedPost.selfTextHtml}"
                 app:layout_constraintTop_toBottomOf="@id/post_fragment_divider_under_details_for_self_posts_only"/>
 
             <View

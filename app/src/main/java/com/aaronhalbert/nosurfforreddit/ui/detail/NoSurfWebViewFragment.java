@@ -90,7 +90,7 @@ public class NoSurfWebViewFragment extends BaseFragment {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
                 SharePost sharePost = new SharePost(getContext());
-                sharePost.createShareIntent(mainActivityViewModel.getLastClickedPostDatum().permalink);
+                sharePost.createShareIntent(mainActivityViewModel.getLastClickedPost().permalink);
                 sharePost.launchShareIntent();
 
                 return true;

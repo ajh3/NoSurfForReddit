@@ -113,7 +113,7 @@ abstract public class PostFragment extends BaseFragment {
         switch(item.getItemId()) {
             case R.id.menu_item_share:
                 SharePost sharePost = new SharePost(getContext());
-                sharePost.createShareIntent(viewModel.getLastClickedPostDatum().permalink);
+                sharePost.createShareIntent(viewModel.getLastClickedPost().permalink);
                 sharePost.launchShareIntent();
 
                 return true;
@@ -127,7 +127,7 @@ abstract public class PostFragment extends BaseFragment {
     // region listeners ----------------------------------------------------------------------------
 
     public void onImageClick(View view) {
-        launchLink(view, viewModel.getLastClickedPostDatum().url);
+        launchLink(view, viewModel.getLastClickedPost().url);
     }
 
     // endregion listeners -------------------------------------------------------------------------
@@ -173,7 +173,7 @@ abstract public class PostFragment extends BaseFragment {
 
         if (!commentsAlreadyLoaded) {
             observeCommentsFinishedLoadingLiveEvent();
-            viewModel.fetchPostCommentsASync(viewModel.getLastClickedPostDatum().id);
+            viewModel.fetchPostCommentsASync(viewModel.getLastClickedPost().id);
         } else {
             updateCommentViewVisibilities();
         }
@@ -181,7 +181,7 @@ abstract public class PostFragment extends BaseFragment {
 
     private void observeCommentsFinishedLoadingLiveEvent() {
         viewModel.getCommentsViewStateLiveData().observe(getViewLifecycleOwner(), commentsViewState -> {
-            if ((viewModel.getLastClickedPostDatum().id).equals(commentsViewState.getId()) || (ZERO.equals(commentsViewState.getId()))) {
+            if ((viewModel.getLastClickedPost().id).equals(commentsViewState.getId()) || (ZERO.equals(commentsViewState.getId()))) {
                 updateCommentViewVisibilities();
                 commentsAlreadyLoaded = true;
             }

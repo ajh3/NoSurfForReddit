@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class PostsViewState {
     private static final int INITIAL_CAPACITY = 25;
-    public final ArrayList<PostDatum> postData;
+    public final ArrayList<Post> postData;
     public final boolean[] hasBeenClicked;
 
     public PostsViewState() {
@@ -29,11 +29,11 @@ public class PostsViewState {
         // make sure initial *size* (not just capacity) of postData == INITIAL_CAPACITY
         // so we can start set()ing its elements right away from the ViewModel
         for (int i = 0; i < INITIAL_CAPACITY; i++) {
-            postData.add(new PostDatum());
+            postData.add(new Post());
         }
     }
 
-    public static class PostDatum {
+    public static class Post {
         public boolean isSelf;
         public boolean isNsfw;
         public int score;

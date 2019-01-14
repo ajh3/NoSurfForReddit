@@ -27,7 +27,7 @@ public class SelfPostFragment extends PostFragment {
                 .postFragmentDividerUnderDetailsForSelfPostsOnly
                 .setVisibility(View.VISIBLE);
 
-        if (!"".equals(viewModel.getLastClickedPostDatum().selfTextHtml)) {
+        if (!"".equals(viewModel.getLastClickedPost().selfTextHtml)) {
 
             fragmentPostBinding
                     .postFragmentSelftextForSelfPostsOnly

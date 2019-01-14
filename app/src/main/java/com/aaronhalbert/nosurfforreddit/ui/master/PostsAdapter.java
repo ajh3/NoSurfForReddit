@@ -13,12 +13,10 @@
 
 package com.aaronhalbert.nosurfforreddit.ui.master;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.aaronhalbert.nosurfforreddit.BaseActivity;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
@@ -125,7 +123,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         @Override
         public void onClick(View v) {
             setLastClickedPostDatum(getAdapterPosition());
-            boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPostDatum().isSelf);
+            boolean isShortcutClick = v instanceof ImageView && !(viewModel.getLastClickedPost().isSelf);
             evaluateClick(v, isShortcutClick);
         }
 
@@ -138,11 +136,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void evaluateClick(View v, boolean isShortcutClick) {
-            if (isNsfwFilter() && viewModel.getLastClickedPostDatum().isNsfw) {
+            if (isNsfwFilter() && viewModel.getLastClickedPost().isNsfw) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
                 builder
-                        .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPostDatum().title, viewModel.getLastClickedPostDatum().subreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
+                        .setMessage(HtmlCompat.fromHtml(v.getContext().getString(R.string.nsfw_confirmation, viewModel.getLastClickedPost().title, viewModel.getLastClickedPost().subreddit), HtmlCompat.FROM_HTML_MODE_LEGACY))
                         .setPositiveButton(VIEW_NSFW_POST, (dialog, id) -> {
                             evaluateIfShortcutClick(isShortcutClick);
                             insertClickedPostId();
@@ -166,7 +164,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void launchPost() {
-            if (viewModel.getLastClickedPostDatum().isSelf) {
+            if (viewModel.getLastClickedPost().isSelf) {
                 ViewPagerFragmentDirections.ClickSelfPostAction action
                         = ViewPagerFragmentDirections.clickSelfPostAction();
 
@@ -180,11 +178,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
         }
 
         private void insertClickedPostId() {
-            viewModel.insertClickedPostId(viewModel.getLastClickedPostDatum().id);
+            viewModel.insertClickedPostId(viewModel.getLastClickedPost().id);
         }
 
         private void gotoUrlDirectly() {
-            String url = viewModel.getLastClickedPostDatum().url;
+            String url = viewModel.getLastClickedPost().url;
 
             GotoUrlGlobalAction action
                     = gotoUrlGlobalAction(url);
@@ -198,7 +196,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         /* cache this information in the ViewModel, as it's used by various other components */
         private void setLastClickedPostDatum(int position) {
-            viewModel.setLastClickedPostDatum(postsViewStateLiveData.getValue().postData.get(position));
+            viewModel.setLastClickedPost(postsViewStateLiveData.getValue().postData.get(position));
         }
     }
     // endregion helper classes---------------------------------------------------------------------
