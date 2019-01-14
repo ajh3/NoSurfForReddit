@@ -55,7 +55,7 @@ public class PostsRepo {
 
     // region network auth calls -------------------------------------------------------------------
 
-    //TODO: Move auth-related calls out of here and into an AuthRepo which incorporates TokenStore
+    //TODO: Move auth-related calls out of here and into an AuthRepo which uses TokenStore
     public Single<UserOAuthToken> fetchUserOAuthTokenASync(String code) {
         return authenticator.fetchUserOAuthTokenASync(code);
     }
@@ -90,7 +90,7 @@ public class PostsRepo {
                     }
                     return Single.error(throwable);
                 })
-                .map(this::cleanRawPosts);
+                .map(this::cleanRawPostsMapper);
     }
 
     /* gets posts from the user's subscribed subreddits; only works for logged-in users. See
@@ -110,7 +110,7 @@ public class PostsRepo {
                         }
                         return Single.error(throwable);
                     })
-                    .map(this::cleanRawPosts);
+                    .map(this::cleanRawPostsMapper);
         }
 
         // do nothing if user is logged out, as subscribed posts are only for logged-in users
@@ -138,7 +138,7 @@ public class PostsRepo {
                     }
                     return Single.error(throwable);
                 })
-                .map(this::cleanRawComments);
+                .map(this::cleanRawCommentsMapper);
     }
 
     // endregion network data calls ----------------------------------------------------------------
@@ -147,7 +147,7 @@ public class PostsRepo {
 
     /* Cleans dirty/raw post data from the Reddit API. Prepares it to be merged with the list
      * of clicked post IDs from the Room database, before being passed to the UI. */
-    private PostsViewState cleanRawPosts(Listing input) {
+    private PostsViewState cleanRawPostsMapper(Listing input) {
         PostsViewState postsViewState = new PostsViewState();
 
         for (int i = 0; i < 25; i++) {
@@ -182,7 +182,7 @@ public class PostsRepo {
     }
 
     /* Cleans dirty/raw comment data from the Reddit API. */
-    private CommentsViewState cleanRawComments(List<Listing> input) {
+    private CommentsViewState cleanRawCommentsMapper(List<Listing> input) {
         CommentsViewState commentsViewState;
         int autoModOffset;
 
