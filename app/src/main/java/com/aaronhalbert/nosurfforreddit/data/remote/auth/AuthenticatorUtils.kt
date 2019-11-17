@@ -15,7 +15,7 @@ package com.aaronhalbert.nosurfforreddit.data.remote.auth
 
 import android.content.Intent
 import com.aaronhalbert.nosurfforreddit.BuildConfig
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.*
 
 const val CLIENT_ID_PARAMETER_NAME = "client_id"
@@ -33,8 +33,7 @@ const val CODE = "code"
 class AuthenticatorUtils {
 
     fun buildAuthUrl(): String {
-        return HttpUrl
-                .parse(BuildConfig.AUTH_URL_BASE)
+        return BuildConfig.AUTH_URL_BASE.toHttpUrlOrNull()
                 ?.newBuilder()
                 ?.addQueryParameter(CLIENT_ID_PARAMETER_NAME, BuildConfig.CLIENT_ID)
                 ?.addQueryParameter(AUTH_URL_RESPONSE_TYPE, RESPONSE_TYPE)
