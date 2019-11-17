@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.viewpager.widget.ViewPager;
 
@@ -189,15 +190,13 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void launchPrefsScreen() {
-        ViewPagerFragmentDirections.GotoPrefsAction action
-                = ViewPagerFragmentDirections.gotoPrefsAction();
+        NavDirections action = ViewPagerFragmentDirections.gotoPrefsAction();
 
         navController.navigate(action);
     }
 
     private void launchAboutScreen() {
-        ViewPagerFragmentDirections.GotoAboutAction action
-                = ViewPagerFragmentDirections.gotoAboutAction();
+        NavDirections action = ViewPagerFragmentDirections.gotoAboutAction();
 
         navController.navigate(action);
     }

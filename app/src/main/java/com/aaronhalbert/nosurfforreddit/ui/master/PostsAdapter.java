@@ -27,6 +27,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -165,13 +166,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         private void launchPost() {
             if (viewModel.getLastClickedPost().isSelf) {
-                ViewPagerFragmentDirections.ClickSelfPostAction action
-                        = ViewPagerFragmentDirections.clickSelfPostAction();
+                NavDirections action = ViewPagerFragmentDirections.clickSelfPostAction();
 
                 navController.navigate(action);
             } else {
-                ViewPagerFragmentDirections.ClickLinkPostAction action
-                        = ViewPagerFragmentDirections.clickLinkPostAction();
+                NavDirections action = ViewPagerFragmentDirections.clickLinkPostAction();
 
                 navController.navigate(action);
             }
