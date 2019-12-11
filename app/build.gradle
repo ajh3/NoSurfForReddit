@@ -59,7 +59,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
-    def retrofit_version = "2.6.2"
+    def retrofit_version = '2.7.0'
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
 
@@ -83,13 +83,11 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
     implementation "android.arch.navigation:navigation-ui:$nav_version"
 
-    def leak_canary_version = "1.6.3"
+    def leak_canary_version = '2.0'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leak_canary_version"
-    debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:$leak_canary_version"
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-inline:3.1.0'
+    testImplementation 'org.mockito:mockito-inline:3.2.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
 }
