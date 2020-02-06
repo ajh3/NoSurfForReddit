@@ -13,29 +13,28 @@
 
 package com.aaronhalbert.nosurfforreddit.ui.main;
 
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+
 import com.aaronhalbert.nosurfforreddit.ui.master.AllPostsFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.ContainerFragment;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-
-class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
+class NoSurfFragmentPagerAdapter extends FragmentStateAdapter {
     private static final int NUM_ITEMS = 2;
     private static final String R_ALL = "/r/All";
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
 
-    NoSurfFragmentPagerAdapter(FragmentManager fm) {
-        super(fm);
+    NoSurfFragmentPagerAdapter(Fragment f) {
+        super(f);
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return NUM_ITEMS;
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         if (position == 0) {
             return AllPostsFragment.newInstance();
         } else {
@@ -43,8 +42,7 @@ class NoSurfFragmentPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
+    public String getTitle(int position) {
         if (position == 0) {
             return R_ALL;
         } else {

@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
@@ -33,6 +33,7 @@ import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsSt
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import javax.inject.Inject;
 
@@ -48,7 +49,7 @@ public class ViewPagerFragment extends BaseFragment {
     private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
 
-    private ViewPager pager;
+    private ViewPager2 pager;
     private NavController navController;
 
     // region lifecycle methods --------------------------------------------------------------------
@@ -165,11 +166,15 @@ public class ViewPagerFragment extends BaseFragment {
     private void setupViewPagerWithTabLayout(View view) {
         pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
+
         NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
-                new NoSurfFragmentPagerAdapter(getChildFragmentManager());
+                new NoSurfFragmentPagerAdapter(this);
 
         pager.setAdapter(noSurfFragmentPagerAdapter);
-        tabs.setupWithViewPager(pager);
+
+        new TabLayoutMediator(tabs, pager,
+                (tab, position) -> tab.setText(noSurfFragmentPagerAdapter.getTitle(position))).attach();
+
         tabs.setTabMode(TabLayout.MODE_FIXED);
     }
 
