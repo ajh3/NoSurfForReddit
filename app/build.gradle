@@ -83,7 +83,7 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
     implementation "android.arch.navigation:navigation-ui:$nav_version"
 
-    def leak_canary_version = '2.1'
+    def leak_canary_version = '2.2'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
 
     testImplementation 'junit:junit:4.13'
