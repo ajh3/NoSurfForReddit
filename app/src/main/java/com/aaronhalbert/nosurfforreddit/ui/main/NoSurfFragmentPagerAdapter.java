@@ -42,7 +42,7 @@ class NoSurfFragmentPagerAdapter extends FragmentStateAdapter {
         }
     }
 
-    public String getTitle(int position) {
+    String getTitle(int position) {
         if (position == 0) {
             return R_ALL;
         } else {
