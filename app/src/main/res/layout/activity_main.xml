@@ -8,7 +8,7 @@
     <include layout="@layout/toolbar"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/nav_host_fragment"
