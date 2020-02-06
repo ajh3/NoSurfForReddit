@@ -2,14 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.aaronhalbert.nosurfforreddit"
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 6
         versionName "6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -65,11 +66,11 @@ dependencies {
 
     def glide_version = '4.11.0'
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     def dagger2_version = '2.26'
     implementation "com.google.dagger:dagger:$dagger2_version"
-    annotationProcessor "com.google.dagger:dagger-compiler:$dagger2_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger2_version"
 
     def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
@@ -77,7 +78,7 @@ dependencies {
     def room_version = '2.2.3'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     def nav_version = "1.0.0"
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
