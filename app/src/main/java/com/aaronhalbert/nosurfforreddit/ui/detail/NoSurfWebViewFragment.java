@@ -24,6 +24,8 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
@@ -32,8 +34,6 @@ import com.aaronhalbert.nosurfforreddit.ui.utils.webview.NoSurfWebViewClient;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
 import javax.inject.Inject;
-
-import androidx.lifecycle.ViewModelProviders;
 
 public class NoSurfWebViewFragment extends BaseFragment {
     @SuppressWarnings("WeakerAccess") @Inject NoSurfWebViewClient noSurfWebViewClient;
@@ -50,7 +50,8 @@ public class NoSurfWebViewFragment extends BaseFragment {
 
         setupMenu();
 
-        mainActivityViewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
+        mainActivityViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(MainActivityViewModel.class);
 
         url = NoSurfWebViewFragmentArgs.fromBundle(getArguments()).getUrl();
     }

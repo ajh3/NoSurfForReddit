@@ -18,7 +18,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -69,8 +69,8 @@ class MainActivity : BaseActivity() {
         PreferenceManager.setDefaultValues(application, R.xml.preferences, false)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProviders
-            .of(this, viewModelFactory)[MainActivityViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)
+                .get(MainActivityViewModel::class.java)
 
         /* only run the splash animation on fresh app launch */
         if (savedInstanceState == null) initSplash()

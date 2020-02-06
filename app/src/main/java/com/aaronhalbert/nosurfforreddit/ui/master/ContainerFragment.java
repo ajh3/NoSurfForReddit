@@ -18,6 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment;
@@ -25,11 +30,6 @@ import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
 import javax.inject.Inject;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 
 /* This fragment is necessary only because it's difficult to directly swap pages inside a
  * FragmentPagerAdapter.
@@ -55,7 +55,8 @@ public class ContainerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(MainActivityViewModel.class);
         fm = getChildFragmentManager();
 
         // we add both fragments and simply show/hide them as needed

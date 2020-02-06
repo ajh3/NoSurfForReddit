@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
@@ -33,8 +35,6 @@ import com.aaronhalbert.nosurfforreddit.ui.utils.SharePost;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 
 import javax.inject.Inject;
-
-import androidx.lifecycle.ViewModelProviders;
 
 /* base fragment for the detail view of a single post, when a row in the RecyclerView is clicked
  *
@@ -63,7 +63,8 @@ abstract public class PostFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(MainActivityViewModel.class);
         externalBrowser = preferenceSettingsStore.isUseExternalBrowser();
         checkIfCommentsAlreadyLoaded(savedInstanceState);
     }

@@ -20,6 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
@@ -31,14 +38,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import static com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState.*;
+import static com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState.Post;
 
 /* base fragment containing the master view of posts, in a RecyclerView
  *
@@ -62,7 +62,8 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(MainActivityViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(MainActivityViewModel.class);
         selectPostsViewStateLiveData();
         setupRefreshAnimationCanceler();
     }
