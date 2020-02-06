@@ -16,7 +16,8 @@ package com.aaronhalbert.nosurfforreddit.di.application;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import com.aaronhalbert.nosurfforreddit.data.local.auth.PreferenceTokenStore;
 import com.aaronhalbert.nosurfforreddit.data.local.auth.TokenStore;
