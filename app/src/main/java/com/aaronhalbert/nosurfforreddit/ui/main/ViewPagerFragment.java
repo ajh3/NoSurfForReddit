@@ -74,7 +74,7 @@ public class ViewPagerFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = Navigation.findNavController(view);
-        setupViewPagerWithTabLayout(view);
+        setupViewPager(view);
         setPage();
         setupSplashVisibilityToggle();
     }
@@ -163,12 +163,14 @@ public class ViewPagerFragment extends BaseFragment {
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void setupViewPagerWithTabLayout(View view) {
+    private void setupViewPager(View view) {
         pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
 
         NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
                 new NoSurfFragmentPagerAdapter(this);
+
+        pager.setUserInputEnabled(false);
 
         pager.setAdapter(noSurfFragmentPagerAdapter);
 
