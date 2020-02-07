@@ -13,10 +13,10 @@
         android:defaultValue="false"
         android:title="@string/external_browser"
         android:key="externalBrowser" />
-    <CheckBoxPreference
+    <!-- <CheckBoxPreference
         android:defaultValue="false"
         android:title="@string/default_page_is_subscribed"
-        android:key="defaultPageIsSubscribed" />
+        android:key="defaultPageIsSubscribed" /> See comments on setPage() of ViewPagerFragment-->
     <CheckBoxPreference
         android:defaultValue="true"
         android:title="@string/nsfw_filter"

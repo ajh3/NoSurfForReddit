@@ -178,10 +178,18 @@ public class ViewPagerFragment extends BaseFragment {
         tabs.setTabMode(TabLayout.MODE_FIXED);
     }
 
+    //TODO: file bug report with Google?
+    /*
+     * Disabled due to ViewPager & ViewPager2 not correctly working with setCurrentItem()
+     * during initial setup.
+     *
+     * https://stackoverflow.com/questions/19316729/android-viewpager-setcurrentitem-not-working-after-onresume
+     *
+     */
     private void setPage() {
-        if (preferenceSettingsStore.isDefaultPageSubscribed()) {
-            pager.setCurrentItem(1);
-        }
+        //if (preferenceSettingsStore.isDefaultPageSubscribed()) {
+        //    pager.setCurrentItem(1);
+        //}
     }
 
     // endregion helper methods --------------------------------------------------------------------
