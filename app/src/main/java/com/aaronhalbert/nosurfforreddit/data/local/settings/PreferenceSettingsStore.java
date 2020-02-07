@@ -21,6 +21,7 @@ public class PreferenceSettingsStore {
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
     private static final String KEY_DEFAULT_PAGE_IS_SUBSCRIBED = "defaultPageIsSubscribed";
     private static final String KEY_NSFW_FILTER = "nsfwFilter";
+    private static final String KEY_SWIPE_TO_REFRESH_DISABLED = "disableSwipeToRefresh";
 
     private final SharedPreferences preferences;
 
@@ -50,6 +51,10 @@ public class PreferenceSettingsStore {
 
     public boolean isNsfwFilter() {
         return preferences.getBoolean(KEY_NSFW_FILTER, false);
+    }
+
+    public boolean isSwipeToRefreshDisabled() {
+        return preferences.getBoolean(KEY_SWIPE_TO_REFRESH_DISABLED, true);
     }
 
     public void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {

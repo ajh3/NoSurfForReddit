@@ -15,6 +15,7 @@ package com.aaronhalbert.nosurfforreddit.ui.master;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,6 +149,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     private void setupSwipeRefreshLayout(View v) {
         swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setEnabled(!preferenceSettingsStore.isSwipeToRefreshDisabled());
     }
 
     private void refreshWithAnimation() {

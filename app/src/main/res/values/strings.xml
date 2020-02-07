@@ -18,4 +18,5 @@
     <string name="nsfw_filter">Mask NSFW posts</string>
     <string name="nsfw_confirmation">&lt;b>%1$s&lt;/b>&lt;br /&gt;&lt;br /&gt;in /r/%2$s</string>
     <string name="mark_all_as_read">Mark all as read</string>
+    <string name="disable_swipe_to_refresh">Disable swipe-to-refresh</string>
 </resources>

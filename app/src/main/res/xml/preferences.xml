@@ -21,4 +21,8 @@
         android:defaultValue="true"
         android:title="@string/nsfw_filter"
         android:key="nsfwFilter" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:title="@string/disable_swipe_to_refresh"
+        android:key="disableSwipeToRefresh" />
 </PreferenceScreen>
