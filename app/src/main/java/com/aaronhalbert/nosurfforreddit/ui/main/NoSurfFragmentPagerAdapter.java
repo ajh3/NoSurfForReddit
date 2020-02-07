@@ -36,17 +36,17 @@ class NoSurfFragmentPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            return AllPostsFragment.newInstance();
-        } else {
             return ContainerFragment.newInstance();
+        } else {
+            return AllPostsFragment.newInstance();
         }
     }
 
     String getTitle(int position) {
         if (position == 0) {
-            return R_ALL;
-        } else {
             return YOUR_SUBREDDITS;
+        } else {
+            return R_ALL;
         }
     }
 }
