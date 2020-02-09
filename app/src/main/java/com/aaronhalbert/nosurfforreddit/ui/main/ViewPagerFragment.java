@@ -21,6 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
@@ -31,6 +34,10 @@ import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
+import com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment;
+import com.aaronhalbert.nosurfforreddit.ui.master.AllPostsFragment;
+import com.aaronhalbert.nosurfforreddit.ui.master.ContainerFragment;
+import com.aaronhalbert.nosurfforreddit.ui.master.SubscribedPostsFragment;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -49,8 +56,14 @@ public class ViewPagerFragment extends BaseFragment {
     private MainActivityViewModel viewModel;
     private boolean isUserLoggedIn = false;
 
-    private ViewPager2 pager;
     private NavController navController;
+    private FragmentManager fm;
+
+    private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
+    private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
+
+    private static final String R_ALL = "/r/All";
+    private static final String YOUR_SUBREDDITS = "Your Subreddits";
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -61,7 +74,32 @@ public class ViewPagerFragment extends BaseFragment {
         setHasOptionsMenu(true);
         viewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(MainActivityViewModel.class);
+        fm = getChildFragmentManager();
+
+        if (findAllPostsFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.asdf,
+                            AllPostsFragment.newInstance(),
+                            TAG_ALL_POSTS_FRAGMENT)
+                    .commit();
+        }
+
+        if (findContainerFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.asdf,
+                            ContainerFragment.newInstance(),
+                            TAG_CONTAINER_FRAGMENT)
+                    .commit();
+        }
+
+
         observeIsUserLoggedInLiveData();
+
+
     }
 
     @Override
@@ -86,7 +124,6 @@ public class ViewPagerFragment extends BaseFragment {
         /* prevent memory leaks due to fragment going on backstack while retaining these objects
          * in instance variables. See comments on PostsFragment.onDestroyView() for a more detailed
          * explanation of this leak. */
-        pager = null;
         navController = null;
     }
 
@@ -164,20 +201,42 @@ public class ViewPagerFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void setupViewPager(View view) {
-        pager = view.findViewById(R.id.view_pager_fragment_pager);
         TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
 
-        NoSurfFragmentPagerAdapter noSurfFragmentPagerAdapter =
-                new NoSurfFragmentPagerAdapter(this);
+        tabs.addTab(tabs.newTab().setText(R_ALL));
+        tabs.addTab(tabs.newTab().setText(YOUR_SUBREDDITS));
 
-        pager.setUserInputEnabled(false);
-
-        pager.setAdapter(noSurfFragmentPagerAdapter);
-
-        new TabLayoutMediator(tabs, pager,
-                (tab, position) -> tab.setText(noSurfFragmentPagerAdapter.getTitle(position))).attach();
 
         tabs.setTabMode(TabLayout.MODE_FIXED);
+
+
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                FragmentTransaction ft = fm.beginTransaction();
+
+                if (tabs.getSelectedTabPosition() == 0) {
+                    ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
+                } else {
+                    ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
+                }
+
+
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
     }
 
     //TODO: file bug report with Google?
@@ -193,6 +252,20 @@ public class ViewPagerFragment extends BaseFragment {
         //    pager.setCurrentItem(1);
         //}
     }
+
+
+
+    private Fragment findAllPostsFragment() {
+        return fm.findFragmentByTag(TAG_ALL_POSTS_FRAGMENT);
+    }
+
+    private Fragment findContainerFragment() {
+        return fm.findFragmentByTag(TAG_CONTAINER_FRAGMENT);
+    }
+
+
+
+
 
     // endregion helper methods --------------------------------------------------------------------
 
