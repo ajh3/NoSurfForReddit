@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
@@ -102,7 +103,9 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initNavComponent() {
-        navController = findNavController(R.id.nav_host_fragment)
+        // https://issuetracker.google.com/issues/142847973
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         setSupportActionBar(toolbar)
         toolbar.setupWithNavController(navController, appBarConfiguration)
