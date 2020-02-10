@@ -13,15 +13,15 @@
             android:dependency="nightMode" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/decrease_addictiveness_settings">
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:title="@string/nsfw_filter"
-            android:key="nsfwFilter" />
+        android:title="@string/content_settings">
         <CheckBoxPreference
             android:defaultValue="false"
             android:title="@string/enable_swipe_to_refresh"
             android:key="enableSwipeToRefresh" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/nsfw_filter"
+            android:key="nsfwFilter" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:title="@string/show_all"

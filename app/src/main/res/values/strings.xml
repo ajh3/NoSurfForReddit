@@ -18,9 +18,9 @@
     <string name="nsfw_filter">Blur NSFW post titles</string>
     <string name="nsfw_confirmation">&lt;b>%1$s&lt;/b>&lt;br /&gt;&lt;br /&gt;in /r/%2$s</string>
     <string name="mark_all_as_read">Mark all as read</string>
-    <string name="enable_swipe_to_refresh">Enable swipe-to-refresh</string>
+    <string name="enable_swipe_to_refresh">Swipe-to-refresh</string>
     <string name="show_all">Show /r/all</string>
     <string name="display_settings">Display</string>
-    <string name="decrease_addictiveness_settings">Decrease addictiveness!</string>
+    <string name="content_settings">Content</string>
     <string name="misc_settings">Misc</string>
 </resources>
