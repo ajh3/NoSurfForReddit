@@ -14,9 +14,14 @@
         android:title="@string/external_browser"
         android:key="externalBrowser" />
     <CheckBoxPreference
+        android:defaultValue="true"
+        android:title="@string/show_all"
+        android:key="showAll" />
+    <CheckBoxPreference
         android:defaultValue="false"
         android:title="@string/default_page_is_all"
-        android:key="defaultPageIsAll" />
+        android:key="defaultPageIsAll"
+        android:dependency="showAll" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:title="@string/nsfw_filter"

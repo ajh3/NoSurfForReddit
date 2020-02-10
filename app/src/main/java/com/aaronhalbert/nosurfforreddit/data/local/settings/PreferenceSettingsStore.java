@@ -19,6 +19,7 @@ public class PreferenceSettingsStore {
     private static final String KEY_NIGHT_MODE = "nightMode";
     private static final String KEY_AMOLED_NIGHT_MODE = "amoledNightMode";
     private static final String KEY_EXTERNAL_BROWSER = "externalBrowser";
+    private static final String KEY_SHOW_ALL = "showAll";
     private static final String KEY_DEFAULT_PAGE_IS_ALL = "defaultPageIsAll";
     private static final String KEY_NSFW_FILTER = "nsfwFilter";
     private static final String KEY_SWIPE_TO_REFRESH_DISABLED = "disableSwipeToRefresh";
@@ -43,6 +44,10 @@ public class PreferenceSettingsStore {
 
     public boolean isUseExternalBrowser() {
         return preferences.getBoolean(KEY_EXTERNAL_BROWSER, false);
+    }
+
+    public boolean showAll() {
+        return preferences.getBoolean(KEY_SHOW_ALL, true);
     }
 
     public boolean isDefaultPageAll() {

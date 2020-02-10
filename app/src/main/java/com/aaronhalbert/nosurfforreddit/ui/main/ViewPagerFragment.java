@@ -61,9 +61,7 @@ public class ViewPagerFragment extends BaseFragment {
 
     private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
     private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
-
     private static final String TAB_STATE = "tabState";
-
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
     private static final String R_ALL = "/r/All";
 
@@ -128,10 +126,22 @@ public class ViewPagerFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = Navigation.findNavController(view);
-        setupViewPager(view);
+
+        if (preferenceSettingsStore.showAll()) {
+            setupViewPager(view);
+            setPage();
+        } else {
+            view.findViewById(R.id.view_pager_fragment_tabs).setVisibility(View.GONE);
+
+            FragmentTransaction ft = fm.beginTransaction();
+
+            ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
+
+            }
 
 
-        setPage();
+
+
 
 
         setupSplashVisibilityToggle();
@@ -213,17 +223,6 @@ public class ViewPagerFragment extends BaseFragment {
         viewModel.getIsUserLoggedInLiveData()
                 .observe(this, loggedInStatus -> {
                     isUserLoggedIn = loggedInStatus;
-
-                    FragmentTransaction ft = fm.beginTransaction();
-
-                    if (tabs.getSelectedTabPosition() == 0) {
-                        ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
-
-
-                    } else {
-                        ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
-
-                    }
         });
     }
 

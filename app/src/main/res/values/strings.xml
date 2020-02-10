@@ -13,10 +13,11 @@
     <string name="post_image_description" tools:keep="@string/post_image_description">Post image</string>
     <string name="post_thumbnail_description" tools:keep="@string/post_thumbnail_description">Post thumbnail image</string>
     <string name="logo_description">NoSurf logo</string>
-    <string name="default_page_is_all">/r/all is default screen</string>
+    <string name="default_page_is_all">/r/all is default screen on app launch</string>
     <string name="share">Share</string>
     <string name="nsfw_filter">Mask NSFW posts</string>
     <string name="nsfw_confirmation">&lt;b>%1$s&lt;/b>&lt;br /&gt;&lt;br /&gt;in /r/%2$s</string>
     <string name="mark_all_as_read">Mark all as read</string>
     <string name="disable_swipe_to_refresh">Disable swipe-to-refresh</string>
+    <string name="show_all">Enable /r/all</string>
 </resources>
