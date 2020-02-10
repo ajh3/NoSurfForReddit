@@ -19,6 +19,7 @@ import android.view.View;
 import com.aaronhalbert.nosurfforreddit.ui.utils.ExternalBrowser;
 
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
@@ -45,7 +46,7 @@ public class LinkPostFragment extends PostFragment {
             GotoUrlGlobalAction action
                     = gotoUrlGlobalAction(url);
 
-            Navigation.findNavController(view).navigate(action);
+            NavHostFragment.findNavController(this).navigate(action);
         }
     }
 }

@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoLoginUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGlobalAction;
@@ -61,6 +62,6 @@ public class LoginFragment extends BaseFragment {
         GotoLoginUrlGlobalAction action
                 = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
 
-        Navigation.findNavController(getView()).navigate(action);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }
