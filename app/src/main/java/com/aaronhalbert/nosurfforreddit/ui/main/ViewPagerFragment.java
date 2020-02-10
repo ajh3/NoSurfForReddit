@@ -104,10 +104,12 @@ public class ViewPagerFragment extends BaseFragment {
         }
 
 
-        Log.e("asdf", "test");
 
-
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
+            if (preferenceSettingsStore.isDefaultPageAll()) {
+                tabPosition = 1;
+            }
+        } else {
             tabPosition = savedInstanceState.getInt(TAB_STATE, 0);
         }
 
@@ -125,25 +127,19 @@ public class ViewPagerFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Log.e("asdf", "view created");
-
         navController = Navigation.findNavController(view);
         setupViewPager(view);
 
 
-
-        tabs.getTabAt(tabPosition).select();
-
-
         setPage();
+
+
         setupSplashVisibilityToggle();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        Log.e("asdf", "view destroyed");
 
         /* prevent memory leaks due to fragment going on backstack while retaining these objects
          * in instance variables. See comments on PostsFragment.onDestroyView() for a more detailed
@@ -298,9 +294,10 @@ public class ViewPagerFragment extends BaseFragment {
      *
      */
     private void setPage() {
-        //if (preferenceSettingsStore.isDefaultPageSubscribed()) {
-        //    pager.setCurrentItem(1);
-        //}
+
+        tabs.getTabAt(tabPosition).select();
+
+
     }
 
 
