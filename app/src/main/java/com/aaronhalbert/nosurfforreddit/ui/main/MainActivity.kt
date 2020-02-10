@@ -19,9 +19,9 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.aaronhalbert.nosurfforreddit.BaseActivity
 import com.aaronhalbert.nosurfforreddit.R
@@ -102,14 +102,10 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initNavComponent() {
-        navController = NavHostFragment.findNavController(
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!
-        )
-
-        /* NavigationUI uses AppBarConfiguration to manage the "UP" button in top-left corner */
-        val appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
+        navController = findNavController(R.id.nav_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
         setSupportActionBar(toolbar)
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+        toolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
     private fun pickDayNightMode() {

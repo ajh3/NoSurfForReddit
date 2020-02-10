@@ -13,13 +13,13 @@
 
 package com.aaronhalbert.nosurfforreddit;
 
-import android.app.Application;
+import androidx.multidex.MultiDexApplication;
 
 import com.aaronhalbert.nosurfforreddit.di.application.ApplicationComponent;
 import com.aaronhalbert.nosurfforreddit.di.application.ApplicationModule;
 import com.aaronhalbert.nosurfforreddit.di.application.DaggerApplicationComponent;
 
-public class NoSurfApplication extends Application {
+public class NoSurfApplication extends MultiDexApplication {
     private ApplicationComponent applicationComponent;
 
     @Override
