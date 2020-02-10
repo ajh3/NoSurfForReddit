@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -60,6 +61,8 @@ public class ViewPagerFragment extends BaseFragment {
 
     private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
     private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
+
+    private static final String TAB_STATE = "tabState";
 
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
     private static final String R_ALL = "/r/All";
@@ -104,7 +107,9 @@ public class ViewPagerFragment extends BaseFragment {
         Log.e("asdf", "test");
 
 
-
+        if (savedInstanceState != null) {
+            tabPosition = savedInstanceState.getInt(TAB_STATE, 0);
+        }
 
         observeIsUserLoggedInLiveData();
 
@@ -124,6 +129,8 @@ public class ViewPagerFragment extends BaseFragment {
 
         navController = Navigation.findNavController(view);
         setupViewPager(view);
+
+
 
         tabs.getTabAt(tabPosition).select();
 
@@ -193,6 +200,13 @@ public class ViewPagerFragment extends BaseFragment {
             loginMenuItem.setVisible(true);
             logoutMenuItem.setVisible(false);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(TAB_STATE, tabPosition);
     }
 
     // endregion menu ------------------------------------------------------------------------------
