@@ -6,20 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- this layout previously used a packed chain to horizontally and vertically center
-     the TextView and button, but vertical centering broke when ViewPagerFragment was
-     converted to use a CoordinatorLayout with AppBarLayout. The problem is, the scroll
-     flag on the TabLayout causes the ViewPager, linked with
-     app:layout_behavior="@string/appbar_scrolling_view_behavior", to be "pushed" down by
-     an amount equal to the height of the TabLayout. This is fine for pages in the ViewPager
-     that have scrolling content (e.g., a RecyclerView), but for non-scrolling view hierarchies
-     like the one in this layout, it causes the view container to be pushed underneath the
-     navigation bar, ruining the possibility of vertical centering. There don't seem to be
-     any suitable workarounds except trying to programmatically correct the offset. It's easier
-     just to forget about vertical centering, especially since the user rarely sees this screen.
-     There don't appear to be any other side effects caused by the container going underneath
-     the navigation bar, so there's no urgent need to fix it. -->
-
     <TextView
         android:id="@+id/login_fragment_instructions"
         android:layout_width="wrap_content"

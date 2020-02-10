@@ -17,12 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.aaronhalbert.nosurfforreddit.R;
-import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
-import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
-import com.aaronhalbert.nosurfforreddit.ui.main.ViewPagerFragmentDirections;
-import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.LiveData;
@@ -30,6 +24,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.aaronhalbert.nosurfforreddit.R;
+import com.aaronhalbert.nosurfforreddit.databinding.RowBinding;
+import com.aaronhalbert.nosurfforreddit.ui.main.MainActivityViewModel;
+import com.aaronhalbert.nosurfforreddit.ui.main.MainFragmentDirections;
+import com.aaronhalbert.nosurfforreddit.ui.viewstate.PostsViewState;
 
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoUrlGlobalAction;
@@ -166,11 +166,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.RowHolder> {
 
         private void launchPost() {
             if (viewModel.getLastClickedPost().isSelf) {
-                NavDirections action = ViewPagerFragmentDirections.clickSelfPostAction();
+                NavDirections action = MainFragmentDirections.clickSelfPostAction();
 
                 navController.navigate(action);
             } else {
-                NavDirections action = ViewPagerFragmentDirections.clickLinkPostAction();
+                NavDirections action = MainFragmentDirections.clickLinkPostAction();
 
                 navController.navigate(action);
             }

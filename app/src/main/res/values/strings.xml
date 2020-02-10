@@ -23,4 +23,6 @@
     <string name="display_settings">Display</string>
     <string name="content_settings">Content</string>
     <string name="misc_settings">Misc</string>
+    <string name="r_all">/r/All</string>
+    <string name="your_subreddits">Your Subreddits</string>
 </resources>

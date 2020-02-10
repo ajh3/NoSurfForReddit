@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/fragment_view_pager_dest">
+    app:startDestination="@id/fragment_main_dest">
 
     <fragment
-        android:id="@+id/fragment_view_pager_dest"
-        android:name="com.aaronhalbert.nosurfforreddit.ui.main.ViewPagerFragment">
+        android:id="@+id/fragment_main_dest"
+        android:name="com.aaronhalbert.nosurfforreddit.ui.main.MainFragment">
         <action
             android:id="@+id/click_link_post_action"
             app:destination="@id/fragment_link_post_dest"

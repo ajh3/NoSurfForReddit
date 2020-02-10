@@ -25,12 +25,12 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:title="@string/show_all"
-            android:key="showAll" />
+            android:key="showRAll" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:title="@string/default_page_is_all"
             android:key="defaultPageIsAll"
-            android:dependency="showAll" />
+            android:dependency="showRAll" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/misc_settings">

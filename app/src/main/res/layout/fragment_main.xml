@@ -2,29 +2,41 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/view_pager_fragment_base_view"
+    android:id="@+id/main_fragment_base_view"
     android:visibility="gone"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/zxcv"
+        android:id="@+id/main_fragment_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:elevation="0dp">
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/view_pager_fragment_tabs"
+            android:id="@+id/main_fragment_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:tabRippleColor="@null" />
+            app:tabRippleColor="@null" >
+
+            <com.google.android.material.tabs.TabItem
+                android:text="@string/your_subreddits"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="@string/r_all"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent" />
+
+        </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
-        android:id="@+id/asdf"
+        android:id="@+id/main_fragment_content_area"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

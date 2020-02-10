@@ -14,7 +14,6 @@
 package com.aaronhalbert.nosurfforreddit.ui.main;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,26 +46,21 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGl
 
 /* the main content fragment which holds all others, at the root of the activity's view */
 
-public class ViewPagerFragment extends BaseFragment {
+public class MainFragment extends BaseFragment {
     @Inject PreferenceSettingsStore preferenceSettingsStore;
     @Inject AuthenticatorUtils authenticatorUtils;
     @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+
     private MainActivityViewModel viewModel;
-    private boolean isUserLoggedIn = false;
-
     private NavController navController;
-    private FragmentManager fm;
-
     private TabLayout tabs;
+
+    private boolean isUserLoggedIn = false;
+    private int tabPosition = 0;
 
     private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
     private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
     private static final String TAB_STATE = "tabState";
-    private static final String YOUR_SUBREDDITS = "Your Subreddits";
-    private static final String R_ALL = "/r/All";
-
-    private int tabPosition = 0;
-
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -75,74 +69,43 @@ public class ViewPagerFragment extends BaseFragment {
         getPresentationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
         viewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(MainActivityViewModel.class);
-        fm = getChildFragmentManager();
-
-        if (findContainerFragment() == null) {
-
-            fm
-                    .beginTransaction()
-                    .add(
-                            R.id.asdf,
-                            ContainerFragment.newInstance(),
-                            TAG_CONTAINER_FRAGMENT)
-                    .commitNow();
-        }
-
-        if (findAllPostsFragment() == null) {
-
-            fm
-                    .beginTransaction()
-                    .add(
-                            R.id.asdf,
-                            AllPostsFragment.newInstance(),
-                            TAG_ALL_POSTS_FRAGMENT)
-                    .commitNow();
-        }
-
-
 
         if (savedInstanceState == null) {
             if (preferenceSettingsStore.isDefaultPageAll()) {
                 tabPosition = 1;
             }
         } else {
+            //TabLayout doesn't auto-preserve position across config changes
             tabPosition = savedInstanceState.getInt(TAB_STATE, 0);
         }
 
+        addChildFragments();
         observeIsUserLoggedInLiveData();
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_view_pager, container, false);
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         navController = Navigation.findNavController(view);
 
-        if (preferenceSettingsStore.showAll()) {
-            setupViewPager(view);
-            setPage();
+        if (preferenceSettingsStore.showRAll()) {
+            setupTabLayout(view);
         } else {
-            view.findViewById(R.id.view_pager_fragment_tabs).setVisibility(View.GONE);
-
-            FragmentTransaction ft = fm.beginTransaction();
-
-            ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
-
+            view.findViewById(R.id.main_fragment_tab_layout).setVisibility(View.GONE);
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .show(findContainerFragment())
+                    .hide(findAllPostsFragment())
+                    .commit();
             }
-
-
-
-
-
 
         setupSplashVisibilityToggle();
     }
@@ -155,6 +118,13 @@ public class ViewPagerFragment extends BaseFragment {
          * in instance variables. See comments on PostsFragment.onDestroyView() for a more detailed
          * explanation of this leak. */
         navController = null;
+        tabs = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(TAB_STATE, tabPosition);
     }
 
     // endregion lifecycle methods -----------------------------------------------------------------
@@ -163,8 +133,8 @@ public class ViewPagerFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.actions, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.actions, menu);
     }
 
     /* Nav component documentation says to handle menu clicks like this:
@@ -208,22 +178,13 @@ public class ViewPagerFragment extends BaseFragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt(TAB_STATE, tabPosition);
-    }
-
     // endregion menu ------------------------------------------------------------------------------
 
     // region observers ----------------------------------------------------------------------------
 
     private void observeIsUserLoggedInLiveData() {
         viewModel.getIsUserLoggedInLiveData()
-                .observe(this, loggedInStatus -> {
-                    isUserLoggedIn = loggedInStatus;
-        });
+                .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
     }
 
     /* allow splash animation to work correctly by ensuring RecyclerView is visible when
@@ -232,43 +193,21 @@ public class ViewPagerFragment extends BaseFragment {
      * on initial app startup. We toggle it VISIBLE whenever data are available. */
     private void setupSplashVisibilityToggle() {
         viewModel.getAllPostsViewStateLiveData().observe(getViewLifecycleOwner(), postsViewState ->
-                getView().findViewById(R.id.view_pager_fragment_base_view).setVisibility(View.VISIBLE));
+                getView().findViewById(R.id.main_fragment_base_view).setVisibility(View.VISIBLE));
     }
 
-    // endregion observers -------------------------------------------------------------------------
-
-    // region helper methods -----------------------------------------------------------------------
-
-    private void setupViewPager(View view) {
-        tabs = view.findViewById(R.id.view_pager_fragment_tabs);
-
-
-        tabs.addTab(tabs.newTab().setText(YOUR_SUBREDDITS));
-        tabs.addTab(tabs.newTab().setText(R_ALL));
-
-        tabs.setTabMode(TabLayout.MODE_FIXED);
-
-
+    private void setupTabListener() {
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
-                // not automatically restored for some reason
                 tabPosition = tabs.getSelectedTabPosition();
+                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
 
-                FragmentTransaction ft = fm.beginTransaction();
-
-                if (tabs.getSelectedTabPosition() == 0) {
+                if (tabPosition == 0) {
                     ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
-
-
                 } else {
                     ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
-
                 }
-
-
-
             }
 
             @Override
@@ -281,37 +220,50 @@ public class ViewPagerFragment extends BaseFragment {
 
             }
         });
-
     }
 
-    //TODO: file bug report with Google?
-    /*
-     * Disabled due to ViewPager & ViewPager2 not correctly working with setCurrentItem()
-     * during initial setup.
-     *
-     * https://stackoverflow.com/questions/19316729/android-viewpager-setcurrentitem-not-working-after-onresume
-     *
-     */
-    private void setPage() {
+    // endregion observers -------------------------------------------------------------------------
 
+    // region helper methods -----------------------------------------------------------------------
+
+    private void setupTabLayout(View view) {
+        tabs = view.findViewById(R.id.main_fragment_tab_layout);
+        tabs.setTabMode(TabLayout.MODE_FIXED);
         tabs.getTabAt(tabPosition).select();
-
-
+        setupTabListener();
     }
-
-
 
     private Fragment findAllPostsFragment() {
-        return fm.findFragmentByTag(TAG_ALL_POSTS_FRAGMENT);
+        return getChildFragmentManager().findFragmentByTag(TAG_ALL_POSTS_FRAGMENT);
     }
 
     private Fragment findContainerFragment() {
-        return fm.findFragmentByTag(TAG_CONTAINER_FRAGMENT);
+        return getChildFragmentManager().findFragmentByTag(TAG_CONTAINER_FRAGMENT);
     }
 
+    private void addChildFragments() {
+        FragmentManager fm = getChildFragmentManager();
 
+        if (findContainerFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.main_fragment_content_area,
+                            ContainerFragment.newInstance(),
+                            TAG_CONTAINER_FRAGMENT)
+                    .commitNow();
+        }
 
-
+        if (findAllPostsFragment() == null) {
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.main_fragment_content_area,
+                            AllPostsFragment.newInstance(),
+                            TAG_ALL_POSTS_FRAGMENT)
+                    .commitNow();
+        }
+    }
 
     // endregion helper methods --------------------------------------------------------------------
 
@@ -325,13 +277,13 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void launchPrefsScreen() {
-        NavDirections action = ViewPagerFragmentDirections.gotoPrefsAction();
+        NavDirections action = MainFragmentDirections.gotoPrefsAction();
 
         navController.navigate(action);
     }
 
     private void launchAboutScreen() {
-        NavDirections action = ViewPagerFragmentDirections.gotoAboutAction();
+        NavDirections action = MainFragmentDirections.gotoAboutAction();
 
         navController.navigate(action);
     }

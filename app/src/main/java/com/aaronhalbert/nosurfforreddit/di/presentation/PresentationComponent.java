@@ -17,7 +17,7 @@ import com.aaronhalbert.nosurfforreddit.ui.detail.NoSurfWebViewFragment;
 import com.aaronhalbert.nosurfforreddit.ui.detail.PostFragment;
 import com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.ui.main.MainActivity;
-import com.aaronhalbert.nosurfforreddit.ui.main.ViewPagerFragment;
+import com.aaronhalbert.nosurfforreddit.ui.main.MainFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.ContainerFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.PostsFragment;
 
@@ -29,7 +29,7 @@ public interface PresentationComponent {
 
     void inject(NoSurfWebViewFragment noSurfWebViewFragment);
 
-    void inject(ViewPagerFragment viewPagerFragment);
+    void inject(MainFragment mainFragment);
 
     void inject(PostFragment postFragment);
 
