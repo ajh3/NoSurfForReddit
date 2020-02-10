@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:title="@string/night_mode"
-        android:key="nightMode" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:title="@string/amoled_night_mode"
-        android:key="amoledNightMode"
-        android:dependency="nightMode" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:title="@string/external_browser"
-        android:key="externalBrowser" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:title="@string/show_all"
-        android:key="showAll" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:title="@string/default_page_is_all"
-        android:key="defaultPageIsAll"
-        android:dependency="showAll" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:title="@string/nsfw_filter"
-        android:key="nsfwFilter" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:title="@string/disable_swipe_to_refresh"
-        android:key="disableSwipeToRefresh" />
+    <PreferenceCategory
+        android:title="@string/display_settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/night_mode"
+            android:key="nightMode" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/amoled_night_mode"
+            android:key="amoledNightMode"
+            android:dependency="nightMode" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/decrease_addictiveness_settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/nsfw_filter"
+            android:key="nsfwFilter" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/enable_swipe_to_refresh"
+            android:key="enableSwipeToRefresh" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/show_all"
+            android:key="showAll" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/default_page_is_all"
+            android:key="defaultPageIsAll"
+            android:dependency="showAll" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/misc_settings">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/external_browser"
+            android:key="externalBrowser" />
+    </PreferenceCategory>
 </PreferenceScreen>

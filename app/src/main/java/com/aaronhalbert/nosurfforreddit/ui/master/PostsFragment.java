@@ -149,7 +149,7 @@ abstract public class PostsFragment extends BaseFragment implements SwipeRefresh
     private void setupSwipeRefreshLayout(View v) {
         swipeRefreshLayout = v.findViewById(R.id.posts_fragment_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setEnabled(!preferenceSettingsStore.isSwipeToRefreshDisabled());
+        swipeRefreshLayout.setEnabled(preferenceSettingsStore.isSwipeToRefreshEnabled());
     }
 
     private void refreshWithAnimation() {

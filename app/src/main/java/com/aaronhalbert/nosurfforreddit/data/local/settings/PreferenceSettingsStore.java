@@ -22,7 +22,7 @@ public class PreferenceSettingsStore {
     private static final String KEY_SHOW_ALL = "showAll";
     private static final String KEY_DEFAULT_PAGE_IS_ALL = "defaultPageIsAll";
     private static final String KEY_NSFW_FILTER = "nsfwFilter";
-    private static final String KEY_SWIPE_TO_REFRESH_DISABLED = "disableSwipeToRefresh";
+    private static final String KEY_SWIPE_TO_REFRESH_ENABLED = "enableSwipeToRefresh";
 
     private final SharedPreferences preferences;
 
@@ -58,8 +58,8 @@ public class PreferenceSettingsStore {
         return preferences.getBoolean(KEY_NSFW_FILTER, false);
     }
 
-    public boolean isSwipeToRefreshDisabled() {
-        return preferences.getBoolean(KEY_SWIPE_TO_REFRESH_DISABLED, true);
+    public boolean isSwipeToRefreshEnabled() {
+        return preferences.getBoolean(KEY_SWIPE_TO_REFRESH_ENABLED, false);
     }
 
     public void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
