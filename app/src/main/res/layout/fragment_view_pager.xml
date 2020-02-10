@@ -18,7 +18,8 @@
             android:id="@+id/view_pager_fragment_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:tabRippleColor="@null" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
