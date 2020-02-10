@@ -14,6 +14,7 @@
 package com.aaronhalbert.nosurfforreddit.ui.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +64,8 @@ public class ViewPagerFragment extends BaseFragment {
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
     private static final String R_ALL = "/r/All";
 
+    private int tabPosition = 0;
+
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -98,6 +101,8 @@ public class ViewPagerFragment extends BaseFragment {
         }
 
 
+        Log.e("asdf", "test");
+
 
 
 
@@ -115,10 +120,12 @@ public class ViewPagerFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Log.e("asdf", "view created");
+
         navController = Navigation.findNavController(view);
         setupViewPager(view);
 
-        tabs.getTabAt(1).select();
+        tabs.getTabAt(tabPosition).select();
 
 
         setPage();
@@ -128,6 +135,8 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        Log.e("asdf", "view destroyed");
 
         /* prevent memory leaks due to fragment going on backstack while retaining these objects
          * in instance variables. See comments on PostsFragment.onDestroyView() for a more detailed
@@ -234,6 +243,9 @@ public class ViewPagerFragment extends BaseFragment {
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+
+                // not automatically restored for some reason
+                tabPosition = tabs.getSelectedTabPosition();
 
                 FragmentTransaction ft = fm.beginTransaction();
 
