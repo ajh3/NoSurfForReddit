@@ -28,19 +28,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
-import com.aaronhalbert.nosurfforreddit.ui.login.LoginFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.AllPostsFragment;
 import com.aaronhalbert.nosurfforreddit.ui.master.ContainerFragment;
-import com.aaronhalbert.nosurfforreddit.ui.master.SubscribedPostsFragment;
 import com.aaronhalbert.nosurfforreddit.utils.ViewModelFactory;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 import javax.inject.Inject;
 
@@ -59,11 +55,14 @@ public class ViewPagerFragment extends BaseFragment {
     private NavController navController;
     private FragmentManager fm;
 
-    private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
-    private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
+    private TabLayout tabs;
 
-    private static final String R_ALL = "/r/All";
+    private static final String TAG_CONTAINER_FRAGMENT = "containerFragment";
+    private static final String TAG_ALL_POSTS_FRAGMENT = "allPostsFragment";
+
     private static final String YOUR_SUBREDDITS = "Your Subreddits";
+    private static final String R_ALL = "/r/All";
+
 
     // region lifecycle methods --------------------------------------------------------------------
 
@@ -76,25 +75,30 @@ public class ViewPagerFragment extends BaseFragment {
                 .get(MainActivityViewModel.class);
         fm = getChildFragmentManager();
 
-        if (findAllPostsFragment() == null) {
-            fm
-                    .beginTransaction()
-                    .add(
-                            R.id.asdf,
-                            AllPostsFragment.newInstance(),
-                            TAG_ALL_POSTS_FRAGMENT)
-                    .commit();
-        }
-
         if (findContainerFragment() == null) {
+
             fm
                     .beginTransaction()
                     .add(
                             R.id.asdf,
                             ContainerFragment.newInstance(),
                             TAG_CONTAINER_FRAGMENT)
-                    .commit();
+                    .commitNow();
         }
+
+        if (findAllPostsFragment() == null) {
+
+            fm
+                    .beginTransaction()
+                    .add(
+                            R.id.asdf,
+                            AllPostsFragment.newInstance(),
+                            TAG_ALL_POSTS_FRAGMENT)
+                    .commitNow();
+        }
+
+
+
 
 
         observeIsUserLoggedInLiveData();
@@ -113,6 +117,10 @@ public class ViewPagerFragment extends BaseFragment {
 
         navController = Navigation.findNavController(view);
         setupViewPager(view);
+
+        tabs.getTabAt(1).select();
+
+
         setPage();
         setupSplashVisibilityToggle();
     }
@@ -184,7 +192,20 @@ public class ViewPagerFragment extends BaseFragment {
 
     private void observeIsUserLoggedInLiveData() {
         viewModel.getIsUserLoggedInLiveData()
-                .observe(this, loggedInStatus -> isUserLoggedIn = loggedInStatus);
+                .observe(this, loggedInStatus -> {
+                    isUserLoggedIn = loggedInStatus;
+
+                    FragmentTransaction ft = fm.beginTransaction();
+
+                    if (tabs.getSelectedTabPosition() == 0) {
+                        ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
+
+
+                    } else {
+                        ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
+
+                    }
+        });
     }
 
     /* allow splash animation to work correctly by ensuring RecyclerView is visible when
@@ -201,11 +222,11 @@ public class ViewPagerFragment extends BaseFragment {
     // region helper methods -----------------------------------------------------------------------
 
     private void setupViewPager(View view) {
-        TabLayout tabs = view.findViewById(R.id.view_pager_fragment_tabs);
+        tabs = view.findViewById(R.id.view_pager_fragment_tabs);
 
-        tabs.addTab(tabs.newTab().setText(R_ALL));
+
         tabs.addTab(tabs.newTab().setText(YOUR_SUBREDDITS));
-
+        tabs.addTab(tabs.newTab().setText(R_ALL));
 
         tabs.setTabMode(TabLayout.MODE_FIXED);
 
@@ -217,9 +238,12 @@ public class ViewPagerFragment extends BaseFragment {
                 FragmentTransaction ft = fm.beginTransaction();
 
                 if (tabs.getSelectedTabPosition() == 0) {
-                    ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
-                } else {
                     ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
+
+
+                } else {
+                    ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
+
                 }
 
 
