@@ -27,9 +27,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
 import com.aaronhalbert.nosurfforreddit.R;
@@ -50,7 +49,7 @@ import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGl
 public class MainFragment extends BaseFragment {
     @Inject PreferenceSettingsStore preferenceSettingsStore;
     @Inject AuthenticatorUtils authenticatorUtils;
-    @SuppressWarnings("WeakerAccess") @Inject ViewModelFactory viewModelFactory;
+    @Inject ViewModelFactory viewModelFactory;
 
     private MainActivityViewModel viewModel;
     private NavController navController;
@@ -138,36 +137,24 @@ public class MainFragment extends BaseFragment {
         inflater.inflate(R.menu.actions, menu);
     }
 
-    /* Nav component documentation says to handle menu clicks like this:
-     *
-     * return NavigationUI.onNavDestinationSelected(item, Navigation.findNavController(getView()));
-     *
-     * However, this does not appear to honor animation transitions defined in XML, so we
-     * perform a manual navigate-by-action instead. */
+    /* TODO: report bug - associating menu clicks with nav actions doesn't respect
+     *   animations defined in nav_graph.xml */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.logout:
-                viewModel.logUserOut();
-                return true;
-            case R.id.login:
-                launchLoginScreen();
-                return true;
-            case R.id.settings:
-                launchPrefsScreen();
-                return true;
-            case R.id.about:
-                launchAboutScreen();
-                return true;
-            // case R.id.refresh: handled in PostsFragment
+        if (item.getItemId() == R.id.fragment_nosurf_web_view_login_dest) {
+            launchLoginScreen(); //must manually navigate when bundle is needed w/ menu action
+            return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.logout) viewModel.logUserOut();
+
+        return NavigationUI.onNavDestinationSelected(item, navController)
+                || super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem loginMenuItem = menu.findItem(R.id.login);
+        MenuItem loginMenuItem = menu.findItem(R.id.fragment_nosurf_web_view_login_dest);
         MenuItem logoutMenuItem = menu.findItem(R.id.logout);
 
         if (isUserLoggedIn) {
@@ -271,20 +258,7 @@ public class MainFragment extends BaseFragment {
     // region navigation helper methods ------------------------------------------------------------
 
     private void launchLoginScreen() {
-        GotoLoginUrlGlobalAction action
-                = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
-
-        navController.navigate(action);
-    }
-
-    private void launchPrefsScreen() {
-        NavDirections action = MainFragmentDirections.gotoPrefsAction();
-
-        navController.navigate(action);
-    }
-
-    private void launchAboutScreen() {
-        NavDirections action = MainFragmentDirections.gotoAboutAction();
+        GotoLoginUrlGlobalAction action = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
 
         navController.navigate(action);
     }

@@ -14,12 +14,12 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/settings"
+        android:id="@id/fragment_nosurf_preference_dest"
         android:title="@string/settings"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/about"
+        android:id="@id/fragment_about_dest"
         android:title="@string/about"
         app:showAsAction="never"/>
 
@@ -29,7 +29,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/login"
+        android:id="@id/fragment_nosurf_web_view_login_dest"
         android:title="@string/login"
         app:showAsAction="never"/>
 </menu>
