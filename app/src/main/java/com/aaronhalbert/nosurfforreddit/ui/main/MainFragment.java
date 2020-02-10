@@ -31,6 +31,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.aaronhalbert.nosurfforreddit.BaseFragment;
+import com.aaronhalbert.nosurfforreddit.NavGraphDirections;
 import com.aaronhalbert.nosurfforreddit.R;
 import com.aaronhalbert.nosurfforreddit.data.local.settings.PreferenceSettingsStore;
 import com.aaronhalbert.nosurfforreddit.data.remote.auth.AuthenticatorUtils;
@@ -41,7 +42,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;
 
-import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.GotoLoginUrlGlobalAction;
 import static com.aaronhalbert.nosurfforreddit.NavGraphDirections.gotoLoginUrlGlobalAction;
 
 /* the main content fragment which holds all others, at the root of the activity's view */
@@ -74,15 +74,13 @@ public class MainFragment extends BaseFragment {
                 .get(MainActivityViewModel.class);
 
         if (savedInstanceState == null) {
-            if (preferenceSettingsStore.isDefaultPageAll()) {
-                tabPosition = 1;
-            }
+            if (preferenceSettingsStore.isDefaultPageAll()) tabPosition = 1;
         } else {
-            //TabLayout doesn't auto-preserve position across config changes
+            //because TabLayout doesn't auto-preserve position across config changes
             tabPosition = savedInstanceState.getInt(TAB_STATE, 0);
         }
 
-        addChildFragments();
+        addContentFragments();
         observeIsUserLoggedInLiveData();
     }
 
@@ -97,15 +95,10 @@ public class MainFragment extends BaseFragment {
         navController = NavHostFragment.findNavController(this);
 
         if (preferenceSettingsStore.showRAll()) {
-            setupTabLayout(view);
+            setupDualContentFragmentsWithTabLayout(view);
         } else {
-            view.findViewById(R.id.main_fragment_tab_layout).setVisibility(View.GONE);
-            getChildFragmentManager()
-                    .beginTransaction()
-                    .show(findContainerFragment())
-                    .hide(findAllPostsFragment())
-                    .commit();
-            }
+            setupSingleContentFragmentWithoutTabLayout(view);
+        }
 
         setupSplashVisibilityToggle();
     }
@@ -142,7 +135,8 @@ public class MainFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.fragment_nosurf_web_view_login_dest) {
-            launchLoginScreen(); //must manually navigate when bundle is needed w/ menu action
+            //must manually navigate when bundle is needed w/ menu action
+            launchLoginScreen();
             return true;
         }
 
@@ -189,13 +183,7 @@ public class MainFragment extends BaseFragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tabPosition = tabs.getSelectedTabPosition();
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-
-                if (tabPosition == 0) {
-                    ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
-                } else {
-                    ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
-                }
+                selectActiveContentFragment();
             }
 
             @Override
@@ -214,11 +202,31 @@ public class MainFragment extends BaseFragment {
 
     // region helper methods -----------------------------------------------------------------------
 
-    private void setupTabLayout(View view) {
+    private void setupDualContentFragmentsWithTabLayout(View view) {
         tabs = view.findViewById(R.id.main_fragment_tab_layout);
         tabs.setTabMode(TabLayout.MODE_FIXED);
         tabs.getTabAt(tabPosition).select();
+        selectActiveContentFragment();
         setupTabListener();
+    }
+
+    private void setupSingleContentFragmentWithoutTabLayout(View view) {
+        view.findViewById(R.id.main_fragment_tab_layout).setVisibility(View.GONE);
+        getChildFragmentManager()
+                .beginTransaction()
+                .show(findContainerFragment())
+                .hide(findAllPostsFragment())
+                .commit();
+    }
+
+    private void selectActiveContentFragment() {
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+
+        if (tabPosition == 0) {
+            ft.show(findContainerFragment()).hide(findAllPostsFragment()).commit();
+        } else {
+            ft.hide(findContainerFragment()).show(findAllPostsFragment()).commit();
+        }
     }
 
     private Fragment findAllPostsFragment() {
@@ -229,7 +237,7 @@ public class MainFragment extends BaseFragment {
         return getChildFragmentManager().findFragmentByTag(TAG_CONTAINER_FRAGMENT);
     }
 
-    private void addChildFragments() {
+    private void addContentFragments() {
         FragmentManager fm = getChildFragmentManager();
 
         if (findContainerFragment() == null) {
@@ -258,7 +266,7 @@ public class MainFragment extends BaseFragment {
     // region navigation helper methods ------------------------------------------------------------
 
     private void launchLoginScreen() {
-        GotoLoginUrlGlobalAction action = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
+        NavGraphDirections.GotoLoginUrlGlobalAction action = gotoLoginUrlGlobalAction(authenticatorUtils.buildAuthUrl());
 
         navController.navigate(action);
     }
