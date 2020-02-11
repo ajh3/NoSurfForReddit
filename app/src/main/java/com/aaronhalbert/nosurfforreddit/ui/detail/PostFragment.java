@@ -40,6 +40,7 @@ import javax.inject.Inject;
  *
  * PostsFragment is the master view */
 
+//TODO: refactor this entire class
 abstract public class PostFragment extends BaseFragment {
     private static final String KEY_COMMENTS_ALREADY_LOADED = "commentsAlreadyLoaded";
     private static final String ZERO = "zero";
@@ -191,7 +192,15 @@ abstract public class PostFragment extends BaseFragment {
 
     /* show the correct comment and divider views based on how many comments the post has */
     private void updateCommentViewVisibilities() {
-        int numComments = viewModel.getCommentsViewStateLiveData().getValue().getNumComments();
+        int numComments;
+
+        //TODO: implementing quick fix for Play console error reports, but
+        // investigate why this method would ever be called when getValue() is null
+        if (null == viewModel.getCommentsViewStateLiveData().getValue()) {
+            numComments = 0;
+        } else {
+            numComments = viewModel.getCommentsViewStateLiveData().getValue().getNumComments();
+        }
 
         for (int i = 0; i < numComments; i++) {
             comments[i].setVisibility(View.VISIBLE);

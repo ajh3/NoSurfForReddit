@@ -86,8 +86,8 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-    def leak_canary_version = '2.2'
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
+    //def leak_canary_version = '2.2'
+    //debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
 
     def multidex_version = '2.0.1'
     implementation "androidx.multidex:multidex:$multidex_version"

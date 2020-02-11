@@ -27,15 +27,17 @@ public class SelfPostFragment extends PostFragment {
                 .postFragmentDividerUnderDetailsForSelfPostsOnly
                 .setVisibility(View.VISIBLE);
 
-        if (!"".equals(viewModel.getLastClickedPost().selfTextHtml)) {
+        //TODO: eliminate this & other null checks?
+        if (null != viewModel.getLastClickedPost()) {
+            if (!"".equals(viewModel.getLastClickedPost().selfTextHtml)) {
+                fragmentPostBinding
+                        .postFragmentSelftextForSelfPostsOnly
+                        .setVisibility(View.VISIBLE);
 
-            fragmentPostBinding
-                    .postFragmentSelftextForSelfPostsOnly
-                    .setVisibility(View.VISIBLE);
-
-            fragmentPostBinding
-                    .postFragmentDividerUnderSelftextForSelfPostsOnly
-                    .setVisibility(View.VISIBLE);
+                fragmentPostBinding
+                        .postFragmentDividerUnderSelftextForSelfPostsOnly
+                        .setVisibility(View.VISIBLE);
+            }
         }
     }
 
