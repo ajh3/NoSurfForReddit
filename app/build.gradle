@@ -67,7 +67,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha05'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
-    def retrofit_version = '2.7.2'
+    def retrofit_version = '2.8.1'
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
 
@@ -79,7 +79,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger2_version"
     kapt "com.google.dagger:dagger-compiler:$dagger2_version"
 
-    def room_version = '2.2.4'
+    def room_version = '2.2.5'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
