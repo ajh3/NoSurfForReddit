@@ -94,7 +94,7 @@ dependencies {
     implementation "androidx.multidex:multidex:$multidex_version"
 
     testImplementation 'junit:junit:4.13'
-    testImplementation 'org.mockito:mockito-inline:3.5.10'
+    testImplementation 'org.mockito:mockito-inline:3.5.13'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
 }
